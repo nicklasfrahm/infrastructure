@@ -29,6 +29,7 @@ runs:
 
     - name: Download Go Module dependencies
       run: go mod download
+      shell: bash
 
     - name: Preview planned changes
       uses: pulumi/actions@v3
