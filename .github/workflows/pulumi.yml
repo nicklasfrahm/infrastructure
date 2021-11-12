@@ -21,6 +21,10 @@ jobs:
 
       - name: Run Pulumi to deploy IaC
         uses: ./.github/actions/pulumi
+        with:
+          personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pulumi_access_token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          gcp_service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
   # k3s:
   #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
