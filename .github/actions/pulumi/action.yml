@@ -36,6 +36,7 @@ runs:
       with:
         command: preview
         stack-name: dns
+        comment-on-pr: true
       env:
         PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
         PERSONAL_ACCESS_TOKEN: ${{ inputs.personal-access-token }}
