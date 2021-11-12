@@ -30,7 +30,26 @@ func main() {
 		// Define GitHub organizations and repositories.
 		orgs := []*github.OrganizationConfig{
 			github.NewOrganizationConfig("nicklasfrahm", []github.Repository{
+				{Name: "nicklasfrahm"},
 				{Name: "infrastructure"},
+				{Name: "mykilio"},
+				{Name: "file-secret-action"},
+				{Name: "scp-action"},
+				{Name: "showcases"},
+				{Name: "odance"},
+				{Name: "labman"},
+				{Name: "llama"},
+				{Name: "archivist"},
+				{Name: "distributed-charging"},
+				{Name: "rts"},
+				{Name: "ses"},
+				{Name: "esd"},
+				{Name: "rtos"},
+				{Name: "adp"},
+				{Name: "indesy-robot"},
+				{Name: "indesy-webclient"},
+				{Name: "indesy-server"},
+				{Name: "node-iot-server"},
 			}),
 			github.NewOrganizationConfig("mykilio", []github.Repository{
 				{Name: "docs"},
