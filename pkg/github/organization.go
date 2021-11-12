@@ -28,14 +28,10 @@ func NewOrganizationConfig(name string, repos []Repository) *OrganizationConfig 
 }
 
 func NewOrganization(ctx *pulumi.Context, name string) (*Organization, error) {
-	// DEBUG: PAT value
-	pat := os.Getenv("PERSONAL_ACCESS_TOKEN")
-	fmt.Println(len(pat))
-
 	id := fmt.Sprintf("github-%s", name)
 	provider, err := github.NewProvider(ctx, id, &github.ProviderArgs{
 		Owner: pulumi.StringPtr(name),
-		Token: pulumi.StringPtr(pat),
+		Token: pulumi.StringPtr(os.Getenv("PERSONAL_ACCESS_TOKEN")),
 	})
 	if err != nil {
 		return nil, err
