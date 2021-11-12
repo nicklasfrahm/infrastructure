@@ -30,13 +30,24 @@ jobs:
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
 
-      - name: Preview planned changes
+      - name: Preview changes
         uses: pulumi/actions@v3
         with:
           command: preview
           stack-name: dns
+          comment-on-pr: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Apply changes
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          command: preview
+          stack-name: dns
+          comment-on-pr: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
   # k3s:
   #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
   #   runs-on: ubuntu-latest
