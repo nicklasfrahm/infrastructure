@@ -20,7 +20,7 @@ runs:
       uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ github.repository_owner }}
-        service_account_key: ${{ inputs.gcp_service_account_key }}
+        service_account_key: ${{ inputs.gcp-service-account-key }}
         export_default_credentials: true
 
     - uses: actions/setup-go@v2
@@ -37,8 +37,8 @@ runs:
         command: preview
         stack-name: dns
       env:
-        PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi_access_token }}
-        PERSONAL_ACCESS_TOKEN: ${{ inputs.personal_access_token }}
+        PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
+        PERSONAL_ACCESS_TOKEN: ${{ inputs.personal-access-token }}
 
     - name: Apply changes
       uses: pulumi/actions@v3
@@ -48,5 +48,5 @@ runs:
         stack-name: dns
         comment-on-pr: true
       env:
-        PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi_access_token }}
-        PERSONAL_ACCESS_TOKEN: ${{ inputs.personal_access_token }}
+        PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
+        PERSONAL_ACCESS_TOKEN: ${{ inputs.personal-access-token }}
