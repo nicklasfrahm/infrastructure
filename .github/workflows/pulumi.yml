@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Pulumi to deploy IaC
-        uses: .github/actions/pulumi.yml
+        uses: ./.github/actions/pulumi.yml
 
   # k3s:
   #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
