@@ -40,6 +40,7 @@ jobs:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Apply changes
+        uses: pulumi/actions@v3
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           command: up
