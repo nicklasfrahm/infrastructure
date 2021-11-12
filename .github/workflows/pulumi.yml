@@ -42,7 +42,7 @@ jobs:
       - name: Apply changes
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
-          command: preview
+          command: up
           stack-name: dns
           comment-on-pr: true
         env:
