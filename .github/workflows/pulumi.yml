@@ -30,6 +30,9 @@ jobs:
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
 
+      - name: Download go modules to prevent verbose output
+        run: go mod download
+
       - name: Preview changes
         uses: pulumi/actions@v3
         with:
