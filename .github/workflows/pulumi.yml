@@ -12,45 +12,26 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  dns:
-    name: DNS
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - dns
+          - github
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - uses: actions/setup-go@v2
+      - name: Run Pulumi to deploy IaC
+        uses: ./.github/actions/pulumi
         with:
-          go-version: "1.16"
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: ${{ github.repository_owner }}
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
-
-      - name: Download go modules to prevent verbose output
-        run: go mod download
-
-      - name: Preview changes
-        uses: pulumi/actions@v3
-        with:
-          command: preview
-          stack-name: dns
-          comment-on-pr: true
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-
-      - name: Apply changes
-        uses: pulumi/actions@v3
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        with:
-          command: up
-          stack-name: dns
-          comment-on-pr: true
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          stack: ${{ matrix.stack }}
+          personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          gcp-service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
   # k3s:
   #   if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

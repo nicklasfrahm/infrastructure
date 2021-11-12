@@ -17,7 +17,7 @@ func Provider(ctx *pulumi.Context) (*gcp.Provider, error) {
 	}
 
 	p, err := gcp.NewProvider(ctx, "gcp", &gcp.ProviderArgs{
-		Region: pulumi.StringPtr(DefaultRegion),
+		Region: pulumi.String(DefaultRegion),
 	})
 	if err != nil {
 		return nil, err
