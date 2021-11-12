@@ -7,10 +7,6 @@ import (
 
 const (
 	ExportZones = "zones"
-
-	ZoneIntric       = "intric-dk"
-	ZoneMykilio      = "mykil-io"
-	ZoneNicklasfrahm = "nicklasfrahm-xyz"
 )
 
 type Zone struct {
@@ -19,35 +15,26 @@ type Zone struct {
 	Description string
 }
 
-func StackDNS() pulumi.RunFunc {
+func NewZone(name string, domain string, description string) Zone {
+	return Zone{
+		Name:        name,
+		Domain:      domain,
+		Description: description,
+	}
+}
+
+func StackDNS(zones []Zone) pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
 		provider, err := Provider(ctx)
 		if err != nil {
 			return err
 		}
 
-		zones := []Zone{
-			{
-				Name:        ZoneNicklasfrahm,
-				Description: "Nicklas Frahm's personal domain",
-				Domain:      "nicklasfrahm.xyz",
-			},
-			{
-				Name:        ZoneIntric,
-				Description: "Intric Denmark startup",
-				Domain:      "intric.dk",
-			},
-			{
-				Name:        ZoneMykilio,
-				Description: "Mykilio project",
-				Domain:      "mykil.io",
-			},
-		}
-
 		for _, zone := range zones {
 			managedZone, err := dns.NewManagedZone(ctx, zone.Name, &dns.ManagedZoneArgs{
-				Name:    pulumi.StringPtr(zone.Name),
-				DnsName: pulumi.StringPtr(zone.Domain),
+				Name:        pulumi.String(zone.Name),
+				DnsName:     pulumi.String(zone.Domain),
+				Description: pulumi.String(zone.Description),
 			}, pulumi.Provider(provider))
 			if err != nil {
 				return err

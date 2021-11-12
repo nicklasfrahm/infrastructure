@@ -1,0 +1,43 @@
+name: Pulumi Go
+description: Deploy an entire Pulumi stack.
+inputs:
+  stack:
+    description: The name of the stack to deploy.
+    required: true
+    default: dev
+runs:
+  using: composite
+  steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-go@v2
+      with:
+        go-version: "1.16"
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ github.repository_owner }}
+        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        export_default_credentials: true
+
+    - name: Preview planned changes
+      uses: pulumi/actions@v3
+      with:
+        command: preview
+        stack-name: dns
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+    - name: Apply changes
+      uses: pulumi/actions@v3
+      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      with:
+        command: up
+        stack-name: dns
+        comment-on-pr: true
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
