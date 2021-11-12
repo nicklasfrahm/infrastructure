@@ -5,7 +5,7 @@ import (
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	"github.com/nicklasfrahm/infrastructure/pkg/dns"
+	"github.com/nicklasfrahm/infrastructure/pkg/gcp"
 )
 
 const (
@@ -16,7 +16,7 @@ func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		// Define all available stacks.
 		stacks := map[string]pulumi.RunFunc{
-			StackDNS: dns.Stack(),
+			StackDNS: gcp.StackDNS(),
 		}
 
 		// Load the corresponding stack and verify its existence.
