@@ -35,7 +35,7 @@ runs:
       uses: pulumi/actions@v3
       with:
         command: preview
-        stack-name: dns
+        stack-name: ${{ inputs.stack }}
         comment-on-pr: true
       env:
         PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
@@ -46,7 +46,7 @@ runs:
       if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
       with:
         command: up
-        stack-name: dns
+        stack-name: ${{ inputs.stack }}
         comment-on-pr: true
       env:
         PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
