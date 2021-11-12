@@ -1,4 +1,4 @@
-name: Pulumi Go
+name: Pulumi
 description: Deploy an entire Pulumi stack.
 inputs:
   stack:
