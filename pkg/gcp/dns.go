@@ -17,9 +17,11 @@ const (
 	// the assumption that our applications are safe and
 	// that zone-walking does not pose a threat.
 	DnsSecNonExistence = dns.ManagedZoneDnsSecConfigNonExistenceNsec
-	// Use the maximum number of bits, where the increment is 64,
-	// the minimum is 512 and the maximum is 1024.
-	DnsSecKeyLength = 1024
+	// Use this algorithm for maximum compatibility as described here.
+	// https://cloud.google.com/dns/docs/dnssec-advanced
+	DnsSecAlgorithm = dns.DnsKeySpecAlgorithmRsasha256
+	// Use the maximum number of bits for the above algorithm.
+	DnsSecKeyLength = 2048
 )
 
 type Zone struct {
@@ -50,8 +52,6 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 				Description: pulumi.String(zone.Description),
 				// Official REST API reference for configuration options:
 				// https://cloud.google.com/dns/docs/reference/v1/managedZones
-				// Information about advanced DNSSEC setups:
-				// https://cloud.google.com/dns/docs/dnssec-advanced
 				DnssecConfig: dns.ManagedZoneDnsSecConfigArgs{
 					State:        DnsSecState,
 					NonExistence: DnsSecNonExistence,
