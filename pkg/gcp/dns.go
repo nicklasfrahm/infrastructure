@@ -7,9 +7,12 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// For more information about how DNSSEC works, consider the link below.
+// https://www.cloudflare.com/dns/dnssec/how-dnssec-works/
+
 const (
 	// Enable DNSSEC to prevent DNS spoofing.
-	DnsSecState = dns.ManagedZoneDnsSecConfigStateOff
+	DnsSecState = dns.ManagedZoneDnsSecConfigStateOn
 	// Use NSEC to reduce cryptographic complexity under
 	// the assumption that our applications are safe and
 	// that zone-walking does not pose a threat.
@@ -45,6 +48,10 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 				Name:        pulumi.String(zone.Name),
 				DnsName:     pulumi.String(fmt.Sprintf("%s.", zone.Domain)),
 				Description: pulumi.String(zone.Description),
+				// Official REST API reference for configuration options:
+				// https://cloud.google.com/dns/docs/reference/v1/managedZones
+				// Information about advanced DNSSEC setups:
+				// https://cloud.google.com/dns/docs/dnssec-advanced
 				DnssecConfig: dns.ManagedZoneDnsSecConfigArgs{
 					State:        DnsSecState,
 					NonExistence: DnsSecNonExistence,
