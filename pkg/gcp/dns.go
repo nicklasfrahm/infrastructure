@@ -1,6 +1,8 @@
 package gcp
 
 import (
+	"fmt"
+
 	dns "github.com/pulumi/pulumi-google-native/sdk/go/google/dns/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -33,14 +35,15 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 		for _, zone := range zones {
 			managedZone, err := dns.NewManagedZone(ctx, zone.Name, &dns.ManagedZoneArgs{
 				Name:        pulumi.String(zone.Name),
-				DnsName:     pulumi.String(zone.Domain),
+				DnsName:     pulumi.String(fmt.Sprintf("%s.", zone.Domain)),
 				Description: pulumi.String(zone.Description),
 			}, pulumi.Provider(provider), pulumi.Parent(provider))
 			if err != nil {
 				return err
 			}
 
-			ctx.Export(zone.Name, managedZone.ID().ToIDPtrOutput())
+			// Export the ID of the zone.
+			ctx.Export(fmt.Sprintf("managedzone.id/%s", zone.Domain), managedZone.ID())
 		}
 
 		return nil

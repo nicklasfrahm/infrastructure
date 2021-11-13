@@ -22,9 +22,9 @@ func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		// Define DNS zones.
 		zones := []gcp.Zone{
-			gcp.NewZone(ZoneNicklasfrahm, "nicklasfrahm.xyz.", "Nicklas Frahm's personal domain"),
-			gcp.NewZone(ZoneIntric, "intric.dk.", "Intric Denmark startup"),
-			gcp.NewZone(ZoneMykilio, "mykil.io.", "Mykilio project"),
+			gcp.NewZone(ZoneNicklasfrahm, "nicklasfrahm.xyz", "Nicklas Frahm's personal domain"),
+			gcp.NewZone(ZoneIntric, "intric.dk", "Intric Denmark startup"),
+			gcp.NewZone(ZoneMykilio, "mykil.io", "Mykilio project"),
 		}
 
 		// Define GitHub organizations and repositories.
