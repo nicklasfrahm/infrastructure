@@ -64,7 +64,7 @@ func NewRepositoryConfig(name string, id string) RepositoryConfig {
 
 func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, error) {
 	id := fmt.Sprintf("%s-%s", org.Name, config.Name)
-	ref := fmt.Sprintf("%s/%s", org.Name, config.Name)
+	// ref := fmt.Sprintf("%s/%s", org.Name, config.Name)
 	repo, err := github.NewRepository(org.Context, id, &github.RepositoryArgs{
 		Name:                pulumi.String(config.Name),
 		Visibility:          pulumi.String(VisibilityPublic),
@@ -79,7 +79,7 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 		HasProjects:         pulumi.Bool(true),
 		HasWiki:             pulumi.Bool(false),
 		VulnerabilityAlerts: pulumi.Bool(true),
-	}, pulumi.Provider(org.Provider), pulumi.Parent(org.Provider), pulumi.Import(pulumi.ID(ref)))
+	}, pulumi.Provider(org.Provider), pulumi.Parent(org.Provider), pulumi.Import(pulumi.ID(config.Name)))
 	if err != nil {
 		return nil, err
 	}
