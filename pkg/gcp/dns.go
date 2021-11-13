@@ -35,7 +35,7 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 				Name:        pulumi.String(zone.Name),
 				DnsName:     pulumi.String(zone.Domain),
 				Description: pulumi.String(zone.Description),
-			}, pulumi.Provider(provider))
+			}, pulumi.Provider(provider), pulumi.Parent(provider))
 			if err != nil {
 				return err
 			}
