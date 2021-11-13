@@ -29,34 +29,34 @@ func main() {
 
 		// Define GitHub organizations and repositories.
 		orgs := []*github.OrganizationConfig{
-			github.NewOrganizationConfig("nicklasfrahm", []github.Repository{
-				{Name: "nicklasfrahm"},
-				{Name: "infrastructure"},
-				{Name: "mykilio"},
-				{Name: "file-secret-action"},
-				{Name: "scp-action"},
-				{Name: "showcases"},
-				{Name: "odance"},
-				{Name: "labman"},
-				{Name: "llama"},
-				{Name: "archivist"},
-				{Name: "distributed-charging"},
-				{Name: "rts"},
-				{Name: "ses"},
-				{Name: "esd"},
-				{Name: "rtos"},
-				{Name: "adp"},
-				{Name: "indesy-robot"},
-				{Name: "indesy-webclient"},
-				{Name: "indesy-server"},
-				{Name: "node-iot-server"},
+			github.NewOrganizationConfig("nicklasfrahm", []github.RepositoryConfig{
+				github.NewRepositoryConfig("adp", "120659570"),
+				github.NewRepositoryConfig("archivist", "352418616"),
+				github.NewRepositoryConfig("distributed-charging", "329911865"),
+				github.NewRepositoryConfig("esd", "219478595"),
+				github.NewRepositoryConfig("file-secret-action", "367789870"),
+				github.NewRepositoryConfig("indesy-robot", "106269089"),
+				github.NewRepositoryConfig("indesy-server", "106265257"),
+				github.NewRepositoryConfig("indesy-webclient", "104065906"),
+				github.NewRepositoryConfig("infrastructure", "421646445"),
+				github.NewRepositoryConfig("labman", "332178426"),
+				github.NewRepositoryConfig("mykilio", "363624141"),
+				github.NewRepositoryConfig("nicklasfrahm", "366965590"),
+				github.NewRepositoryConfig("node-iot-server", "103060200"),
+				github.NewRepositoryConfig("odance", "359234052"),
+				github.NewRepositoryConfig("rtos", "147308829"),
+				github.NewRepositoryConfig("rts", "255901708"),
+				github.NewRepositoryConfig("scp-action", "367666163"),
+				github.NewRepositoryConfig("ses", "222951163"),
+				github.NewRepositoryConfig("showcases", "417350673"),
+				github.NewRepositoryConfig("sonderborg-smart-zero-hack-19-mock-box", "220659897"),
 			}),
-			github.NewOrganizationConfig("mykilio", []github.Repository{
-				{Name: "docs"},
-				{Name: "mykilio.go"},
+			github.NewOrganizationConfig("mykilio", []github.RepositoryConfig{
+				github.NewRepositoryConfig("docs", "423123012"),
+				github.NewRepositoryConfig("mykilio.go", "426119679"),
 			}),
-			github.NewOrganizationConfig("intric", []github.Repository{
-				{Name: "services"},
+			github.NewOrganizationConfig("intric", []github.RepositoryConfig{
+				// github.NewRepositoryConfig("services", "427475385"),
 			}),
 		}
 

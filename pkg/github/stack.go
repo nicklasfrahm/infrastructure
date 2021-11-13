@@ -6,15 +6,16 @@ import (
 
 func StackGitHub(configs []*OrganizationConfig) pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
-		for _, config := range configs {
+		for _, org := range configs {
 			// Create a new organization.
-			organization, err := NewOrganization(ctx, config.Name)
+			organization, err := NewOrganization(ctx, org)
 			if err != nil {
 				return err
 			}
 
-			for _, repo := range config.Repositories {
-				_, err := organization.NewRepository(repo.Name)
+			// Create repositories for the organization.
+			for _, repo := range org.Repositories {
+				_, err := organization.NewRepository(&repo)
 				if err != nil {
 					return err
 				}

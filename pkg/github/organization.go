@@ -14,7 +14,7 @@ const (
 
 type OrganizationConfig struct {
 	Name         string
-	Repositories []Repository
+	Repositories []RepositoryConfig
 }
 
 type Organization struct {
@@ -23,14 +23,14 @@ type Organization struct {
 	Provider *github.Provider
 }
 
-func NewOrganizationConfig(name string, repos []Repository) *OrganizationConfig {
+func NewOrganizationConfig(name string, repos []RepositoryConfig) *OrganizationConfig {
 	return &OrganizationConfig{Name: name, Repositories: repos}
 }
 
-func NewOrganization(ctx *pulumi.Context, name string) (*Organization, error) {
-	id := fmt.Sprintf("github-%s", name)
+func NewOrganization(ctx *pulumi.Context, config *OrganizationConfig) (*Organization, error) {
+	id := fmt.Sprintf("github-%s", config.Name)
 	provider, err := github.NewProvider(ctx, id, &github.ProviderArgs{
-		Owner: pulumi.StringPtr(name),
+		Owner: pulumi.StringPtr(config.Name),
 		Token: pulumi.StringPtr(os.Getenv("PERSONAL_ACCESS_TOKEN")),
 	})
 	if err != nil {
@@ -38,13 +38,14 @@ func NewOrganization(ctx *pulumi.Context, name string) (*Organization, error) {
 	}
 
 	return &Organization{
-		Name:     name,
+		Name:     config.Name,
 		Context:  ctx,
 		Provider: provider,
 	}, nil
 }
 
 type RepositoryConfig struct {
+	ID   string
 	Name string
 }
 
@@ -54,11 +55,18 @@ type Repository struct {
 	Repository   *github.Repository
 }
 
-func (org *Organization) NewRepository(name string) (*Repository, error) {
+func NewRepositoryConfig(name string, id string) RepositoryConfig {
+	return RepositoryConfig{
+		ID:   id,
+		Name: name,
+	}
+}
 
-	id := fmt.Sprintf("%s-%s", org.Name, name)
+func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, error) {
+	id := fmt.Sprintf("%s-%s", org.Name, config.Name)
+	ref := fmt.Sprintf("%s/%s", org.Name, config.Name)
 	repo, err := github.NewRepository(org.Context, id, &github.RepositoryArgs{
-		Name:                pulumi.String(name),
+		Name:                pulumi.String(config.Name),
 		Visibility:          pulumi.String(VisibilityPublic),
 		AllowAutoMerge:      pulumi.Bool(true),
 		AllowMergeCommit:    pulumi.Bool(true),
@@ -71,13 +79,13 @@ func (org *Organization) NewRepository(name string) (*Repository, error) {
 		HasProjects:         pulumi.Bool(true),
 		HasWiki:             pulumi.Bool(false),
 		VulnerabilityAlerts: pulumi.Bool(true),
-	}, pulumi.Provider(org.Provider), pulumi.Parent(org.Provider))
+	}, pulumi.Provider(org.Provider), pulumi.Parent(org.Provider), pulumi.Import(pulumi.ID(ref)))
 	if err != nil {
 		return nil, err
 	}
 
 	return &Repository{
-		Name:         name,
+		Name:         config.Name,
 		Organization: org,
 		Repository:   repo,
 	}, nil
