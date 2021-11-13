@@ -8,7 +8,15 @@ import (
 )
 
 const (
-	ExportZones = "zones"
+	// Enable DNSSEC to prevent DNS spoofing.
+	DnsSecState = dns.ManagedZoneDnsSecConfigStateOff
+	// Use NSEC to reduce cryptographic complexity under
+	// the assumption that our applications are safe and
+	// that zone-walking does not pose a threat.
+	DnsSecNonExistence = dns.ManagedZoneDnsSecConfigNonExistenceNsec
+	// Use the maximum number of bits, where the increment is 64,
+	// the minimum is 512 and the maximum is 1024.
+	DnsSecKeyLength = 1024
 )
 
 type Zone struct {
@@ -37,6 +45,23 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 				Name:        pulumi.String(zone.Name),
 				DnsName:     pulumi.String(fmt.Sprintf("%s.", zone.Domain)),
 				Description: pulumi.String(zone.Description),
+				DnssecConfig: dns.ManagedZoneDnsSecConfigArgs{
+					State:        DnsSecState,
+					NonExistence: DnsSecNonExistence,
+					DefaultKeySpecs: dns.DnsKeySpecArray{
+						dns.DnsKeySpecArgs{
+							Algorithm: dns.DnsKeySpecAlgorithmEcdsap384sha384,
+							KeyLength: pulumi.IntPtr(DnsSecKeyLength),
+							KeyType:   dns.DnsKeySpecKeyTypeZoneSigning,
+						},
+						dns.DnsKeySpecArgs{
+							Algorithm: dns.DnsKeySpecAlgorithmEcdsap384sha384,
+							KeyLength: pulumi.IntPtr(DnsSecKeyLength),
+							KeyType:   dns.DnsKeySpecKeyTypeKeySigning,
+						},
+					},
+				},
+				Visibility: dns.ManagedZoneVisibilityPublic,
 			}, pulumi.Provider(provider), pulumi.Parent(provider))
 			if err != nil {
 				return err
