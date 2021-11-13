@@ -36,7 +36,7 @@ runs:
       with:
         command: preview
         stack-name: ${{ inputs.stack }}
-        comment-on-pr: true
+        comment-on-pr: github.event_name != 'pull_request'
       env:
         PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
         PERSONAL_ACCESS_TOKEN: ${{ inputs.personal-access-token }}
@@ -47,7 +47,7 @@ runs:
       with:
         command: up
         stack-name: ${{ inputs.stack }}
-        comment-on-pr: true
+        comment-on-pr: github.event_name != 'pull_request'
       env:
         PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
         PERSONAL_ACCESS_TOKEN: ${{ inputs.personal-access-token }}
