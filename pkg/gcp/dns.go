@@ -57,12 +57,12 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 					NonExistence: DnsSecNonExistence,
 					DefaultKeySpecs: dns.DnsKeySpecArray{
 						dns.DnsKeySpecArgs{
-							Algorithm: dns.DnsKeySpecAlgorithmEcdsap384sha384,
+							Algorithm: DnsSecAlgorithm,
 							KeyLength: pulumi.IntPtr(DnsSecKeyLength),
 							KeyType:   dns.DnsKeySpecKeyTypeZoneSigning,
 						},
 						dns.DnsKeySpecArgs{
-							Algorithm: dns.DnsKeySpecAlgorithmEcdsap384sha384,
+							Algorithm: DnsSecAlgorithm,
 							KeyLength: pulumi.IntPtr(DnsSecKeyLength),
 							KeyType:   dns.DnsKeySpecKeyTypeKeySigning,
 						},
