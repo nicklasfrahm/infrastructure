@@ -106,13 +106,13 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 		AllowMergeCommit:    pulumi.Bool(true),
 		AllowRebaseMerge:    pulumi.Bool(true),
 		AllowSquashMerge:    pulumi.Bool(true),
-		AutoInit:            pulumi.Bool(false),
 		DeleteBranchOnMerge: pulumi.Bool(false), // Change to true.
+		HasWiki:             pulumi.Bool(true),  // Change to false.
 		HasIssues:           pulumi.Bool(true),
 		HasProjects:         pulumi.Bool(true),
-		HasWiki:             pulumi.Bool(true), // Change to false.
 		VulnerabilityAlerts: pulumi.Bool(true),
 		HasDownloads:        pulumi.Bool(true),
+		AutoInit:            pulumi.Bool(false),
 		Topics:              pulumi.ToStringArray(config.Topics),
 		// ArchiveOnDestroy:    pulumi.Bool(false),
 	}

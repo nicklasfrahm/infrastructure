@@ -46,18 +46,36 @@ func main() {
 				github.NewRepositoryConfig("indesy-webclient", "The web application for an indoor delivery system.", &github.RepositoryExtensions{
 					Topics: []string{"system", "webclient", "indoor", "delivery", "indesy"},
 				}),
-				// github.NewRepositoryConfig("infrastructure", "421646445"),
-				// github.NewRepositoryConfig("labman", "332178426"),
-				// github.NewRepositoryConfig("mykilio", "363624141"),
-				// github.NewRepositoryConfig("nicklasfrahm", "366965590"),
-				// github.NewRepositoryConfig("node-iot-server", "103060200"),
-				// github.NewRepositoryConfig("odance", "359234052"),
-				// github.NewRepositoryConfig("rtos", "147308829"),
-				// github.NewRepositoryConfig("rts", "255901708"),
-				// github.NewRepositoryConfig("scp-action", "367666163"),
-				// github.NewRepositoryConfig("ses", "222951163"),
-				// github.NewRepositoryConfig("showcases", "417350673"),
-				// github.NewRepositoryConfig("sonderborg-smart-zero-hack-19-mock-box", "220659897"),
+				github.NewRepositoryConfig("infrastructure", "A repository to automate the configuration of my local infrastructure.", &github.RepositoryExtensions{
+					Topics: []string{"infrastructure-as-code", "hybrid-cloud"},
+				}),
+				github.NewRepositoryConfig("labman", "A cloud-based management solution for laboratories and workshops.", nil),
+				github.NewRepositoryConfig("mykilio", "Mykilio is the proposal for a new Living Standard with the goal to reimagine infrastructure management and monitoring. It aims to be scalable, lightweight, extensible and secure by applying IoT principles to the datacenter and homelabs.", &github.RepositoryExtensions{
+					Topics:      []string{"infrastructure", "monitoring", "baremetal", "mykilio"},
+					HomepageUrl: "https://mykil.io",
+					PagesSource: "docs",
+				}),
+				github.NewRepositoryConfig("nicklasfrahm", "An overview of my current projects and ideas.", nil),
+				github.NewRepositoryConfig("node-iot-server", "A small server to make a serial device addressable over UDP.", &github.RepositoryExtensions{
+					Topics: []string{"iot", "serial", "server", "udp"},
+				}),
+				github.NewRepositoryConfig("odance", "O!Dance is a dancing school project in Sonderborg, Denmark.", &github.RepositoryExtensions{
+					Topics:      []string{"website", "school", "dancing"},
+					HomepageUrl: "https://odance.dk",
+					PagesSource: "gh-pages",
+				}),
+				github.NewRepositoryConfig("rtos", "The source code for the exercises during the RTOS course.", nil),
+				github.NewRepositoryConfig("rts", "Real-time systems", nil),
+				github.NewRepositoryConfig("scp-action", "A Github Action to upload and download files via SCP.", &github.RepositoryExtensions{
+					Topics: []string{"github", "ssh", "scp", "action"},
+				}),
+				github.NewRepositoryConfig("ses", "Software for Embedded Systems Course Source Code", nil),
+				github.NewRepositoryConfig("showcases", "A repository containing showcases for my programming and architecture skills.", &github.RepositoryExtensions{
+					Topics:      []string{"go", "microservices", "nats", "event-driven"},
+					HomepageUrl: "https://nicklasfrahm.xyz",
+					PagesSource: "gh-pages",
+				}),
+				github.NewRepositoryConfig("sonderborg-smart-zero-hack-19-mock-box", "", nil),
 			}),
 			github.NewOrganizationConfig("mykilio", []github.RepositoryConfig{
 				github.NewRepositoryConfig("docs", "A collection of documentation for all components of the Mykilio ecosystem.", &github.RepositoryExtensions{
