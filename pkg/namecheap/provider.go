@@ -54,5 +54,7 @@ type Provider struct {
 	ClientIp pulumi.StringPtrOutput `pulumi:"clientIp"`
 }
 
+// TODO: Import provider args.
+
 func NewCustomDNS() {
 }
