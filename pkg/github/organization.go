@@ -102,12 +102,12 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 		Description:         pulumi.String(config.Description),
 		Visibility:          pulumi.String("public"),
 		HomepageUrl:         pulumi.String(config.HomepageUrl),
-		AllowAutoMerge:      pulumi.Bool(false), // Change to true.
+		AllowAutoMerge:      pulumi.Bool(true),
 		AllowMergeCommit:    pulumi.Bool(true),
 		AllowRebaseMerge:    pulumi.Bool(true),
 		AllowSquashMerge:    pulumi.Bool(true),
-		DeleteBranchOnMerge: pulumi.Bool(false), // Change to true.
-		HasWiki:             pulumi.Bool(true),  // Change to false.
+		DeleteBranchOnMerge: pulumi.Bool(true),
+		HasWiki:             pulumi.Bool(false),
 		HasIssues:           pulumi.Bool(true),
 		HasProjects:         pulumi.Bool(true),
 		VulnerabilityAlerts: pulumi.Bool(true),
