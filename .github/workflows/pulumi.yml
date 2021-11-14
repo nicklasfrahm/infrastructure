@@ -8,19 +8,12 @@ on:
       - main
     tags:
       - v*
-  schedule:
-    - cron: "0 0 * * *"
 
 jobs:
-  deploy:
+  # Don't run matrix to generate proper dependency graph.
+  dns:
     name: Deploy
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        stack:
-          - dns
-          - github
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -28,7 +21,22 @@ jobs:
       - name: Run Pulumi to deploy IaC
         uses: ./.github/actions/pulumi
         with:
-          stack: ${{ matrix.stack }}
+          stack: dns
+          personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          gcp-service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+  github:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Run Pulumi to deploy IaC
+        uses: ./.github/actions/pulumi
+        with:
+          stack: github
           personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           gcp-service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
