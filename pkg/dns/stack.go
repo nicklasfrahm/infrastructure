@@ -1,4 +1,4 @@
-package gcp
+package dns
 
 import (
 	"fmt"
@@ -73,6 +73,8 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 			if err != nil {
 				return err
 			}
+
+			// TODO: Configure Namecheap or GoDaddy DNS records.
 
 			// Export the ID of the zone.
 			ctx.Export(fmt.Sprintf("managedzone.id/%s", zone.Domain), managedZone.ID())
