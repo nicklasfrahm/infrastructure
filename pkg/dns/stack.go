@@ -74,7 +74,7 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 				return err
 			}
 
-			// TODO: Configure Namecheap or GoDaddy DNS records.
+			// TODO: Configure Namecheap and GoDaddy DNS records.
 
 			// Export the ID of the zone.
 			ctx.Export(fmt.Sprintf("managedzone.id/%s", zone.Domain), managedZone.ID())
