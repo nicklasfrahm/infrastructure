@@ -12,7 +12,7 @@ on:
 jobs:
   # Don't run matrix to generate proper dependency graph.
   dns:
-    name: Deploy
+    name: DNS
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -27,7 +27,7 @@ jobs:
           gcp-service-account-key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
   github:
-    name: Deploy
+    name: GitHub
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
