@@ -45,9 +45,11 @@ For more information you may want to check out the following files and directori
 
 While I am migrating my current setup, I am using an [Ubiquity Edgerouter-X][website-erx] (ER-X) with port-forwarding towards a single baremetal [k3s cluster][website-k3s] on a seperate machine. The ER-X is fine, but not great for automation and dynamic configuration. I would like to run a Kubernetes cluster on my router which is not possible on the ER-X.
 
+I am currently running two subnets, **userspace** (`192.168.0.1/24`) and **homelab** (`172.16.0.1/22`), where DHCP is only enabled in the **userspace** subnet. This setup allows me to maintain network connectivity for **userspace** traffic while performing testing or configuration changes in my **homelab**. The configuration is currently hardcoded to specific ports on my router. In the future I am planning to orchestrate software defined networking via VLANs.
+
 **Status (v2):** 💡 Planning
 
-**Keywords:** BGP, Kubernetes Operator, [Kube-Router][website-kube-router]  
+**Keywords:** BGP, Kubernetes Operator, [Kube-Router][website-kube-router], VLAN, SDN  
 **Motivation:** Automation, ease-of-operation, client source IPs
 
 ### Load balancing 🔁
@@ -56,7 +58,7 @@ While I am migrating my current setup, I am using an [Ubiquity Edgerouter-X][web
 
 Currently, I am only running [Traefik][website-traefik] as an [Ingress Controller][docs-ingress], which does load balancing and TLS termination for my pods in Kubernetes. In the future I would like to have automatic load balancing for my Kubernetes Control Planes and `LoadBalancer` type services.
 
-**Status (V2):** 💡 Planning
+**Status (v2):** 💡 Planning
 
 **Keywords:** BGP, [HAProxy][website-haproxy], [Gateway API][website-gateway-api]  
 **Motivation:** Automation, ease-of-operation, client source IPs
