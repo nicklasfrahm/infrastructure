@@ -3,7 +3,7 @@ package dns
 import (
 	"fmt"
 
-	gcp "github.com/pulumi/pulumi-google-native/sdk/go/google"
+	"github.com/pulumi/pulumi-google-native/sdk/go/google"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -12,14 +12,14 @@ const (
 	Project       = "nicklasfrahm"
 )
 
-var provider *gcp.Provider
+var gcp *google.Provider
 
-func Provider(ctx *pulumi.Context) (*gcp.Provider, error) {
-	if provider != nil {
-		return provider, nil
+func ProviderGCP(ctx *pulumi.Context) (*google.Provider, error) {
+	if gcp != nil {
+		return gcp, nil
 	}
 
-	p, err := gcp.NewProvider(ctx, fmt.Sprintf("gcp-%s", Project), &gcp.ProviderArgs{
+	provider, err := google.NewProvider(ctx, fmt.Sprintf("gcp-%s", Project), &google.ProviderArgs{
 		Project: pulumi.String(Project),
 		Region:  pulumi.String(DefaultRegion),
 	})
@@ -27,7 +27,7 @@ func Provider(ctx *pulumi.Context) (*gcp.Provider, error) {
 		return nil, err
 	}
 
-	provider = p
+	gcp = provider
 
-	return provider, nil
+	return gcp, nil
 }

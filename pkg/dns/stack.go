@@ -2,6 +2,7 @@ package dns
 
 import (
 	"fmt"
+	"strings"
 
 	dns "github.com/pulumi/pulumi-google-native/sdk/go/google/dns/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -30,17 +31,17 @@ type Zone struct {
 	Description string
 }
 
-func NewZone(name string, domain string, description string) Zone {
-	return Zone{
-		Name:        name,
+func NewZone(domain string, description string) *Zone {
+	return &Zone{
+		Name:        strings.ReplaceAll(domain, ".", "-"),
 		Domain:      domain,
 		Description: description,
 	}
 }
 
-func StackDNS(zones []Zone) pulumi.RunFunc {
+func Stack(zones []*Zone) pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
-		provider, err := Provider(ctx)
+		provider, err := ProviderGCP(ctx)
 		if err != nil {
 			return err
 		}
@@ -73,8 +74,6 @@ func StackDNS(zones []Zone) pulumi.RunFunc {
 			if err != nil {
 				return err
 			}
-
-			// TODO: Configure Namecheap and GoDaddy DNS records.
 
 			// Export the ID of the zone.
 			ctx.Export(fmt.Sprintf("managedzone.id/%s", zone.Domain), managedZone.ID())

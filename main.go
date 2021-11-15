@@ -7,24 +7,22 @@ import (
 
 	"github.com/nicklasfrahm/infrastructure/pkg/dns"
 	"github.com/nicklasfrahm/infrastructure/pkg/github"
+	"github.com/nicklasfrahm/infrastructure/pkg/kubernetes"
 )
 
 const (
-	StackDNS    = "dns"
-	StackGitHub = "github"
-
-	ZoneIntric       = "intric-dk"
-	ZoneMykilio      = "mykil-io"
-	ZoneNicklasfrahm = "nicklasfrahm-xyz"
+	StackDNS        = "dns"
+	StackGitHub     = "github"
+	StackKubernetes = "kubernetes"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		// Define DNS zones.
-		zones := []dns.Zone{
-			dns.NewZone(ZoneNicklasfrahm, "nicklasfrahm.xyz", "Nicklas Frahm's personal domain"),
-			dns.NewZone(ZoneIntric, "intric.dk", "Intric Denmark startup"),
-			dns.NewZone(ZoneMykilio, "mykil.io", "Mykilio project"),
+		zones := []*dns.Zone{
+			dns.NewZone("nicklasfrahm.xyz", "Nicklas Frahm's personal domain"),
+			dns.NewZone("mykil.io", "Mykilio project"),
+			dns.NewZone("intric.dk", "Intric Denmark startup"),
 		}
 
 		// Define GitHub organizations and repositories.
@@ -94,8 +92,9 @@ func main() {
 
 		// Define all available stacks.
 		stacks := map[string]pulumi.RunFunc{
-			StackDNS:    dns.StackDNS(zones),
-			StackGitHub: github.StackGitHub(orgs),
+			StackDNS:        dns.Stack(zones),
+			StackKubernetes: kubernetes.Stack(),
+			StackGitHub:     github.Stack(orgs),
 		}
 
 		// Load the corresponding stack and verify its existence.
