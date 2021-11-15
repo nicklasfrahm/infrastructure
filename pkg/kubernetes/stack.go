@@ -46,6 +46,14 @@ func NewRegion(name string) *Region {
 
 func Stack() pulumi.RunFunc {
 	return func(ctx *pulumi.Context) error {
+		// TODO: Create DNS record for cluster.
+
+		// TODO: Deploy K3S on device.
+
+		// TODO: Deploy cluster-wide services, such as Traefik and Cert-manager.
+
+		// TODO: Configure namespaces and set them up as GitHub environments with DNS records.
+
 		return nil
 	}
 }

@@ -52,7 +52,7 @@ While I am migrating my current setup, I am using an [Ubiquity Edgerouter-X][web
 
 ### Load balancing 🔁
 
-**Status:** 🟠 Limited availability
+**Status:** 🔵 Limited availability
 
 Currently, I am only running [Traefik][website-traefik] as an [Ingress Controller][docs-ingress], which does load balancing and TLS termination for my pods in Kubernetes. In the future I would like to have automatic load balancing for my Kubernetes Control Planes and `LoadBalancer` type services.
 
@@ -63,7 +63,7 @@ Currently, I am only running [Traefik][website-traefik] as an [Ingress Controlle
 
 ## Limitations❗
 
-Below you may find a list of limitations in my current infrastructure setup.
+Below you may find a list of limitations with my current infrastructure setup.
 
 - **Manual NS and DS records**  
   Due to the limitations of the [Namecheap API][website-namecheap-api], I decided to completely administrate my NS and DS records by hand. If I can't automate it for one registrar, I will not automate it for any of them. This is subject to change based on the amount of domains and the frequency of changes. Usually however NS records rarely change.
