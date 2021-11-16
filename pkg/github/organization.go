@@ -45,24 +45,20 @@ func NewOrganization(ctx *pulumi.Context, config *OrganizationConfig) (*Organiza
 	}, nil
 }
 
+type RepositoryOptions struct {
+	Private     bool
+	HomepageUrl string
+	Topics      []string
+	// The format for the pages source is `<branch>:/path/to/folder`.
+	// This implicity enables GitHub pages.
+	PagesSource string
+	Template    string
+}
+
 type RepositoryConfig struct {
 	Name        string
 	Description string
-	Private     bool
-	HomepageUrl string
-	Topics      []string
-	// The format for the pages source is `<branch>:/path/to/folder`.
-	// This implicity enables GitHub pages.
-	PagesSource string
-}
-
-type RepositoryExtensions struct {
-	Private     bool
-	HomepageUrl string
-	Topics      []string
-	// The format for the pages source is `<branch>:/path/to/folder`.
-	// This implicity enables GitHub pages.
-	PagesSource string
+	Options     *RepositoryOptions
 }
 
 type Repository struct {
@@ -74,24 +70,20 @@ type Repository struct {
 func NewRepositoryConfig(
 	name string,
 	description string,
-	extensions *RepositoryExtensions,
+	options *RepositoryOptions,
 ) RepositoryConfig {
-	extras := new(RepositoryExtensions)
-	if extensions != nil {
-		if extensions.Topics == nil {
-			extensions.Topics = []string{}
-		}
+	if options == nil {
+		options = new(RepositoryOptions)
+	}
 
-		*extras = *extensions
+	if options.Topics == nil {
+		options.Topics = make([]string, 0)
 	}
 
 	return RepositoryConfig{
 		Name:        name,
 		Description: description,
-		Private:     extras.Private,
-		HomepageUrl: extras.HomepageUrl,
-		Topics:      extras.Topics,
-		PagesSource: extras.PagesSource,
+		Options:     options,
 	}
 }
 
@@ -101,7 +93,7 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 		Name:                pulumi.String(config.Name),
 		Description:         pulumi.String(config.Description),
 		Visibility:          pulumi.String("public"),
-		HomepageUrl:         pulumi.String(config.HomepageUrl),
+		HomepageUrl:         pulumi.String(config.Options.HomepageUrl),
 		AllowAutoMerge:      pulumi.Bool(true),
 		AllowMergeCommit:    pulumi.Bool(true),
 		AllowRebaseMerge:    pulumi.Bool(true),
@@ -113,19 +105,19 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 		VulnerabilityAlerts: pulumi.Bool(true),
 		HasDownloads:        pulumi.Bool(true),
 		AutoInit:            pulumi.Bool(false),
-		Topics:              pulumi.ToStringArray(config.Topics),
+		Topics:              pulumi.ToStringArray(config.Options.Topics),
 		// ArchiveOnDestroy:    pulumi.Bool(false),
 	}
 
 	// Overwrite visibility.
-	if config.Private {
+	if config.Options.Private {
 		repository.Visibility = pulumi.String("private")
 	}
 
 	// Configure GitHub pages.
-	if config.PagesSource != "" {
+	if config.Options.PagesSource != "" {
 		// The format for the pages source is `<branch>:/path/to/folder`.
-		sourceParameters := strings.Split(config.PagesSource, ":")
+		sourceParameters := strings.Split(config.Options.PagesSource, ":")
 		source := github.RepositoryPagesSourceArgs{
 			Branch: pulumi.String(sourceParameters[0]),
 		}
@@ -136,11 +128,26 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 		}
 
 		// Get domain name.
-		domainSegments := strings.Split(config.HomepageUrl, "://")
+		domainSegments := strings.Split(config.Options.HomepageUrl, "://")
 
 		repository.Pages = github.RepositoryPagesArgs{
 			Cname:  pulumi.String(domainSegments[len(domainSegments)-1]),
 			Source: source,
+		}
+	}
+
+	// Configure template reference.
+	if config.Options.Template != "" {
+		chunks := strings.Split(config.Options.Template, "/")
+		owner := "nicklasfrahm"
+		repo := chunks[0]
+		if len(chunks) >= 2 {
+			owner = chunks[0]
+			repo = chunks[1]
+		}
+		repository.Template = github.RepositoryTemplateArgs{
+			Owner:      pulumi.String(owner),
+			Repository: pulumi.String(repo),
 		}
 	}
 
