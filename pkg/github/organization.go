@@ -145,7 +145,12 @@ func (org *Organization) NewRepository(config *RepositoryConfig) (*Repository, e
 	}
 
 	id := fmt.Sprintf("%s-%s", org.Name, config.Name)
-	repo, err := github.NewRepository(org.Context, id, &repository, pulumi.Provider(org.Provider), pulumi.Parent(org.Provider), pulumi.Import(pulumi.ID(config.Name)))
+	options := []pulumi.ResourceOption{
+		pulumi.Provider(org.Provider),
+		pulumi.Parent(org.Provider),
+		pulumi.Import(pulumi.ID(config.Name)),
+	}
+	repo, err := github.NewRepository(org.Context, id, &repository, options...)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,10 @@ type Zone struct {
 	Description string
 }
 
+func (z *Zone) Subdomain(hostname string) string {
+	return fmt.Sprintf("%s.%s", hostname, z.Domain)
+}
+
 func NewZone(domain string, description string) *Zone {
 	return &Zone{
 		Name:        strings.ReplaceAll(domain, ".", "-"),

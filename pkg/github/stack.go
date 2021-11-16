@@ -19,6 +19,8 @@ func Stack(configs []*OrganizationConfig) pulumi.RunFunc {
 				if err != nil {
 					return err
 				}
+
+				// TODO: Create DNS records for GitHub pages, if zone is managed by Pulumi.
 			}
 		}
 
