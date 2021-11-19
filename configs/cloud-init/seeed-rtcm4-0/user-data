@@ -1,0 +1,86 @@
+#cloud-config
+
+## This is the user-data configuration file for cloud-init. By default this sets
+## up an initial user called "ubuntu" with password "ubuntu", which must be
+## changed at first login. However, many additional actions can be initiated on
+## first boot from this file. The cloud-init documentation has more details:
+##
+## Reference: https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+##
+## Some additional examples are provided in comments below the default
+## configuration.
+
+## Disable password authentication with the SSH daemon.
+ssh_pwauth: false
+
+## On first boot, use ssh-import-id to give the specific users SSH access to
+## the default user.
+ssh_import_id:
+  - gh:nicklasfrahm
+
+## Add users and groups to the system, and import keys with the ssh-import-id
+## utility
+users:
+  - name: nicklasfrahm
+    gecos: Nicklas Frahm
+    ## Reference: https://wiki.debian.org/SystemGroups#Other_System_Groups
+    groups:
+      - adm
+      - sudo
+      - staff
+      - systemd-journal
+      - dialout
+      - plugdev
+      - netdev
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_import_id:
+      - gh:nicklasfrahm
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4HGFk2Tfl0iAl3XNmXStRTjnsFAWshl7DadyqmlqJa github-actions@github.com/nicklasfrahm/infrastructure
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+## Prevent update of apt database and upgrade of packages on first boot.
+package_update: false
+package_upgrade: false
+
+## By default, (most) ssh host keys are printed to the console. Setting
+## emit_keys_to_console to false suppresses this output.
+ssh:
+  emit_keys_to_console: false
+
+## Disable swap.
+swap:
+  size: 0
+
+## Configure hostname.
+prefer_fqdn_over_hostname: true
+fqdn: seeed-rtcm4-0.net.nicklasfrahm.xyz
+
+## Configure system locale and apply it system wide.
+locale: C.UTF-8
+
+## Configure timezone.
+timezone: UTC
+
+## Run arbitrary commands at rc.local like time
+##
+##  default: none
+##  runcmd contains a list of either lists or a string
+## each item will be executed in order at rc.local like level with
+## output to the console
+## - runcmd only runs during the first boot
+## - if the item is a list, the items will be properly executed as if
+##   passed to execve(3) (with the first arg as the command).
+## - if the item is a string, it will be simply written to the file and
+##   will be interpreted by 'sh'
+##
+## Note, that the list has to be proper yaml, so you have to quote
+## any characters yaml would eat (':' can be problematic)
+runcmd:
+  - apt-get update
+  - apt-get purge -y --autoremove snapd
+  - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
+  - apt-get install -y unattended-upgrades apt-listchanges
+  - apt-get update
+  - apt-get full-upgrade -y

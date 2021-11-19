@@ -1,0 +1,23 @@
+## This file contains a netplan-compatible configuration which cloud-init
+## will apply on first-boot. Please refer to the cloud-init documentation and
+## the netplan reference for full details:
+##
+## References:
+##   - https://cloudinit.readthedocs.io/
+##   - https://netplan.io/reference
+##
+## Some additional examples are commented out below
+
+version: 2
+ethernets:
+  eth0:
+    dhcp4: false
+    optional: true
+    # TODO: Configure VLANs.
+  eth1:
+    dhcp4: true
+    optional: true
+    nameservers:
+      addresses:
+        - 1.1.1.1
+        - 1.0.0.1
