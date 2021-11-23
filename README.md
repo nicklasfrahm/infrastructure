@@ -72,8 +72,6 @@ The table below describes the set of manually assigned VLANs. The configuration 
 - [Ubuntu community article about `isc-dhcp-server`][article-ubuntu-dhcp]
 - [How to make a simple router on a Ubuntu server][medium-ubuntu-router]
 
-_TODO: Indicate presence of DHCP server._
-
 | VLAN ID | Gateway CIDR       | DHCP | Name       | Description                                                        |
 | ------- | ------------------ | ---- | ---------- | ------------------------------------------------------------------ |
 | 1       | `none`             | No   | default    | A network without any gateway to isolate unassigned hosts.         |
