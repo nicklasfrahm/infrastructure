@@ -78,9 +78,12 @@ timezone: UTC
 ## Note, that the list has to be proper yaml, so you have to quote
 ## any characters yaml would eat (':' can be problematic)
 runcmd:
+  - systemctl stop iptables
+  - systemctl mask iptables
   - apt-get update
-  - apt-get purge -y --autoremove snapd
+  - apt-get purge -y --autoremove snapd ufw
   - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
-  - apt-get install -y unattended-upgrades apt-listchanges
   - apt-get update
+  - apt-get install -y unattended-upgrades apt-listchanges firewalld nftables
   - apt-get full-upgrade -y
+  - systemctl enable nftables.service
