@@ -63,12 +63,11 @@ locale: C.UTF-8
 ## Configure timezone.
 timezone: UTC
 
-## Run arbitrary commands at rc.local like time
+## Run arbitrary commands at rc.local like time (default: none)
 ##
-##  default: none
-##  runcmd contains a list of either lists or a string
-## each item will be executed in order at rc.local like level with
-## output to the console
+## runcmd contains a list of either lists or a string
+## each item will be executed in order at rc.local like
+## level with output to the console
 ## - runcmd only runs during the first boot
 ## - if the item is a list, the items will be properly executed as if
 ##   passed to execve(3) (with the first arg as the command).
@@ -78,13 +77,97 @@ timezone: UTC
 ## Note, that the list has to be proper yaml, so you have to quote
 ## any characters yaml would eat (':' can be problematic)
 runcmd:
-  - systemctl stop iptables
-  - systemctl mask iptables
+  # Uninstall unneeded packages and upgrade all packages.
   - apt-get update
   - apt-get purge -y --autoremove snapd ufw
+  - apt-get full-upgrade -y
+  # Configure automatic upgrades.
   - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
   - apt-get update
-  - apt-get install -y unattended-upgrades apt-listchanges firewalld nftables isc-dhcp-server
-  - apt-get full-upgrade -y
+  - apt-get install -y unattended-upgrades apt-listchanges
+  # Remove iptables.
+  - systemctl stop iptables
+  - systemctl mask iptables
+  #  Replace iptables with nftables and firewalld.
+  - apt-get update
+  - apt-get update firewalld nftables
   - systemctl enable --now nftables
   - systemctl enable --now firewalld
+  # Configure zones and firewall rules.
+  - firewall-cmd --zone=external --set-target=DROP
+  - firewall-cmd --zone=internal --add-masquerade
+  - firewall-cmd --zone=internal --remove-service=samba-client
+  - firewall-cmd --zone=external --change-interface=eth1
+  - firewall-cmd --zone=internal --change-interface=vlan.4000
+  - firewall-cmd --zone=internal --change-interface=vlan.4010
+  - firewall-cmd --zone=internal --change-interface=vlan.4020
+  - firewall-cmd --direct --add-rule ipv4 nat POSTROUTING 0 -o eth1 -j MASQUERADE
+  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i vlan.4000 -o eth1 -j ACCEPT
+  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i vlan.4010 -o eth1 -j ACCEPT
+  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i vlan.4020 -o eth1 -j ACCEPT
+  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o vlan.4000 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o vlan.4010 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o vlan.4020 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  - firewall-cmd --runtime-to-permanent
+  - firewall-cmd --reload
+  # Configure kernel network forwarding.
+  - sed -i '/net.ipv4.ip_forward=1/s/^#//' /etc/sysctl.conf
+  - sysctl -p
+  # Install DHCP server.
+  - apt-get update
+  - apt-get install -y isc-dhcp-server
+  - systemctl enable --now isc-dhcp-server
+
+## This is the configuration syntax that the write_files module
+## will know how to understand. encoding can be given b64 or gzip or (gz+b64).
+## The content will be decoded accordingly and then written to the path that is
+## provided.
+write_files:
+  - path: /etc/dhcp/dhcpd.conf
+    content: |
+      # dhcpd.conf
+
+      # option definitions common to all supported networks...
+      option domain-name-servers 1.1.1.1, 1.0.0.1;
+
+      default-lease-time 86400;
+      max-lease-time 86400;
+
+      # The ddns-updates-style parameter controls whether or not the server will
+      # attempt to do a DNS update when a lease is confirmed. We default to the
+      # behavior of the version 2 packages ('none', since DHCP v2 didn't
+      # have support for DDNS.)
+      ddns-update-style none;
+
+      # If this DHCP server is the official DHCP server for the local
+      # network, the authoritative directive should be uncommented.
+      authoritative;
+
+      # vlan.4000 >> 172.16.0.1/22
+      subnet 172.16.0.0 netmask 255.255.252.0 {
+
+        range  172.16.0.2 172.16.3.200;
+
+        option routers                  172.16.0.1;
+        option subnet-mask              255.255.252.0;
+        option broadcast-address        172.16.3.255;
+
+      }
+
+      # vlan.4010 >> 172.16.4.1/22
+      subnet 172.16.4.0 netmask 255.255.252.0 {
+      }
+
+      # vlan.4020 >> 192.168.255.1/24
+      subnet 192.168.255.0 netmask 255.255.255.0 {
+
+        range  192.168.255.2 192.168.255.250;
+
+        option routers                  192.168.255.1;
+        option subnet-mask              255.255.255.0;
+        option broadcast-address        192.168.255.255;
+
+      }
+  - path: /etc/default/isc-dhcp-server
+    content: |
+      INTERFACES="vlan.4000 vlan.4010 vlan.4020"
