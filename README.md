@@ -67,24 +67,35 @@ Currently, I am only running [Traefik][website-traefik] as an [Ingress Controlle
 
 **Status:** 🟡 Rollout
 
-The table below describes the set of manually assigned VLANs. The configuration of the DHCPv4 server is based on [this Ubuntu community article][article-ubuntu-dhcp].
+The table below describes the set of manually assigned VLANs. The configuration of the DHCPv4 server is based on the following resources:
 
-| VLAN ID | Gateway CIDR       | Name       | Description                                                        |
-| ------- | ------------------ | ---------- | ------------------------------------------------------------------ |
-| 1       | `none`             | default    | A network without any gateway to isolate unassigned hosts.         |
-| 4000    | `172.16.0.1/22`    | management | A network for the configuration and management of network devices. |
-| 4010    | `172.16.4.1/22`    | homelab    | A network for experimental deployments.                            |
-| 4020    | `192.168.255.1/24` | userspace  | A home network for WiFi and other domestic traffic.                |
+- [Ubuntu community article about `isc-dhcp-server`][article-ubuntu-dhcp]
+- [How to make a simple router on a Ubuntu server][medium-ubuntu-router]
+
+_TODO: Indicate presence of DHCP server._
+
+| VLAN ID | Gateway CIDR       | DHCP | Name       | Description                                                        |
+| ------- | ------------------ | ---- | ---------- | ------------------------------------------------------------------ |
+| 1       | `none`             | No   | default    | A network without any gateway to isolate unassigned hosts.         |
+| 4000    | `172.16.0.1/22`    | Yes  | management | A network for the configuration and management of network devices. |
+| 4010    | `172.16.4.1/22`    | No   | homelab    | A network for experimental deployments.                            |
+| 4020    | `192.168.255.1/24` | Yes  | userspace  | A home network for WiFi and other domestic traffic.                |
 
 ### Firewall 🔥
 
 **Status:** 🟡 Rollout
 
-I chose to set up `firewalld` and use `firewall-cmd` to manage the firewall. The table below shows an overview of the defined zones and their associated services. [This Digital Ocean tutorial][tutorial-firewall-cmd] was very useful throughout the process.
+I chose to set up `firewalld` and use `firewall-cmd` to manage the firewall. The table below shows an overview of the defined zones and their associated services. For the implementation the following resources were used:
 
-| Zone     | Description                          | Services         |
-| -------- | ------------------------------------ | ---------------- |
-| internet | The connection towards the internet. | `ssh`, `kubeapi` |
+- [Digital Ocean tutorial about `firewall-cmd`][tutorial-firewall-cmd]
+- [RHEL documentation explaining usage of `firewalld`][documentation-rhel-firewalld]
+- [Article about IP masquerade with `firewalld`][website-server-world-masquerade]
+
+_TODO: Update zones, masquerading and services._
+
+| Zone     | Description                          | Services                |
+| -------- | ------------------------------------ | ----------------------- |
+| external | The connection towards the internet. | `ssh`, `kube-apiserver` |
 
 ## Limitations❗
 
@@ -123,3 +134,6 @@ This project is licensed under the terms of the [MIT license][file-license].
 [file-license]: ./LICENSE.md
 [tutorial-firewall-cmd]: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-centos-8
 [article-ubuntu-dhcp]: https://help.ubuntu.com/community/isc-dhcp-server
+[medium-ubuntu-router]: https://medium.com/@exesse/how-to-make-a-simple-router-gateway-from-ubuntu-server-18-04-lts-fd40b7bfec9
+[documentation-rhel-firewalld]: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-and-configuring-firewalld_configuring-and-managing-networking
+[website-server-world-masquerade]: https://www.server-world.info/en/note?os=CentOS_7&p=firewalld&f=2
