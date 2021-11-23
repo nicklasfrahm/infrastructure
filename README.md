@@ -63,12 +63,37 @@ Currently, I am only running [Traefik][website-traefik] as an [Ingress Controlle
 **Keywords:** BGP, [HAProxy][website-haproxy], [Gateway API][website-gateway-api]  
 **Motivation:** Automation, ease-of-operation, client source IPs
 
+### VLANs 🛡️
+
+**Status:** 🟡 Rollout
+
+The table below describes the set of manually assigned VLANs.
+
+| VLAN ID | CIDR               | Name       | Description                                                        |
+| ------- | ------------------ | ---------- | ------------------------------------------------------------------ |
+| 1       | `none`             | default    | A network without any gateway to isolate unassigned hosts.         |
+| 10      | `172.16.0.1/22`    | management | A network for the configuration and management of network devices. |
+| 4000    | `192.168.255.0/24` | userspace  | A home network for WiFi and other domestic traffic.                |
+
+### Firewall 🔥
+
+**Status:** 🟡 Rollout
+
+I chose to set up `firewalld` and use `firewall-cmd` to manage the firewall. The table below shows an overview of the defined zones and their associated services.
+
+| Zone     | Description                          | Services         |
+| -------- | ------------------------------------ | ---------------- |
+| internet | The connection towards the internet. | `ssh`, `kubeapi` |
+
 ## Limitations❗
 
 Below you may find a list of limitations with my current infrastructure setup.
 
 - **Manual NS and DS records**  
   Due to the limitations of the [Namecheap API][website-namecheap-api], I decided to completely administrate my NS and DS records by hand. If I can't automate it for one registrar, I will not automate it for any of them. This is subject to change based on the amount of domains and the frequency of changes. Usually however NS records rarely change.
+
+- **Manual administration of VLANs**  
+  Because my network contains a variety of network devices with different management protocols, there is a currently little value in automating the management of VLANs.
 
 ## License 📄
 
