@@ -67,19 +67,20 @@ Currently, I am only running [Traefik][website-traefik] as an [Ingress Controlle
 
 **Status:** 🟡 Rollout
 
-The table below describes the set of manually assigned VLANs.
+The table below describes the set of manually assigned VLANs. The configuration of the DHCPv4 server is based on [this Ubuntu community article][article-ubuntu-dhcp].
 
-| VLAN ID | CIDR               | Name       | Description                                                        |
+| VLAN ID | Gateway CIDR       | Name       | Description                                                        |
 | ------- | ------------------ | ---------- | ------------------------------------------------------------------ |
 | 1       | `none`             | default    | A network without any gateway to isolate unassigned hosts.         |
-| 10      | `172.16.0.1/22`    | management | A network for the configuration and management of network devices. |
-| 4000    | `192.168.255.0/24` | userspace  | A home network for WiFi and other domestic traffic.                |
+| 4000    | `172.16.0.1/22`    | management | A network for the configuration and management of network devices. |
+| 4010    | `172.16.4.1/22`    | homelab    | A network for experimental deployments.                            |
+| 4020    | `192.168.255.1/24` | userspace  | A home network for WiFi and other domestic traffic.                |
 
 ### Firewall 🔥
 
 **Status:** 🟡 Rollout
 
-I chose to set up `firewalld` and use `firewall-cmd` to manage the firewall. The table below shows an overview of the defined zones and their associated services.
+I chose to set up `firewalld` and use `firewall-cmd` to manage the firewall. The table below shows an overview of the defined zones and their associated services. [This Digital Ocean tutorial][tutorial-firewall-cmd] was very useful throughout the process.
 
 | Zone     | Description                          | Services         |
 | -------- | ------------------------------------ | ---------------- |
@@ -93,7 +94,10 @@ Below you may find a list of limitations with my current infrastructure setup.
   Due to the limitations of the [Namecheap API][website-namecheap-api], I decided to completely administrate my NS and DS records by hand. If I can't automate it for one registrar, I will not automate it for any of them. This is subject to change based on the amount of domains and the frequency of changes. Usually however NS records rarely change.
 
 - **Manual administration of VLANs**  
-  Because my network contains a variety of network devices with different management protocols, there is a currently little value in automating the management of VLANs.
+  Because my network contains a variety of network devices with different management protocols, there is a currently little value in automating the management of VLANs. If this should prove to be a valuable investment at some point, the links below include information on how to interface with some of my hardware via protocols such as the _Easy Smart Configuration Protocol (ESCP)_.
+  - [How I can gain control of your TP-LINK home switch](https://www.pentestpartners.com/security-blog/how-i-can-gain-control-of-your-tp-link-home-switch/)
+  - [Information disclosure vulnerability in TP-Link Easy Smart switches](https://www.chrisdcmoore.co.uk/post/tplink-easy-smart-switch-vulnerabilities/)
+  - [Ansible Collection - rgl.tp_link_easy_smart_switch](https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch)
 
 ## License 📄
 
@@ -117,3 +121,5 @@ This project is licensed under the terms of the [MIT license][file-license].
 [website-haproxy]: http://www.haproxy.org/
 [website-gateway-api]: https://gateway-api.sigs.k8s.io/
 [file-license]: ./LICENSE.md
+[tutorial-firewall-cmd]: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-centos-8
+[article-ubuntu-dhcp]: https://help.ubuntu.com/community/isc-dhcp-server

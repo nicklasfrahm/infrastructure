@@ -24,14 +24,20 @@ ethernets:
         - 1.0.0.1
 vlans:
   # Management network.
-  vlan.10:
-    id: 10
+  vlan.4000:
+    id: 4000
     link: eth0
     addresses:
       - 172.16.0.1/22
+  # Homelab network.
+  vlan.4010:
+    id: 4010
+    link: eth0
+    addresses:
+      - 172.16.4.1/22
   # Userspace network.
-  vlan.4000:
-    id: 4000
+  vlan.4020:
+    id: 4020
     link: eth0
     addresses:
       - 192.168.255.1/24

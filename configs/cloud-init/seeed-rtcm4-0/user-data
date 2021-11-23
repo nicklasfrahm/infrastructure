@@ -84,6 +84,7 @@ runcmd:
   - apt-get purge -y --autoremove snapd ufw
   - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
   - apt-get update
-  - apt-get install -y unattended-upgrades apt-listchanges firewalld nftables
+  - apt-get install -y unattended-upgrades apt-listchanges firewalld nftables isc-dhcp-server
   - apt-get full-upgrade -y
-  - systemctl enable nftables.service
+  - systemctl enable --now nftables
+  - systemctl enable --now firewalld
