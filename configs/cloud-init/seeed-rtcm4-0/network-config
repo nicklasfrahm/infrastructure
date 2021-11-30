@@ -5,39 +5,41 @@
 ## References:
 ##   - https://cloudinit.readthedocs.io/
 ##   - https://netplan.io/reference
-##
-## Some additional examples are commented out below
 
 version: 2
 ethernets:
   # LAN interface.
   eth0:
     dhcp4: false
-    optional: true
+    addresses:
+      - 192.168.2.254/24
   # WAN interface.
   eth1:
     dhcp4: true
-    optional: true
+    dhcp4-overrides:
+      use-dns: false
     nameservers:
+      search:
+        - net.nicklasfrahm.xyz
       addresses:
         - 1.1.1.1
         - 1.0.0.1
-vlans:
-  # Management network.
-  vlan.4000:
-    id: 4000
-    link: eth0
-    addresses:
-      - 172.16.0.1/22
-  # Homelab network.
-  vlan.4010:
-    id: 4010
-    link: eth0
-    addresses:
-      - 172.16.4.1/22
-  # Userspace network.
-  vlan.4020:
-    id: 4020
-    link: eth0
-    addresses:
-      - 192.168.255.1/24
+# vlans:
+#   # Management network.
+#   vlan4000:
+#     id: 4000
+#     link: eth0
+#     addresses:
+#       - 172.16.0.1/22
+#   # Homelab network.
+#   vlan4010:
+#     id: 4010
+#     link: eth0
+#     addresses:
+#       - 172.16.4.1/22
+#   # Userspace network.
+#   vlan4020:
+#     id: 4020
+#     link: eth0
+#     addresses:
+#       - 192.168.255.1/24

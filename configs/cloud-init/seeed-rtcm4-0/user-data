@@ -40,9 +40,16 @@ users:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4HGFk2Tfl0iAl3XNmXStRTjnsFAWshl7DadyqmlqJa github-actions@github.com/nicklasfrahm/infrastructure
     sudo: ALL=(ALL) NOPASSWD:ALL
 
-## Prevent update of apt database and upgrade of packages on first boot.
-package_update: false
-package_upgrade: false
+## Update apt database and upgrade packages on first boot.
+package_update: true
+package_upgrade: true
+
+## Install additional packages.
+packages:
+  - nftables
+  - isc-dhcp-server
+  - unattended-upgrades
+  - apt-listchanges
 
 ## By default, (most) ssh host keys are printed to the console. Setting
 ## emit_keys_to_console to false suppresses this output.
@@ -77,46 +84,25 @@ timezone: UTC
 ## Note, that the list has to be proper yaml, so you have to quote
 ## any characters yaml would eat (':' can be problematic)
 runcmd:
-  # Uninstall unneeded packages and upgrade all packages.
-  - apt-get update
-  - apt-get purge -y --autoremove snapd ufw
-  - apt-get full-upgrade -y
-  # Configure automatic upgrades.
-  - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
-  - apt-get update
-  - apt-get install -y unattended-upgrades apt-listchanges
   # Remove iptables.
   - systemctl stop iptables
   - systemctl mask iptables
-  #  Replace iptables with nftables and firewalld.
-  - apt-get update
-  - apt-get update firewalld nftables
-  - systemctl enable --now nftables
-  - systemctl enable --now firewalld
-  # Configure zones and firewall rules.
-  - firewall-cmd --zone=external --set-target=DROP
-  - firewall-cmd --zone=internal --add-masquerade
-  - firewall-cmd --zone=internal --remove-service=samba-client
-  - firewall-cmd --zone=external --change-interface=eth1
-  - firewall-cmd --zone=internal --change-interface=vlan.4000
-  - firewall-cmd --zone=internal --change-interface=vlan.4010
-  - firewall-cmd --zone=internal --change-interface=vlan.4020
-  - firewall-cmd --direct --add-rule ipv4 nat POSTROUTING 0 -o eth1 -j MASQUERADE
-  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i vlan.4000 -o eth1 -j ACCEPT
-  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i vlan.4010 -o eth1 -j ACCEPT
-  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i vlan.4020 -o eth1 -j ACCEPT
-  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o vlan.4000 -m state --state RELATED,ESTABLISHED -j ACCEPT
-  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o vlan.4010 -m state --state RELATED,ESTABLISHED -j ACCEPT
-  - firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth1 -o vlan.4020 -m state --state RELATED,ESTABLISHED -j ACCEPT
-  - firewall-cmd --runtime-to-permanent
-  - firewall-cmd --reload
+  - systemctl stop ip6tables
+  - systemctl mask ip6tables
+  - systemctl stop ipset
+  - systemctl mask ipset
+  # Uninstall unneeded packages and upgrade all packages.
+  - apt-get purge -y --autoremove snapd ufw
+  # Configure automatic upgrades.
+  - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
   # Configure kernel network forwarding.
-  - sed -i '/net.ipv4.ip_forward=1/s/^#//' /etc/sysctl.conf
-  - sysctl -p
+  - sysctl -w net.ipv4.ip_forward=1
+  #  Replace iptables with nftables.
+  - systemctl enable nftables
+  - systemctl restart nftables
   # Install DHCP server.
-  - apt-get update
-  - apt-get install -y isc-dhcp-server
-  - systemctl enable --now isc-dhcp-server
+  - systemctl enable isc-dhcp-server
+  - systemctl restart isc-dhcp-server
 
 ## This is the configuration syntax that the write_files module
 ## will know how to understand. encoding can be given b64 or gzip or (gz+b64).
@@ -143,31 +129,129 @@ write_files:
       # network, the authoritative directive should be uncommented.
       authoritative;
 
-      # vlan.4000 >> 172.16.0.1/22
-      subnet 172.16.0.0 netmask 255.255.252.0 {
+      # eth0 >> 192.168.2.0/24
+      subnet 192.168.2.0 netmask 255.255.255.0 {
 
-        range  172.16.0.2 172.16.3.200;
+        range  192.168.2.1 192.168.2.250;
 
-        option routers                  172.16.0.1;
-        option subnet-mask              255.255.252.0;
-        option broadcast-address        172.16.3.255;
-
-      }
-
-      # vlan.4010 >> 172.16.4.1/22
-      subnet 172.16.4.0 netmask 255.255.252.0 {
-      }
-
-      # vlan.4020 >> 192.168.255.1/24
-      subnet 192.168.255.0 netmask 255.255.255.0 {
-
-        range  192.168.255.2 192.168.255.250;
-
-        option routers                  192.168.255.1;
+        option routers                  192.168.2.254;
         option subnet-mask              255.255.255.0;
-        option broadcast-address        192.168.255.255;
+        option broadcast-address        192.168.2.255;
 
       }
+
+      # vlan4000 >> 172.16.0.1/22
+      # subnet 172.16.0.0 netmask 255.255.252.0 {
+
+      #   range  172.16.0.2 172.16.3.200;
+
+      #   option routers                  172.16.0.1;
+      #   option subnet-mask              255.255.252.0;
+      #   option broadcast-address        172.16.3.255;
+
+      # }
+
+      # vlan4010 >> 172.16.4.1/22
+      # subnet 172.16.4.0 netmask 255.255.252.0 {
+      # }
+
+      # vlan4020 >> 192.168.255.1/24
+      # subnet 192.168.255.0 netmask 255.255.255.0 {
+
+      #   range  192.168.255.2 192.168.255.250;
+
+      #   option routers                  192.168.255.1;
+      #   option subnet-mask              255.255.255.0;
+      #   option broadcast-address        192.168.255.255;
+
+      # }
+
   - path: /etc/default/isc-dhcp-server
     content: |
-      INTERFACES="vlan.4000 vlan.4010 vlan.4020"
+      INTERFACES="eth0"
+
+  - path: /etc/nftables.conf
+    content: |
+      #!/usr/sbin/nft -f
+
+      # This setup is based on the Red Hat Documentation of nftables:
+      # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-configuring_nat_using_nftables
+
+      # Reset firewall flushing the ruleset.
+      flush ruleset
+
+      # Declare variables.
+      define NIC_WAN = eth1
+      define NIC_LAN = eth0
+      define NET_LAN = 192.168.2.0/24
+
+      # Create a table for firewalling.
+      table inet firewall {
+        # Handle incoming traffic for host processes.
+        chain input {
+          # Drop all traffic by default.
+          type filter hook input priority filter; policy drop;
+
+          # Let invalid connections time out, while accepting established
+          # or related connections.
+          ct state invalid counter drop
+          ct state established,related counter accept
+
+          # Accept connections from the loopback interface to itself while
+          # protecting it from foreign traffic.
+          iif lo accept
+          iif != lo ip daddr 127.0.0.1/8 counter drop
+          iif != lo ip6 daddr ::1/128 counter drop
+
+          # Allow ICMP traffic for correct network operation.
+          # Reference: http://shouldiblockicmp.com/
+          ip protocol icmp counter accept
+          ip6 nexthdr icmpv6 counter accept
+
+          # Allow selected protocols.
+          tcp dport {ssh} accept
+
+          # Count dropped packets.
+          counter comment "dropped packets"
+        }
+
+        # Handle forwarded traffic between network interfaces.
+        chain forward {
+          # Drop all traffic by default.
+          type filter hook forward priority 0; policy drop;
+
+          # Allow forwarded traffic only from internal network interfaces
+          # or if packets are established or related.
+          iifname != $NIC_WAN accept
+          iifname $NIC_WAN ct state established,related accept
+
+          # TODO: Block inter-VLAN traffic.
+          # # Accept traffic if directed towards own VLAN or internet.
+          # iifname $IFACE_MANAGEMENT oifname {$IFACE_MANAGEMENT,$IFACE_WAN} accept
+          # iifname $IFACE_HOMELAB oifname {$IFACE_HOMELAB,$IFACE_WAN} accept
+          # iifname $IFACE_USERSPACE oifname {$IFACE_USERSPACE,$IFACE_WAN} accept
+
+          # Count dropped packets.
+          counter comment "dropped packets"
+        }
+
+        # Handle outgoing traffic from host processes.
+        chain output {
+          # Allows all outgoing traffic by default.
+          type filter hook output priority 0; policy accept;
+          counter comment "accepted packets"
+        }
+
+        # Handle outgoing packets before leaving the system.
+        chain postrouting {
+          # Register a hook to in the postrouting chain.
+          type nat hook postrouting priority srcnat; policy accept;
+
+          # Rewrite the source address with the address of the outgoing interface.
+          oifname $NIC_WAN masquerade
+        }
+      }
+
+  - path: /etc/sysctl.d/local.conf
+    content: |
+      net.ipv4.ip_forward=1
