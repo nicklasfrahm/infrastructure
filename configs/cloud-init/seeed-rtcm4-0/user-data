@@ -129,46 +129,40 @@ write_files:
       # network, the authoritative directive should be uncommented.
       authoritative;
 
-      # eth0 >> 192.168.2.0/24
-      subnet 192.168.2.0 netmask 255.255.255.0 {
+      # vlan10
+      subnet 172.16.0.0 netmask 255.255.252.0 {
 
-        range  192.168.2.1 192.168.2.250;
+        range  172.16.0.1 172.16.3.200;
 
-        option routers                  192.168.2.254;
-        option subnet-mask              255.255.255.0;
-        option broadcast-address        192.168.2.255;
+        option routers                  172.16.3.254;
+        option subnet-mask              255.255.252.0;
+        option broadcast-address        172.16.3.255;
 
       }
 
-      # vlan4000 >> 172.16.0.1/22
-      # subnet 172.16.0.0 netmask 255.255.252.0 {
+      # vlan4000
+      subnet 192.168.254.0 netmask 255.255.255.0 {
 
-      #   range  172.16.0.2 172.16.3.200;
+        # This section is only informative and
+        # allows dhcpd to understand the network
+        # environment it is running in.
 
-      #   option routers                  172.16.0.1;
-      #   option subnet-mask              255.255.252.0;
-      #   option broadcast-address        172.16.3.255;
+      }
 
-      # }
+      # vlan4090
+      subnet 192.168.255.0 netmask 255.255.255.0 {
 
-      # vlan4010 >> 172.16.4.1/22
-      # subnet 172.16.4.0 netmask 255.255.252.0 {
-      # }
+        range  192.168.255.1 192.168.255.250;
 
-      # vlan4020 >> 192.168.255.1/24
-      # subnet 192.168.255.0 netmask 255.255.255.0 {
+        option routers                  192.168.255.254;
+        option subnet-mask              255.255.255.0;
+        option broadcast-address        192.168.255.255;
 
-      #   range  192.168.255.2 192.168.255.250;
-
-      #   option routers                  192.168.255.1;
-      #   option subnet-mask              255.255.255.0;
-      #   option broadcast-address        192.168.255.255;
-
-      # }
+      }
 
   - path: /etc/default/isc-dhcp-server
     content: |
-      INTERFACES="eth0"
+      INTERFACES="vlan10 vlan4090"
 
   - path: /etc/nftables.conf
     content: |
@@ -182,8 +176,12 @@ write_files:
 
       # Declare variables.
       define NIC_WAN = eth1
-      define NIC_LAN = eth0
-      define NET_LAN = 192.168.2.0/24
+      define NIC_MANAGEMENT = vlan10
+      define NIC_HOMELAB = vlan4000
+      define NIC_USERSPACE = vlan4090
+      define NET_MANAGEMENT = 172.16.0.0/22
+      define NET_HOMELAB = 192.168.254.0/24
+      define NET_USERSPACE = 192.168.255.0/24
 
       # Create a table for firewalling.
       table inet firewall {
@@ -194,25 +192,26 @@ write_files:
 
           # Let invalid connections time out, while accepting established
           # or related connections.
-          ct state invalid counter drop
-          ct state established,related counter accept
+          ct state invalid counter drop comment "invalid input packets"
+          ct state established,related counter accept comment "accepted input packets"
 
           # Accept connections from the loopback interface to itself while
-          # protecting it from foreign traffic.
+          # protecting it from external traffic.
           iif lo accept
-          iif != lo ip daddr 127.0.0.1/8 counter drop
-          iif != lo ip6 daddr ::1/128 counter drop
+          iif != lo ip daddr 127.0.0.1/8 counter drop comment "dropped lo packets"
+          iif != lo ip6 daddr ::1/128 counter drop comment "dropped lo packets"
 
-          # Allow ICMP traffic for correct network operation.
+          # Allow ICMP and IGMP traffic for correct network operation.
           # Reference: http://shouldiblockicmp.com/
-          ip protocol icmp counter accept
-          ip6 nexthdr icmpv6 counter accept
+          ip protocol icmp counter accept comment "icmp input packets"
+          ip protocol igmp counter accept comment "igmp input packets"
+          ip6 nexthdr icmpv6 counter accept comment "icmpv6 input packets"
 
           # Allow selected protocols.
-          tcp dport {ssh} accept
+          tcp dport {ssh} counter accept comment "accepted input packets"
 
           # Count dropped packets.
-          counter comment "dropped packets"
+          counter comment "dropped input packets"
         }
 
         # Handle forwarded traffic between network interfaces.
@@ -220,10 +219,14 @@ write_files:
           # Drop all traffic by default.
           type filter hook forward priority 0; policy drop;
 
+          # Clamp MSS to MTU based on routing cache via PMTUD. Without this
+          # TCP traffic might not work if your ISP uses PPPoE or FTTH.
+          tcp flags syn tcp option maxseg size set rt mtu
+
           # Allow forwarded traffic only from internal network interfaces
           # or if packets are established or related.
-          iifname != $NIC_WAN accept
-          iifname $NIC_WAN ct state established,related accept
+          iifname != $NIC_WAN counter accept comment "accepted forward packets"
+          iifname $NIC_WAN ct state established,related counter accept comment "accepted forward packets"
 
           # TODO: Block inter-VLAN traffic.
           # # Accept traffic if directed towards own VLAN or internet.
@@ -232,14 +235,14 @@ write_files:
           # iifname $IFACE_USERSPACE oifname {$IFACE_USERSPACE,$IFACE_WAN} accept
 
           # Count dropped packets.
-          counter comment "dropped packets"
+          counter comment "dropped forward packets"
         }
 
         # Handle outgoing traffic from host processes.
         chain output {
           # Allows all outgoing traffic by default.
           type filter hook output priority 0; policy accept;
-          counter comment "accepted packets"
+          counter comment "accepted output packets"
         }
 
         # Handle outgoing packets before leaving the system.
@@ -248,10 +251,11 @@ write_files:
           type nat hook postrouting priority srcnat; policy accept;
 
           # Rewrite the source address with the address of the outgoing interface.
-          oifname $NIC_WAN masquerade
+          oifname != "lo" masquerade
         }
       }
 
   - path: /etc/sysctl.d/local.conf
     content: |
       net.ipv4.ip_forward=1
+      net.ipv6.conf.all.forwarding=1
