@@ -9,8 +9,9 @@ on:
       - v*
     paths:
       - deployments/**
+      - .github/workflows/apps.yml
   schedule:
-    - cron: "0 4 * * *"
+    - cron: "0 6 * * *"
 
 jobs:
   apps:
@@ -42,7 +43,7 @@ jobs:
 
       - name: Install applications
         run: |
-          ls deployments/${{ matrix.site }} | xargs -I # cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
+          ls deployments/${{ matrix.site }} | xargs -I {} cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
         env:
           DDCLIENT_DOMAIN: ${{ secrets.DDCLIENT_DOMAIN }}
           DDCLIENT_TOKEN: ${{ secrets.DDCLIENT_TOKEN }}

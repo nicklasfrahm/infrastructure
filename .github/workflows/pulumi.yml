@@ -3,11 +3,20 @@ name: Pulumi
 on:
   workflow_dispatch:
   pull_request:
+  schedule:
+    - cron: "0 6 * * *"
   push:
     branches:
       - main
     tags:
       - v*
+    paths:
+      - go.*
+      - main.go
+      - pkg/**
+      - Pulumi.yaml
+      - .github/actions/pulumi/**
+      - .github/workflows/pulumi.yml
 
 jobs:
   # Don't run matrix to generate proper dependency graph.
