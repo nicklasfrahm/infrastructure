@@ -30,6 +30,23 @@ spec:
       runAsUser: 1000
       fsGroup: 1000
 
+    livenessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 5
+      failureThreshold: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 5
+      failureThreshold: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    startupProbe:
+      enabled: true
+      failureThreshold: 30
+      periodSeconds: 10
+
     # Reference: https://github.com/itzg/minecraft-server-charts/tree/master/charts/minecraft
     minecraftServer:
       # This must be overridden, since we can't accept this for the user.
