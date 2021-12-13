@@ -30,43 +30,18 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - name: Add SSH_PROXY_HOST to environment
-        run: echo "SSH_PROXY_HOST=${{ secrets.PROXY_HOST }}" >> $GITHUB_ENV
-
-      - name: Deploy k3s via proxy host
-        uses: appleboy/ssh-action@master
-        if: env.SSH_PROXY_HOST != ''
-        with:
-          script_stop: true
-          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
-          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
-          proxy_username: ${{ secrets.SSH_PROXY_USER }}
-          proxy_key: ${{ secrets.SSH_PROXY_KEY }}
-          host: ${{ secrets.SSH_TARGET_HOST }}
-          fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
-          username: ${{ secrets.SSH_TARGET_USER }}
-          key: ${{ secrets.SSH_TARGET_KEY }}
-          script: |
-            curl -sfL https://get.k3s.io | sudo sh -s - \
-              --advertise-address $(host -t a ${{ secrets.SITE_FQDN }} | cut -d ' ' -f4) \
-              --tls-san ${{ secrets.SITE_FQDN }} \
-              --disable traefik \
-              --write-kubeconfig-mode 644 \
-              --selinux
-            mkdir -p -m 700 .kube
-            sudo cp -f /etc/rancher/k3s/k3s.yaml .kube/config
-            sudo chown ${{ secrets.SSH_TARGET_USER }}:${{ secrets.SSH_TARGET_USER }} .kube/config
-            sudo chmod 600 .kube/config
-
       - name: Deploy k3s
         uses: appleboy/ssh-action@master
-        if: env.SSH_PROXY_HOST == ''
         with:
           script_stop: true
+          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
+          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ secrets.SSH_PROXY_USER }}
+          proxy_key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.SSH_TARGET_HOST }}
           fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
           username: ${{ secrets.SSH_TARGET_USER }}
-          key: ${{ secrets.SSH_TARGET_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
             curl -sfL https://get.k3s.io | sudo sh -s - \
               --advertise-address $(host -t a ${{ secrets.SITE_FQDN }} | cut -d ' ' -f4) \
@@ -78,32 +53,19 @@ jobs:
             sudo cp -f /etc/rancher/k3s/k3s.yaml .kube/config
             sudo chown ${{ secrets.SSH_TARGET_USER }}:${{ secrets.SSH_TARGET_USER }} .kube/config
             sudo chmod 600 .kube/config
-
-      - name: Download kubeconfig via proxy host
-        uses: nicklasfrahm/scp-action@main
-        if: env.SSH_PROXY_HOST != ''
-        with:
-          direction: download
-          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
-          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
-          proxy_username: ${{ secrets.SSH_PROXY_USER }}
-          proxy_key: ${{ secrets.SSH_PROXY_KEY }}
-          host: ${{ secrets.SSH_TARGET_HOST }}
-          fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
-          username: ${{ secrets.SSH_TARGET_USER }}
-          key: ${{ secrets.SSH_TARGET_KEY }}
-          source: /etc/rancher/k3s/k3s.yaml
-          target: kubeconfig.yml
 
       - name: Download kubeconfig
         uses: nicklasfrahm/scp-action@main
-        if: env.SSH_PROXY_HOST == ''
         with:
           direction: download
+          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
+          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ secrets.SSH_PROXY_USER }}
+          proxy_key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.SSH_TARGET_HOST }}
           fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
           username: ${{ secrets.SSH_TARGET_USER }}
-          key: ${{ secrets.SSH_TARGET_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           source: /etc/rancher/k3s/k3s.yaml
           target: kubeconfig.yml
 
