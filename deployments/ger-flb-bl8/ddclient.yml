@@ -14,7 +14,6 @@ metadata:
 stringData:
   ddclient.conf: |
     daemon=300
-    syslog=yes
     protocol=dyndns2
     use=cmd, cmd='curl https://checkipv4.dedyn.io/'
     ssl=yes
@@ -51,7 +50,7 @@ spec:
             secretName: ddclient-config
       containers:
         - name: ddclient
-          image: linuxserver/ddclient
+          image: lscr.io/linuxserver/ddclient
           imagePullPolicy: Always
           volumeMounts:
             - mountPath: /config
