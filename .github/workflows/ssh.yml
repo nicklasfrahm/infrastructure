@@ -48,10 +48,10 @@ jobs:
               --disable traefik \
               --write-kubeconfig-mode 644 \
               --selinux
-            mkdir -p -m 700 $$HOME/.kube
-            sudo cp -f /etc/rancher/k3s/k3s.yaml $$HOME/.kube/config
-            sudo chown ${{ secrets.SSH_TARGET_USER }}:${{ secrets.SSH_TARGET_USER }} $$HOME/.kube/config
-            sudo chmod 600 $$HOME/.kube/config
+            mkdir -p -m 700 .kube
+            sudo cp -f /etc/rancher/k3s/k3s.yaml .kube/config
+            sudo chown ${{ secrets.SSH_TARGET_USER }}:${{ secrets.SSH_TARGET_USER }} .kube/config
+            sudo chmod 600 .kube/config
 
       - name: Download kubeconfig
         uses: nicklasfrahm/scp-action@main
