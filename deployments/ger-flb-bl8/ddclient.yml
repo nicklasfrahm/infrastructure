@@ -16,10 +16,9 @@ stringData:
     daemon=300
     syslog=yes
     protocol=dyndns2
-    server=update.dedyn.io
-    use=web
-    web=https://checkipv4.dedyn.io
+    use=cmd, cmd='curl https://checkipv4.dedyn.io/'
     ssl=yes
+    server=update.dedyn.io
     login=${DDCLIENT_DOMAIN}
     password='${DDCLIENT_TOKEN}'
     ${DDCLIENT_DOMAIN}
