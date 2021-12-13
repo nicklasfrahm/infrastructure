@@ -33,9 +33,9 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           script_stop: true
-          proxy_host: ${{ env.SITE_FQDN }}
-          proxy_fingerprint: ${{ env.SSH_PROXY_FINGERPRINT }}
-          proxy_username: ${{ env.SSH_PROXY_USER }}
+          proxy_host: ${{ secrets.SITE_FQDN }}
+          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ secrets.SSH_PROXY_USER }}
           proxy_key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.SSH_TARGET_HOST }}
           fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
@@ -56,9 +56,9 @@ jobs:
         uses: nicklasfrahm/scp-action@main
         with:
           direction: download
-          proxy_host: ${{ env.SITE_FQDN }}
-          proxy_fingerprint: ${{ env.SSH_PROXY_FINGERPRINT }}
-          proxy_username: ${{ env.SSH_PROXY_USER }}
+          proxy_host: ${{ secrets.SITE_FQDN }}
+          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ secrets.SSH_PROXY_USER }}
           proxy_key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.SSH_TARGET_HOST }}
           fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
