@@ -1,0 +1,79 @@
+name: SSH
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  kubernetes:
+    name: Kubernetes
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - ger-flb-bl8
+    environment:
+      name: ${{ matrix.site }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Deploy k3s
+        uses: appleboy/ssh-action@master
+        with:
+          script_stop: true
+          proxy_host: ${{ env.SITE_FQDN }}
+          proxy_fingerprint: ${{ env.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ env.SSH_PROXY_USER }}
+          proxy_key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SSH_TARGET_HOST }}
+          fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
+          username: ${{ secrets.SSH_TARGET_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            curl -sfL https://get.k3s.io | sudo sh -s - \
+              --advertise-address $(host -t a ${{ secrets.SITE_FQDN }} | cut -d ' ' -f4) \
+              --tls-san ${{ secrets.SITE_FQDN }} \
+              --disable traefik \
+              --write-kubeconfig-mode 644 \
+              --selinux
+            sudo cp -f /etc/rancher/k3s/k3s.yaml /home/${{ secrets.SSH_TARGET_USER }}/.kube/config
+            sudo chown ${{ secrets.SSH_TARGET_USER }}:${{ secrets.SSH_TARGET_USER }} /home/${{ secrets.SSH_TARGET_USER }}/.kube/config
+            sudo chmod 600 /home/${{ secrets.SSH_TARGET_USER }}/.kube/config
+
+      - name: Download kubeconfig
+        uses: nicklasfrahm/scp-action@main
+        with:
+          direction: download
+          proxy_host: ${{ env.SITE_FQDN }}
+          proxy_fingerprint: ${{ env.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ env.SSH_PROXY_USER }}
+          proxy_key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SSH_TARGET_HOST }}
+          fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
+          username: ${{ secrets.SSH_TARGET_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: /etc/rancher/k3s/k3s.yaml
+          target: kubeconfig.yml
+
+      - name: Adjust API server URL
+        run: sed -i s/127.0.0.1/${{ secrets.SITE_FQDN }}/g kubeconfig.yml
+
+      # - name: Create kubeconfig secret
+      #   uses: nicklasfrahm/file-secret-action@main
+      #   with:
+      #     token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      #     scope: ${{ github.repository }}
+      #     secret: KUBECONFIG
+      #     file: kubeconfig.yml
