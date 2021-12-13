@@ -42,4 +42,4 @@ jobs:
 
       - name: Install applications
         run: |
-          kubectl apply -f ${{ matrix.site }}
+          kubectl apply -f deployments/${{ matrix.site }}
