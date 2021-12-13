@@ -1,0 +1,45 @@
+name: Apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+    paths:
+      - deployments/**
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+  apps:
+    name: Apps
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - ger-flb-bl8
+    environment:
+      name: ${{ matrix.site }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Install helm
+        uses: azure/setup-helm@v1
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -m 700 -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Install applications
+        run: |
+          kubectl apply -f ${{ matrix.site }}
