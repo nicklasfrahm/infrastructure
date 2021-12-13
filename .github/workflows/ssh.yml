@@ -71,10 +71,7 @@ jobs:
       - name: Adjust API server URL
         run: sed -i s/127.0.0.1/${{ secrets.SITE_FQDN }}/g kubeconfig.yml
 
-      # - name: Create kubeconfig secret
-      #   uses: nicklasfrahm/file-secret-action@main
-      #   with:
-      #     token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      #     scope: ${{ github.repository }}
-      #     secret: KUBECONFIG
-      #     file: kubeconfig.yml
+      - name: Create secret for kubeconfig
+        run: |
+          cat ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
+          gh secret set KUBECONFIG -r ${{ github.repository }} -e ${{ matrix.site }} < kubeconfig.yml
