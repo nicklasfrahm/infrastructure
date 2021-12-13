@@ -42,4 +42,7 @@ jobs:
 
       - name: Install applications
         run: |
-          kubectl apply -f deployments/${{ matrix.site }}
+          ls deployments/${{ matrix.site }} | xargs -I # cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
+        env:
+          DDCLIENT_DOMAIN: ${{ secrets.DDCLIENT_DOMAIN }}
+          DDCLIENT_TOKEN: ${{ secrets.DDCLIENT_TOKEN }}
