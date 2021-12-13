@@ -25,6 +25,11 @@ spec:
         memory: 512Mi
         cpu: 500m
 
+    securityContext:
+      # Security context settings
+      runAsUser: 1000
+      fsGroup: 1000
+
     # Reference: https://github.com/itzg/minecraft-server-charts/tree/master/charts/minecraft
     minecraftServer:
       # This must be overridden, since we can't accept this for the user.
@@ -36,7 +41,7 @@ spec:
       # One of: peaceful, easy, normal, and hard
       difficulty: normal
       # A comma-separated list of player names to whitelist.
-      whitelist: AnnSolo,Vegetablerian
+      whitelist: AnnSolo,Vegetablerian,Zitronaut
       # A comma-separated list of player names who should be admins.
       ops: Vegetablerian
       # A server icon URL for server listings. Auto-scaled and transcoded.
@@ -78,7 +83,7 @@ spec:
       # One of: DEFAULT, FLAT, LARGEBIOMES, AMPLIFIED, CUSTOMIZED
       levelType: DEFAULT
       # force re-download of server file
-      forceReDownload: true
+      forceReDownload: false
       # Check accounts against Minecraft account service.
       onlineMode: true
       # If you adjust this, you may need to adjust resources.requests above to match.
