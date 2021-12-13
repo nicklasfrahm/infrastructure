@@ -23,7 +23,7 @@ spec:
     resources:
       requests:
         memory: 1024Mi
-        cpu: 4000m
+        cpu: 6000m
 
     securityContext:
       # Security context settings
@@ -58,13 +58,13 @@ spec:
       # One of: peaceful, easy, normal, and hard
       difficulty: normal
       # A comma-separated list of player names to whitelist.
-      whitelist: AnnSolo,Vegetablerian,Zitronaut
+      whitelist: AnnSolo,Vegetablerian,Zitronaut,dramxo
       # A comma-separated list of player names who should be admins.
       ops: Vegetablerian
       # A server icon URL for server listings. Auto-scaled and transcoded.
       icon: https://cdn-icons-png.flaticon.com/512/427/427528.png
       # Max connected players.
-      maxPlayers: 20
+      maxPlayers: 5
       # This sets the maximum possible size in blocks, expressed as a radius, that the world border can obtain.
       maxWorldSize: 10000
       # Allows players to travel to the Nether.
@@ -90,7 +90,7 @@ spec:
       # Determines if villagers will be spawned.
       spawnNPCs: true
       # Max view distance (in chunks).
-      viewDistance: 10
+      viewDistance: 5
       # One of: creative, survival, adventure, spectator
       gameMode: survival
       # Message of the Day
