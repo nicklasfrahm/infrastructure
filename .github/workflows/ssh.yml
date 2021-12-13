@@ -23,6 +23,7 @@ jobs:
       matrix:
         site:
           - ger-flb-bl8
+          - den-sdb-osg18
     environment:
       name: ${{ matrix.site }}
     steps:
@@ -33,7 +34,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           script_stop: true
-          proxy_host: ${{ secrets.SITE_FQDN }}
+          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
           proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
           proxy_username: ${{ secrets.SSH_PROXY_USER }}
           proxy_key: ${{ secrets.SSH_KEY }}
@@ -57,7 +58,7 @@ jobs:
         uses: nicklasfrahm/scp-action@main
         with:
           direction: download
-          proxy_host: ${{ secrets.SITE_FQDN }}
+          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
           proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
           proxy_username: ${{ secrets.SSH_PROXY_USER }}
           proxy_key: ${{ secrets.SSH_KEY }}
