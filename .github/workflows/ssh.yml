@@ -9,8 +9,6 @@ on:
       - main
     tags:
       - v*
-    branches:
-      - main
     paths:
       - .github/workflows/ssh.yml
 

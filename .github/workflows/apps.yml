@@ -2,6 +2,8 @@ name: Apps
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
   push:
     branches:
       - main
@@ -10,8 +12,6 @@ on:
     paths:
       - deployments/**
       - .github/workflows/apps.yml
-  schedule:
-    - cron: "0 6 * * *"
 
 jobs:
   apps:
