@@ -73,5 +73,5 @@ jobs:
 
       - name: Create secret for kubeconfig
         run: |
-          cat ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
+          echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
           gh secret set KUBECONFIG -r ${{ github.repository }} -e ${{ matrix.site }} < kubeconfig.yml
