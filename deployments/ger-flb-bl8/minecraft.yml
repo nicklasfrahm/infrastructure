@@ -8,7 +8,7 @@ apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
   name: minecraft
-  namespace: minecraft
+  namespace: default
 spec:
   repo: https://itzg.github.io/minecraft-server-charts/
   chart: minecraft
@@ -22,8 +22,8 @@ spec:
     ##
     resources:
       requests:
-        memory: 3072Mi
-        cpu: 3000m
+        memory: 2048Mi
+        cpu: 2000m
 
     securityContext:
       # Security context settings
@@ -104,7 +104,7 @@ spec:
       # Check accounts against Minecraft account service.
       onlineMode: true
       # If you adjust this, you may need to adjust resources.requests above to match.
-      memory: 3072M
+      memory: 2048M
       # General JVM options to be passed to the Minecraft server invocation
       jvmOpts: ""
       # Options like -X that need to proceed general JVM options
