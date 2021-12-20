@@ -75,3 +75,81 @@ jobs:
         run: |
           echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
           gh secret set KUBECONFIG -r ${{ github.repository }} -e ${{ matrix.site }} < kubeconfig.yml
+
+  traefik:
+    name: Ingress controller
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs:
+      - kubernetes
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - den-sdb-osg18
+    environment:
+      name: ${{ matrix.site }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Install helm
+        uses: azure/setup-helm@v1
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -m 700 -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Install traefik
+        run: |
+          kubectl create namespace traefik || true
+          helm repo add traefik https://helm.traefik.io/traefik
+          helm repo update
+          helm upgrade traefik traefik/traefik --atomic -i -n traefik -f deployments/global/traefik-values.yml
+
+  cert-manager:
+    name: Certificate manager
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs:
+      - kubernetes
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - den-sdb-osg18
+    environment:
+      name: ${{ matrix.site }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Install helm
+        uses: azure/setup-helm@v1
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -m 700 -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Install cert-manager
+        run: |
+          kubectl create namespace cert-manager || true
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          helm upgrade \
+            --install \
+            --atomic \
+            --namespace cert-manager \
+            --set installCRDs=true \
+            cert-manager jetstack/cert-manager
+          kubectl apply -f deployments/global/cert-manager-manifests.yml
