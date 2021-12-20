@@ -208,7 +208,7 @@ write_files:
           ip6 nexthdr icmpv6 counter accept comment "icmpv6 input packets"
 
           # Allow selected protocols.
-          tcp dport {ssh,6443} counter accept comment "accepted input packets"
+          tcp dport {ssh,http,https,6443} counter accept comment "accepted input packets"
 
           # Count dropped packets.
           counter comment "dropped input packets"
