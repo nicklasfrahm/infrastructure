@@ -153,3 +153,34 @@ jobs:
             --set installCRDs=true \
             cert-manager jetstack/cert-manager
           kubectl apply -f deployments/global/cert-manager-manifests.yml
+
+  # The main point of this job is to synchronize the state
+  # of the deployment in GitHub. In the future we could
+  # set up some actual tests to evaluate the cluster health.
+  test:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs:
+      - traefik
+      - cert-manager
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - den-sdb-osg18
+    environment:
+      name: ${{ matrix.site }}
+    steps:
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -m 700 -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Display nodes and node load
+        run: |
+          kubectl get nodes
+          kubectl top nodes
