@@ -43,7 +43,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             curl -sfL https://get.k3s.io | sudo sh -s - \
-              --advertise-address $(host -t a ${{ secrets.SITE_FQDN }} | cut -d ' ' -f4) \
               --tls-san ${{ secrets.SITE_FQDN }} \
               --disable traefik \
               --write-kubeconfig-mode 644 \
