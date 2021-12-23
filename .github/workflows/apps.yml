@@ -43,8 +43,7 @@ jobs:
 
         # TODO: How to handle deployment failures? Via `git revert` and Pulumi?
       - name: Install applications
-        run: |
-          ls deployments/${{ matrix.site }} | xargs -I {} cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
+        run: ls deployments/${{ matrix.site }} | xargs -I {} cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
 
   # TODO: Set this up via Pulumi and `kubernetesx` so that environments can
   # also be deprovisioned by simply removing them from this repository.
@@ -56,7 +55,7 @@ jobs:
       fail-fast: false
       matrix:
         site:
-          - ger-flb-bl8
+          - den-sdb-osg18
         repository:
           - nicklasfrahm/snek
     environment:
@@ -77,23 +76,16 @@ jobs:
           chmod 600 ~/.kube/config
 
       - name: Generate namespace name
-        run: echo NAMESPACE=$(echo -n ${{ matrix.repo }} | tr '/' '-') >> $GITHUB_ENV
+        run: export NAMESPACE=$(echo -n ${{ matrix.repo }} | tr '/' '-')
 
       - name: Create environment namespace and service account
         run: envsubst < deployments/global/environment-manifests.yml | kubectl apply -f -
-        env:
-          NAMESPACE: ${{ env.NAMESPACE }}
 
       - name: Get service account token secret name
-        run: echo TOKEN_SECRET=$(kubectl -n $NAMESPACE get sa $SERVICE_ACCOUNT -o jsonpath='{.secrets[0].name}') >> $GITHUB_ENV
-        env:
-          NAMESPACE: ${{ env.NAMESPACE }}
+        run: export TOKEN_SECRET=$(kubectl -n $NAMESPACE get sa $SERVICE_ACCOUNT -o jsonpath='{.secrets[0].name}')
 
       - name: Fetch service account token
-        run: echo TOKEN=$(kubectl -n $NAMESPACE get secret $SECRET_NAME -o jsonpath='{.data.token}' | base64 -d) >> $GITHUB_ENV
-        env:
-          NAMESPACE: ${{ env.NAMESPACE }}
-          TOKEN_SECRET: ${{ env.TOKEN_SECRET }}
+        run: export TOKEN=$(kubectl -n $NAMESPACE get secret $SECRET_NAME -o jsonpath='{.data.token}' | base64 -d)
 
       # Reference: https://docs.armory.io/armory-enterprise/armory-admin/manual-service-account/#get-the-service-account-and-token
       - name: Create namespaced kubeconfig
@@ -107,8 +99,6 @@ jobs:
           rm ${KUBECONFIG_FILE}.tmp
         env:
           KUBECONFIG_FILE: kubeconfig.yml
-          TOKEN: ${{ env.TOKEN }}
-          NAMESPACE: ${{ env.NAMESPACE }}
 
       - name: Upload kubeconfig as pipeline secret
         run: |
