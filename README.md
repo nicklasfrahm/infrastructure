@@ -41,16 +41,53 @@ For more information you may want to check out the following files and directori
 
 ### Routing 🔀
 
-**Status**: 🟢 Operational
+**Status (v3):** 💡 Planning
 
-While I am migrating my current setup, I am using an [Ubiquity Edgerouter-X][website-erx] (ER-X) with port-forwarding towards a single baremetal [k3s cluster][website-k3s] on a seperate machine. The ER-X is fine, but not great for automation and dynamic configuration. I would like to run a Kubernetes cluster on my router which is not possible on the ER-X.
-
-I am currently running two subnets, **userspace** (`192.168.0.1/24`) and **homelab** (`172.16.0.1/22`), where DHCP is only enabled in the **userspace** subnet. This setup allows me to maintain network connectivity for **userspace** traffic while performing testing or configuration changes in my **homelab**. The configuration is currently hardcoded to specific ports on my router. In the future I am planning to orchestrate software defined networking via VLANs.
-
-**Status (v2):** 💡 Planning
-
-**Keywords:** BGP, Kubernetes Operator, [Kube-Router][website-kube-router], VLAN, SDN  
+**Keywords:** BGP, Kubernetes Operator, [Kube-Router][website-kube-router], SDN  
 **Motivation:** Automation, ease-of-operation, client source IPs
+
+**Status (v2):** 🟢 Operational
+
+This setup uses a [Seeed Dual Gigabit Ethernet NIC Carrier Board][shop-seeed-router] with a [Raspberry Pi Compute Module 4][shop-rpi-cm4] as a router. This setup allows it to run a Kubernetes cluster on my router and therefore on my network edge, which is not possible with my previous setup. This setup allows to build a custom orchestration layer for software defined networking via VLANs.
+
+**Status (v1):** 🔴 End of life
+
+In this setup I was running a [Ubiquity Edgerouter-X][website-erx] (ER-X) with port-forwarding towards a single baremetal [k3s cluster][website-k3s] on a seperate machine. The ER-X is fine, but not great for automation and dynamic configuration.
+
+In this setup I was had two subnets, **userspace** (`192.168.0.1/24`) and **homelab** (`172.16.0.1/22`), where DHCP was only enabled in the **userspace** subnet. This setup allowed me to maintain network connectivity for **userspace** traffic while performing testing or configuration changes in my **homelab**. The configuration was hardcoded to specific ports on my router.
+
+### VLANs 🛡️
+
+**Status:** 🟢 Operational
+
+The table below describes the set of manually assigned VLANs. The configuration of the DHCPv4 server and my network interfaces via [netplan.io][docs-netplan] is based on the following resources:
+
+- [Ubuntu community article about `isc-dhcp-server`][article-ubuntu-dhcp]
+- [How to make a simple router on a Ubuntu server][medium-ubuntu-router]
+- [`netplan.io` examples][docs-netplan-examples]
+
+| VLAN ID | CIDR               | DHCP | Name       | Description                                                        |
+| ------- | ------------------ | ---- | ---------- | ------------------------------------------------------------------ |
+| 1       | `none`             | No   | default    | A network without any gateway to isolate unassigned hosts.         |
+| 10      | `172.16.0.0/22`    | Yes  | management | A network for the configuration and management of network devices. |
+| 4000    | `192.168.254.0/22` | No   | homelab    | A network for experimental deployments.                            |
+| 4090    | `192.168.255.0/24` | Yes  | userspace  | A home network for WiFi and other domestic traffic.                |
+
+### Firewall 🔥
+
+**Status (v1):** 🟢 Operational
+
+I chose to use `nftables` as it provides a modern and declarative API. In the future the configuration should be managed via a software layer that performs automatic reconciliation.
+
+For anyone replicating this setup, it might be worth noting that there was one major roadblock during the implementation, which took me a week to figure out. Make sure to configure MTU clamping as described in the reference below or shown in `configs/cloud-init/seeed-rtcm4-0/user-data`. The symptoms of this missing configuration option are that small TCP and UDP packets will be forwarded correctly, such as the `client hello` of a TLS handshake or DNS queries, but regular TCP traffic will just be dropped. This in turn causes websites to fail loading. If you are able to open [`https://api.ipify.org`][api-ipify] in your browser, but not [`https://wikipedia.org`][wikipedia] it may very well be related to this.
+
+- [Quick reference for `nftables` from its wiki][wiki-nftables-quickstart]
+- [RHEL documentation `nftables` chapter][rhel-docs-nftables-quickstart]
+- [RHEL documentation explaining NAT configuration][rhel-docs-nftables-nat]
+- [Blog post for simple firewall setup][website-cryptsus-simple-firewall]
+- [Gento wiki showing `nftables` configuration examples][wiki-gentoo-nftables-examples]
+- [Arch Linux wiki explaining `nftables` basics][wiki-arch-nftables-basics]
+- [MTU clamping via packet header mangling][wiki-nftables-mtu-clamping]
 
 ### Load balancing 🔁
 
@@ -62,38 +99,6 @@ Currently, I am only running [Traefik][website-traefik] as an [Ingress Controlle
 
 **Keywords:** BGP, [HAProxy][website-haproxy], [Gateway API][website-gateway-api]  
 **Motivation:** Automation, ease-of-operation, client source IPs
-
-### VLANs 🛡️
-
-**Status:** 🟡 Rollout
-
-The table below describes the set of manually assigned VLANs. The configuration of the DHCPv4 server is based on the following resources:
-
-- [Ubuntu community article about `isc-dhcp-server`][article-ubuntu-dhcp]
-- [How to make a simple router on a Ubuntu server][medium-ubuntu-router]
-
-| VLAN ID | Gateway CIDR       | DHCP | Name       | Description                                                        |
-| ------- | ------------------ | ---- | ---------- | ------------------------------------------------------------------ |
-| 1       | `none`             | No   | default    | A network without any gateway to isolate unassigned hosts.         |
-| 4000    | `172.16.0.1/22`    | Yes  | management | A network for the configuration and management of network devices. |
-| 4010    | `172.16.4.1/22`    | No   | homelab    | A network for experimental deployments.                            |
-| 4020    | `192.168.255.1/24` | Yes  | userspace  | A home network for WiFi and other domestic traffic.                |
-
-### Firewall 🔥
-
-**Status:** 🟡 Rollout
-
-I chose to set up `firewalld` and use `firewall-cmd` to manage the firewall. The table below shows an overview of the defined zones and their associated services. For the implementation the following resources were used:
-
-- [Digital Ocean tutorial about `firewall-cmd`][tutorial-firewall-cmd]
-- [RHEL documentation explaining usage of `firewalld`][documentation-rhel-firewalld]
-- [Article about IP masquerade with `firewalld`][website-server-world-masquerade]
-
-_TODO: Update zones, masquerading and services._
-
-| Zone     | Description                          | Services                |
-| -------- | ------------------------------------ | ----------------------- |
-| external | The connection towards the internet. | `ssh`, `kube-apiserver` |
 
 ## Limitations❗
 
@@ -130,8 +135,18 @@ This project is licensed under the terms of the [MIT license][file-license].
 [website-haproxy]: http://www.haproxy.org/
 [website-gateway-api]: https://gateway-api.sigs.k8s.io/
 [file-license]: ./LICENSE.md
-[tutorial-firewall-cmd]: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-centos-8
 [article-ubuntu-dhcp]: https://help.ubuntu.com/community/isc-dhcp-server
 [medium-ubuntu-router]: https://medium.com/@exesse/how-to-make-a-simple-router-gateway-from-ubuntu-server-18-04-lts-fd40b7bfec9
-[documentation-rhel-firewalld]: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/using-and-configuring-firewalld_configuring-and-managing-networking
-[website-server-world-masquerade]: https://www.server-world.info/en/note?os=CentOS_7&p=firewalld&f=2
+[shop-seeed-router]: https://www.seeedstudio.com/Rapberry-Pi-CM4-Dual-GbE-Carrier-Board-p-4874.html
+[shop-rpi-cm4]: https://www.seeedstudio.com/Raspberry-Pi-Compute-Module-CM4104032-p-4722.html
+[wiki-nftables-quickstart]: https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes
+[rhel-docs-nftables-quickstart]: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/chap-getting_started_with_nftables
+[rhel-docs-nftables-nat]: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-configuring_nat_using_nftables
+[website-cryptsus-simple-firewall]: https://cryptsus.com/blog/setting-up-nftables-firewall.html
+[wiki-gentoo-nftables-examples]: https://wiki.gentoo.org/wiki/Nftables/Examples
+[wiki-arch-nftables-basics]: https://wiki.archlinux.org/title/nftables
+[wiki-nftables-mtu-clamping]: https://wiki.nftables.org/wiki-nftables/index.php/Mangling_packet_headers
+[wikipedia]: https://wikipedia.org
+[api-ipify]: https://api.ipify.org
+[docs-netplan-examples]: https://netplan.io/examples/
+[docs-netplan]: https://netplan.io
