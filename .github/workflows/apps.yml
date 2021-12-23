@@ -76,7 +76,7 @@ jobs:
           chmod 600 ~/.kube/config
 
       - name: Generate namespace name
-        run: export NAMESPACE=$(echo -n ${{ matrix.repo }} | tr '/' '-')
+        run: export NAMESPACE=$(echo -n ${{ matrix.repository }} | tr '/' '-')
 
       - name: Create environment namespace and service account
         run: envsubst < deployments/global/environment-manifests.yml | kubectl apply -f -
