@@ -76,16 +76,25 @@ jobs:
           chmod 600 ~/.kube/config
 
       - name: Generate namespace name
-        run: export NAMESPACE=$(echo -n ${{ matrix.repository }} | tr '/' '-')
+        run: echo NAMESPACE=$(echo -n ${{ matrix.repository }} | tr '/' '-') >> $GITHUB_ENV
 
       - name: Create environment namespace and service account
-        run: envsubst < deployments/global/environment-manifests.yml | kubectl apply -f -
+        run: |
+          echo $NAMESPACE
+          envsubst < deployments/global/environment-manifests.yml | kubectl apply -f -
+        env:
+          NAMESPACE: ${{ env.NAMESPACE }}
 
       - name: Get service account token secret name
-        run: export TOKEN_SECRET=$(kubectl -n $NAMESPACE get sa $SERVICE_ACCOUNT -o jsonpath='{.secrets[0].name}')
+        run: echo TOKEN_SECRET=$(kubectl -n $NAMESPACE get sa $SERVICE_ACCOUNT -o jsonpath='{.secrets[0].name}') >> $GITHUB_ENV
+        env:
+          NAMESPACE: ${{ env.NAMESPACE }}
 
       - name: Fetch service account token
-        run: export TOKEN=$(kubectl -n $NAMESPACE get secret $SECRET_NAME -o jsonpath='{.data.token}' | base64 -d)
+        run: echo TOKEN=$(kubectl -n $NAMESPACE get secret $TOKEN_SECRET -o jsonpath='{.data.token}' | base64 -d) >> $GITHUB_ENV
+        env:
+          NAMESPACE: ${{ env.NAMESPACE }}
+          TOKEN_SECRET: ${{ env.TOKEN_SECRET }}
 
       # Reference: https://docs.armory.io/armory-enterprise/armory-admin/manual-service-account/#get-the-service-account-and-token
       - name: Create namespaced kubeconfig
@@ -99,6 +108,8 @@ jobs:
           rm ${KUBECONFIG_FILE}.tmp
         env:
           KUBECONFIG_FILE: kubeconfig.yml
+          NAMESPACE: ${{ env.NAMESPACE }}
+          TOKEN: ${{ env.TOKEN }}
 
       - name: Upload kubeconfig as pipeline secret
         run: |
