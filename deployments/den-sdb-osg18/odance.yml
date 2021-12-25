@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: odance
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghost-credentials
+  namespace: odance
+stringData:
+  ghost-password: ${ODANCE_GHOST_PASSWORD}
+  mariadb-password: ${ODANCE_MARIADB_PASSWORD}
+  mariadb-root-password: ${ODANCE_MARIADB_ROOT_PASSWORD}
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: ghost-odance
+  namespace: default
+spec:
+  repo: https://charts.bitnami.com/bitnami
+  chart: ghost
+  targetNamespace: odance
+  valuesContent: |-
+    # Reference: https://github.com/bitnami/charts/tree/master/bitnami/ghost/
+    existingSecret: ghost-credentials
+
+    # Configure Ghost CMS.
+    ghostPath: /
+    allowEmptyPassword: no
+    ghostBlogTitle:
+    ghostEnableHttps: yes
+    ghostUsername: Ola
+    ghostEmail: o.poziomkowska@gmail.com
+    ghostBlogTitle:
+
+    # Configure Sendgrid as SMTP provider.
+    # smtpHost: smtp.sendgrid.net
+    # smtpPort: 587
+    # smtpUser: apikey
+    # smtpService: Sendgrid
+
+    # Secure application by preventing empty passwords.
+    allowEmptyPassword: false
+
+    # Only expose the service internally.
+    service:
+      type: ClusterIP
+
+    # Configure persistence between pod restarts.
+    persistence:
+      enabled: yes
+
+    # Configure resource constraints.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+    # Configure startup probe to avoid problems on slow nodes.
+    startupProbe:
+      enabled: yes
+
+    # Use an ingress for public access.
+    ingress:
+      enabled: yes
+      hostname: odance.dk
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+
+    # Configure database credentials.
+    mariadb:
+      auth:
+        existingSecret: ghost-credentials
+        database: ghost_odance
+        username: ghost_odance
+      primary:
+        startupProbe:
+          enabled: yes
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi

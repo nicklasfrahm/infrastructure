@@ -23,6 +23,7 @@ jobs:
       matrix:
         site:
           - ger-flb-bl8
+          - den-sdb-osg18
     environment:
       name: ${{ matrix.site }}
     steps:
@@ -44,6 +45,10 @@ jobs:
         # TODO: How to handle deployment failures? Via `git revert` and Pulumi?
       - name: Install applications
         run: ls deployments/${{ matrix.site }} | xargs -I {} cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
+        env:
+          ODANCE_GHOST_PASSWORD: ${{ secrets.ODANCE_GHOST_PASSWORD }}
+          ODANCE_MARIADB_PASSWORD: ${{ secrets.ODANCE_MARIADB_PASSWORD }}
+          ODANCE_MARIADB_ROOT_PASSWORD: ${{ secrets.ODANCE_MARIADB_ROOT_PASSWORD }}
 
   # TODO: Set this up via Pulumi and `kubernetesx` so that environments can
   # also be deprovisioned by simply removing them from this repository.
