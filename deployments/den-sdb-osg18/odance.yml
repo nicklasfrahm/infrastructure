@@ -64,7 +64,7 @@ spec:
     volumePermissions:
       enabled: yes
       image:
-        repository: library/busybox
+        repository: library/bash
         tag: latest
         pullPolicy: Always
 
@@ -94,7 +94,7 @@ spec:
       volumePermissions:
         enabled: yes
         image:
-          repository: library/busybox
+          repository: library/bash
           tag: latest
           pullPolicy: Always
       image:
