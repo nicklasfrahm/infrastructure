@@ -28,12 +28,13 @@ spec:
     existingSecret: ghost-credentials
 
     # Configure Ghost CMS.
-    ghostPath: /
     allowEmptyPassword: no
     ghostEnableHttps: yes
+    ghostHost: odance.dk
+    ghostPath: /
+    ghostBlogTitle: Harmonic Self
     ghostUsername: Ola
     ghostEmail: o.poziomkowska@gmail.com
-    ghostBlogTitle: Ola's blog
 
     # Configure Sendgrid as SMTP provider.
     # smtpHost: smtp.sendgrid.net
