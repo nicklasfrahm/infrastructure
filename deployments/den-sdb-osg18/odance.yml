@@ -27,6 +27,13 @@ spec:
     # Reference: https://github.com/bitnami/charts/tree/master/bitnami/ghost/
     existingSecret: ghost-credentials
 
+    # Configure Ghost container image.
+    image:
+      registry: docker.io
+      repository: library/ghost
+      tag: alpine
+      pullPolicy: always
+
     # Configure Ghost CMS.
     allowEmptyPassword: no
     ghostEnableHttps: yes
