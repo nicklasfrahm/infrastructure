@@ -62,10 +62,11 @@ spec:
 
     # Fix volume permissions.
     volumePermissions:
-      repository: library/busybox
-      tag: latest
-      pullPolicy: Always
       enabled: yes
+      image:
+        repository: library/busybox
+        tag: latest
+        pullPolicy: Always
 
     # Configure resource constraints.
     resources:
@@ -91,10 +92,11 @@ spec:
     # Configure database credentials.
     mariadb:
       volumePermissions:
-        repository: library/busybox
-        tag: latest
-        pullPolicy: Always
         enabled: yes
+        image:
+          repository: library/busybox
+          tag: latest
+          pullPolicy: Always
       image:
         registry: docker.io
         repository: library/mariadb
