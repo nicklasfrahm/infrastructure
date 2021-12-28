@@ -119,4 +119,4 @@ jobs:
       - name: Upload kubeconfig as pipeline secret
         run: |
           echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
-          gh secret set KUBECONFIG -r ${{ matrix.repository }} -e ${{ matrix.site }} < kubeconfig.yml
+          gh secret set KUBECONFIG -R ${{ matrix.repository }} -e ${{ matrix.site }} < kubeconfig.yml
