@@ -32,7 +32,7 @@ spec:
       registry: docker.io
       repository: library/ghost
       tag: alpine
-      pullPolicy: always
+      pullPolicy: Always
 
     # Configure Ghost CMS.
     allowEmptyPassword: no
@@ -86,7 +86,7 @@ spec:
         registry: docker.io
         repository: library/mariadb
         tag: latest
-        pullPolicy: always
+        pullPolicy: Always
       auth:
         existingSecret: ghost-credentials
         database: ghost_odance
