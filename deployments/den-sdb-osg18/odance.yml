@@ -87,8 +87,6 @@ spec:
         repository: library/mariadb
         tag: latest
         pullPolicy: Always
-      podSecurityContext:
-        enabled: false
       auth:
         existingSecret: ghost-credentials
         database: ghost_odance
@@ -103,3 +101,5 @@ spec:
           limits:
             cpu: 250m
             memory: 256Mi
+        podSecurityContext:
+          enabled: false
