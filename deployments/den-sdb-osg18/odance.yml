@@ -75,6 +75,11 @@ spec:
 
     # Configure database credentials.
     mariadb:
+      image:
+        registry: docker.io
+        repository: library/mariadb
+        tag: latest
+        pullPolicy: always
       auth:
         existingSecret: ghost-credentials
         database: ghost_odance
