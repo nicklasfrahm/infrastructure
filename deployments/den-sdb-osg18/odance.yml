@@ -101,7 +101,12 @@ spec:
         database: ghost_odance
         username: ghost_odance
       primary:
-        extraFlags: "--datadir=/bitnami/mariadb"
+        configuration: |
+          [mysqld]
+          datadir=/bitnami/mariadb
+
+          [mariadb]
+          datadir=/bitnami/mariadb
         startupProbe:
           enabled: yes
         resources:
