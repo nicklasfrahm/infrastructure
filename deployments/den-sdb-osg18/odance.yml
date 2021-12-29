@@ -64,9 +64,18 @@ spec:
     volumePermissions:
       enabled: yes
       image:
-        repository: library/ubuntu
+        repository: library/mariadb
         tag: latest
         pullPolicy: Always
+
+    # Configure security context.
+    podSecurityContext:
+      enabled: yes
+      fsGroup: mysql
+    containerSecurityContext:
+      enabled: yes
+      runAsUser: mysql
+      runAsNonRoot: yes
 
     # Configure resource constraints.
     resources:
@@ -91,12 +100,6 @@ spec:
 
     # Configure database credentials.
     mariadb:
-      volumePermissions:
-        enabled: yes
-        image:
-          repository: library/ubuntu
-          tag: latest
-          pullPolicy: Always
       image:
         registry: docker.io
         repository: library/mariadb
@@ -116,3 +119,16 @@ spec:
           limits:
             cpu: 250m
             memory: 256Mi
+        podSecurityContext:
+          enabled: yes
+          fsGroup: mysql
+        containerSecurityContext:
+          enabled: yes
+          runAsUser: mysql
+          runAsNonRoot: yes
+      volumePermissions:
+        enabled: yes
+        image:
+          repository: library/mariadb
+          tag: latest
+          pullPolicy: Always
