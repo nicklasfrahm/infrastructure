@@ -21,7 +21,8 @@ func main() {
 		nicklasfrahm := dns.NewZone("nicklasfrahm.xyz", "Nicklas Frahm's personal domain")
 		mykilio := dns.NewZone("mykil.io", "Mykilio project")
 		intric := dns.NewZone("intric.dk", "Intric Denmark startup")
-		zones := []*dns.Zone{nicklasfrahm, mykilio, intric}
+		odance := dns.NewZone("odance.dk", "Olcia's personal domain")
+		zones := []*dns.Zone{nicklasfrahm, mykilio, intric, odance}
 
 		// Define GitHub organizations and repositories.
 		orgs := []*github.OrganizationConfig{
