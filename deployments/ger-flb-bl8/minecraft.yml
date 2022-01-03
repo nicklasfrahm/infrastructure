@@ -22,10 +22,10 @@ spec:
     ##
     resources:
       limits:
-        memory: 2560Mi
+        memory: 2500Mi
         cpu: 3500m
       requests:
-        memory: 2560Mi
+        memory: 2500Mi
         cpu: 3500m
 
     securityContext:
@@ -107,7 +107,7 @@ spec:
       # Check accounts against Minecraft account service.
       onlineMode: true
       # If you adjust this, you may need to adjust resources.requests above to match.
-      memory: 2560M
+      memory: 2300M
       # General JVM options to be passed to the Minecraft server invocation
       jvmOpts: ""
       # Options like -X that need to proceed general JVM options
