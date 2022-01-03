@@ -22,11 +22,11 @@ spec:
     ##
     resources:
       limits:
-        memory: 3072Mi
-        cpu: 3000m
+        memory: 2560Mi
+        cpu: 3500m
       requests:
-        memory: 3072Mi
-        cpu: 3000m
+        memory: 2560Mi
+        cpu: 3500m
 
     securityContext:
       # Security context settings
