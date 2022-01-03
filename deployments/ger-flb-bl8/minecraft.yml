@@ -23,10 +23,10 @@ spec:
     resources:
       limits:
         memory: 2560Mi
-        cpu: 3000m
+        cpu: 2000m
       requests:
         memory: 2560Mi
-        cpu: 3000m
+        cpu: 2000m
 
     securityContext:
       # Security context settings
