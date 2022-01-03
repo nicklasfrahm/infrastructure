@@ -22,10 +22,10 @@ spec:
     ##
     resources:
       limits:
-        memory: 3072Mi
+        memory: 2560Mi
         cpu: 3000m
       requests:
-        memory: 3072Mi
+        memory: 2560Mi
         cpu: 3000m
 
     securityContext:
