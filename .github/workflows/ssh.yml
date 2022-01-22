@@ -86,7 +86,6 @@ jobs:
       matrix:
         site:
           - den-sdb-osg18
-          - ger-flb-bl8
     environment:
       name: ${{ matrix.site }}
     steps:
@@ -123,7 +122,6 @@ jobs:
       matrix:
         site:
           - den-sdb-osg18
-          - ger-flb-bl8
     environment:
       name: ${{ matrix.site }}
     steps:
