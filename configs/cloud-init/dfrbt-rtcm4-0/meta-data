@@ -1,0 +1,6 @@
+## This is the meta-data configuration file for cloud-init. Typically this just
+## contains the instance_id. Please refer to the cloud-init documentation for
+## more information:
+##
+## Reference: https://cloudinit.readthedocs.io/en/latest/topics/instancedata.html#instance-metadata
+instance_id: 95820962-41d9-4305-bd40-0359551f95dc

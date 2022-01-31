@@ -13,8 +13,8 @@ on:
       - .github/workflows/ssh.yml
 
 jobs:
-  kubernetes:
-    name: Kubernetes
+  kubernetes-control-plane:
+    name: Kubernetes Control Plane
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     strategy:
@@ -74,6 +74,44 @@ jobs:
         run: |
           echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
           gh secret set KUBECONFIG -r ${{ github.repository }} -e ${{ matrix.site }} < kubeconfig.yml
+
+  kubernetes-node-token:
+    name: Kubernetes Node Token
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - den-sdb-osg18
+    environment:
+      name: ${{ matrix.site }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Deploy k3s
+        uses: appleboy/ssh-action@master
+        with:
+          script_stop: true
+          proxy_host: ${{ secrets.SSH_PROXY_HOST }}
+          proxy_fingerprint: ${{ secrets.SSH_PROXY_FINGERPRINT }}
+          proxy_username: ${{ secrets.SSH_PROXY_USER }}
+          proxy_key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SSH_TARGET_HOST }}
+          fingerprint: ${{ secrets.SSH_TARGET_FINGERPRINT }}
+          username: ${{ secrets.SSH_TARGET_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            curl -sfL https://get.k3s.io | sudo sh -s - \
+              --tls-san ${{ secrets.SITE_FQDN }} \
+              --disable traefik \
+              --write-kubeconfig-mode 644 \
+              --selinux
+            mkdir -p -m 700 .kube
+            sudo cp -f /etc/rancher/k3s/k3s.yaml .kube/config
+            sudo chown ${{ secrets.SSH_TARGET_USER }}:${{ secrets.SSH_TARGET_USER }} .kube/config
+            sudo chmod 600 .kube/config
 
   traefik:
     name: Ingress controller
