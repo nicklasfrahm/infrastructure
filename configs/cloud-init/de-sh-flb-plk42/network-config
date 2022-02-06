@@ -1,0 +1,50 @@
+## This file contains a netplan-compatible configuration which cloud-init
+## will apply on first-boot. Please refer to the cloud-init documentation and
+## the netplan reference for full details:
+##
+## References:
+##   - https://cloudinit.readthedocs.io/
+##   - https://netplan.io/reference
+
+version: 2
+ethernets:
+  # Trunk links.
+  eth0:
+    optional: true
+  eth1:
+    optional: true
+
+bonds:
+  # Bonded link.
+  bond0:
+    min-links: 1
+    interfaces:
+      - eth0
+      - eth1
+
+vlans:
+  # Management network.
+  vlan1:
+    id: 1
+    link: bond0
+    addresses:
+      - 192.168.254.254/24
+  # WAN.
+  vlan2:
+    id: 2
+    link: bond0
+    dhcp4: true
+    dhcp4-overrides:
+      use-dns: false
+    nameservers:
+      search:
+        - net.nicklasfrahm.xyz
+      addresses:
+        - 1.1.1.1
+        - 1.0.0.1
+  # LAN.
+  vlan3:
+    id: 3
+    link: bond0
+    addresses:
+      - 192.168.255.254/24

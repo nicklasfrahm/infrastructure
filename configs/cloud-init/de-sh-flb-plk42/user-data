@@ -1,0 +1,251 @@
+#cloud-config
+
+## This is the user-data configuration file for cloud-init. By default this sets
+## up an initial user called "ubuntu" with password "ubuntu", which must be
+## changed at first login. However, many additional actions can be initiated on
+## first boot from this file. The cloud-init documentation has more details:
+##
+## Reference: https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+##
+## Some additional examples are provided in comments below the default
+## configuration.
+
+## Disable password authentication with the SSH daemon.
+ssh_pwauth: false
+
+## On first boot, use ssh-import-id to give the specific users SSH access to
+## the default user.
+ssh_import_id:
+  - gh:nicklasfrahm
+
+## Add users and groups to the system, and import keys with the ssh-import-id
+## utility
+users:
+  - name: nicklasfrahm
+    gecos: Nicklas Frahm
+    ## Reference: https://wiki.debian.org/SystemGroups#Other_System_Groups
+    groups:
+      - adm
+      - sudo
+      - staff
+      - systemd-journal
+      - dialout
+      - plugdev
+      - netdev
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_import_id:
+      - gh:nicklasfrahm
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4HGFk2Tfl0iAl3XNmXStRTjnsFAWshl7DadyqmlqJa github-actions@github.com/nicklasfrahm/infrastructure
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+## Update apt database and upgrade packages on first boot.
+package_update: true
+package_upgrade: true
+
+## Install additional packages.
+packages:
+  - nftables
+  - isc-dhcp-server
+  - unattended-upgrades
+  - apt-listchanges
+
+## By default, (most) ssh host keys are printed to the console. Setting
+## emit_keys_to_console to false suppresses this output.
+ssh:
+  emit_keys_to_console: false
+
+## Disable swap.
+swap:
+  size: 0
+
+## Configure hostname.
+prefer_fqdn_over_hostname: true
+fqdn: de-sh-flb-plk42.net.nicklasfrahm.xyz
+
+## Configure system locale and apply it system wide.
+locale: C.UTF-8
+
+## Configure timezone.
+timezone: UTC
+
+## Run arbitrary commands at rc.local like time (default: none)
+##
+## runcmd contains a list of either lists or a string
+## each item will be executed in order at rc.local like
+## level with output to the console
+## - runcmd only runs during the first boot
+## - if the item is a list, the items will be properly executed as if
+##   passed to execve(3) (with the first arg as the command).
+## - if the item is a string, it will be simply written to the file and
+##   will be interpreted by 'sh'
+##
+## Note, that the list has to be proper yaml, so you have to quote
+## any characters yaml would eat (':' can be problematic)
+runcmd:
+  # Remove iptables.
+  - systemctl stop iptables
+  - systemctl mask iptables
+  - systemctl stop ip6tables
+  - systemctl mask ip6tables
+  - systemctl stop ipset
+  - systemctl mask ipset
+  # Uninstall unneeded packages and upgrade all packages.
+  - apt-get purge -y --autoremove snapd ufw
+  # Configure automatic upgrades.
+  - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
+  # Configure kernel network forwarding.
+  - sysctl -w net.ipv4.ip_forward=1
+  #  Replace iptables with nftables.
+  - systemctl enable nftables
+  - systemctl restart nftables
+  # Install DHCP server.
+  - systemctl enable isc-dhcp-server
+  - systemctl restart isc-dhcp-server
+
+## This is the configuration syntax that the write_files module
+## will know how to understand. encoding can be given b64 or gzip or (gz+b64).
+## The content will be decoded accordingly and then written to the path that is
+## provided.
+write_files:
+  - path: /etc/dhcp/dhcpd.conf
+    content: |
+      # dhcpd.conf
+
+      # option definitions common to all supported networks...
+      option domain-name-servers 1.1.1.1, 1.0.0.1;
+
+      default-lease-time 86400;
+      max-lease-time 86400;
+
+      # The ddns-updates-style parameter controls whether or not the server will
+      # attempt to do a DNS update when a lease is confirmed. We default to the
+      # behavior of the version 2 packages ('none', since DHCP v2 didn't
+      # have support for DDNS.)
+      ddns-update-style none;
+
+      # If this DHCP server is the official DHCP server for the local
+      # network, the authoritative directive should be uncommented.
+      authoritative;
+
+      # vlan1
+      subnet 192.168.254.0 netmask 255.255.255.0 {
+
+        # This section is only informative and
+        # allows dhcpd to understand the network
+        # environment it is running in.
+
+      }
+
+      # vlan3
+      subnet 192.168.255.0 netmask 255.255.255.0 {
+
+        range  192.168.255.1 192.168.255.250;
+
+        option routers                  192.168.255.254;
+        option subnet-mask              255.255.255.0;
+        option broadcast-address        192.168.255.255;
+
+      }
+
+  - path: /etc/default/isc-dhcp-server
+    content: |
+      INTERFACES="vlan3"
+
+  - path: /etc/nftables.conf
+    content: |
+      #!/usr/sbin/nft -f
+
+      # This setup is based on the Red Hat Documentation of nftables:
+      # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-configuring_nat_using_nftables
+
+      # Reset firewall flushing the ruleset.
+      flush ruleset
+
+      # Declare variables.
+      define NIC_MGMT = vlan1
+      define NIC_WAN = vlan2
+      define NIC_LAN = vlan3
+      define NET_MGMT = 192.168.254.0/24
+      define NET_LAN = 192.168.255.0/24
+
+      # Create a table for firewalling.
+      table inet firewall {
+        # Handle incoming traffic for host processes.
+        chain input {
+          # Drop all traffic by default.
+          type filter hook input priority filter; policy drop;
+
+          # Let invalid connections time out, while accepting established
+          # or related connections.
+          ct state invalid counter drop comment "invalid input packets"
+          ct state established,related counter accept comment "accepted input packets"
+
+          # Accept connections from the loopback interface to itself while
+          # protecting it from external traffic.
+          iif lo accept
+          iif != lo ip daddr 127.0.0.1/8 counter drop comment "dropped lo packets"
+          iif != lo ip6 daddr ::1/128 counter drop comment "dropped lo packets"
+
+          # Allow ICMP and IGMP traffic for correct network operation.
+          # Reference: http://shouldiblockicmp.com/
+          ip protocol icmp counter accept comment "icmp input packets"
+          ip protocol igmp counter accept comment "igmp input packets"
+          ip6 nexthdr icmpv6 counter accept comment "icmpv6 input packets"
+
+          # Allow selected protocols.
+          tcp dport {ssh,http,https,6443} counter accept comment "accepted input packets"
+
+          # Ensure that Kubernetes node metrics can be collected.
+          iifname != $NIC_WAN tcp dport {10250} counter accept comment "accepted input packets"
+
+          # Count dropped packets.
+          counter comment "dropped input packets"
+        }
+
+        # Handle forwarded traffic between network interfaces.
+        chain forward {
+          # Drop all traffic by default.
+          type filter hook forward priority 0; policy drop;
+
+          # Clamp MSS to MTU based on routing cache via PMTUD. Without this
+          # TCP traffic might not work if your ISP uses PPPoE or FTTH.
+          tcp flags syn tcp option maxseg size set rt mtu
+
+          # Allow forwarded traffic only from internal network interfaces
+          # or if packets are established or related.
+          iifname != $NIC_WAN counter accept comment "accepted forward packets"
+          iifname $NIC_WAN ct state established,related counter accept comment "accepted forward packets"
+
+          # TODO: Block inter-VLAN traffic.
+          # # Accept traffic if directed towards own VLAN or internet.
+          # iifname $IFACE_MANAGEMENT oifname {$IFACE_MANAGEMENT,$IFACE_WAN} accept
+          # iifname $IFACE_HOMELAB oifname {$IFACE_HOMELAB,$IFACE_WAN} accept
+          # iifname $IFACE_USERSPACE oifname {$IFACE_USERSPACE,$IFACE_WAN} accept
+
+          # Count dropped packets.
+          counter comment "dropped forward packets"
+        }
+
+        # Handle outgoing traffic from host processes.
+        chain output {
+          # Allows all outgoing traffic by default.
+          type filter hook output priority 0; policy accept;
+          counter comment "accepted output packets"
+        }
+
+        # Handle outgoing packets before leaving the system.
+        chain postrouting {
+          # Register a hook to in the postrouting chain.
+          type nat hook postrouting priority srcnat; policy accept;
+
+          # Rewrite the source address with the address of the outgoing interface.
+          oifname != "lo" masquerade
+        }
+      }
+
+  - path: /etc/sysctl.d/local.conf
+    content: |
+      net.ipv4.ip_forward=1
+      net.ipv6.conf.all.forwarding=1
