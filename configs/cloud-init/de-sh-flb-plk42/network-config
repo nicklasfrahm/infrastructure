@@ -8,38 +8,8 @@
 
 version: 2
 ethernets:
-  # Trunk links.
+  # Public link.
   eth0:
-    dhcp4: no
-    match:
-      name: eth0
-  eth1:
-    dhcp4: yes
-    match:
-      name: eth1
-
-# bonds:
-#   # Bonded link.
-#   bond0:
-#     dhcp4: no
-#     interfaces:
-#       - eth0
-#     parameters:
-#       mode: balance-alb
-#       mii-monitor-interval: 1
-
-vlans:
-  # Management network.
-  vlan1:
-    id: 1
-    link: eth0
-    dhcp4: no
-    addresses:
-      - 192.168.254.254/24
-  # WAN.
-  vlan2:
-    id: 2
-    link: eth0
     dhcp4: yes
     dhcp4-overrides:
       use-dns: false
@@ -49,10 +19,22 @@ vlans:
       addresses:
         - 1.1.1.1
         - 1.0.0.1
-  # LAN.
+  # Private link.
+  eth1:
+    dhcp4: no
+
+vlans:
+  # Management network.
+  vlan1:
+    id: 1
+    link: eth1
+    dhcp4: no
+    addresses:
+      - 192.168.254.253/24
+  # Home network.
   vlan3:
-    id: 3
-    link: eth0
+    id: 4093
+    link: eth1
     dhcp4: no
     addresses:
       - 192.168.255.254/24

@@ -37,12 +37,14 @@ users:
     ssh_import_id:
       - gh:nicklasfrahm
     ssh_authorized_keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4HGFk2Tfl0iAl3XNmXStRTjnsFAWshl7DadyqmlqJa github-actions@github.com/nicklasfrahm/infrastructure
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF4HGFk2Tfl0iAl3XNmXStRTjnsFAWshl7DadyqmlqJa actions@github.com/nicklasfrahm/infrastructure
     sudo: ALL=(ALL) NOPASSWD:ALL
 
-## Update apt database and upgrade packages on first boot.
+## Update apt database on first boot,
+## but refrain from installing updates
+## to prevent excessively long provisioning.
 package_update: true
-package_upgrade: true
+package_update: false
 
 ## Install additional packages.
 packages:
@@ -71,6 +73,13 @@ locale: C.UTF-8
 ## Configure timezone.
 timezone: UTC
 
+# Reboot instance after provisioning.
+power_state:
+  delay: now
+  mode: reboot
+  timeout: 300
+  condition: True
+
 ## Run arbitrary commands at rc.local like time (default: none)
 ##
 ## runcmd contains a list of either lists or a string
@@ -85,6 +94,8 @@ timezone: UTC
 ## Note, that the list has to be proper yaml, so you have to quote
 ## any characters yaml would eat (':' can be problematic)
 runcmd:
+  # Activate cgroups to ensure compatibility with k3s.
+  echo "cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 $(cat /boot/firmware/cmdline.txt)" > /boot/firmware/cmdline.txt
   # Remove iptables.
   - systemctl stop iptables
   - systemctl mask iptables
@@ -98,6 +109,7 @@ runcmd:
   - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
   # Configure kernel network forwarding.
   - sysctl -w net.ipv4.ip_forward=1
+  - sysctl -w net.ipv6.conf.all.forwarding=1
   #  Replace iptables with nftables.
   - systemctl enable nftables
   - systemctl restart nftables
@@ -165,11 +177,11 @@ write_files:
       flush ruleset
 
       # Declare variables.
+      define NIC_INET = eth0
       define NIC_MGMT = vlan1
-      define NIC_WAN = vlan2
-      define NIC_LAN = vlan3
       define NET_MGMT = 192.168.254.0/24
-      define NET_LAN = 192.168.255.0/24
+      define NIC_HOME = vlan3
+      define NET_HOME = 192.168.255.0/24
 
       # Create a table for firewalling.
       table inet firewall {
@@ -199,7 +211,7 @@ write_files:
           tcp dport {ssh,http,https,6443} counter accept comment "accepted input packets"
 
           # Ensure that Kubernetes node metrics can be collected.
-          iifname != $NIC_WAN tcp dport {10250} counter accept comment "accepted input packets"
+          iifname != $NIC_INET tcp dport {10250} counter accept comment "accepted input packets"
 
           # Count dropped packets.
           counter comment "dropped input packets"
@@ -216,14 +228,13 @@ write_files:
 
           # Allow forwarded traffic only from internal network interfaces
           # or if packets are established or related.
-          iifname != $NIC_WAN counter accept comment "accepted forward packets"
-          iifname $NIC_WAN ct state established,related counter accept comment "accepted forward packets"
+          iifname != $NIC_INET counter accept comment "accepted forward packets"
+          iifname $NIC_INET ct state established,related counter accept comment "accepted forward packets"
 
           # TODO: Block inter-VLAN traffic.
           # # Accept traffic if directed towards own VLAN or internet.
-          # iifname $IFACE_MANAGEMENT oifname {$IFACE_MANAGEMENT,$IFACE_WAN} accept
-          # iifname $IFACE_HOMELAB oifname {$IFACE_HOMELAB,$IFACE_WAN} accept
-          # iifname $IFACE_USERSPACE oifname {$IFACE_USERSPACE,$IFACE_WAN} accept
+          # iifname $IFACE_MGMT oifname {$IFACE_MGMT,$IFACE_INET} accept
+          # iifname $IFACE_HOME oifname {$IFACE_HOME,$IFACE_INET} accept
 
           # Count dropped packets.
           counter comment "dropped forward packets"
