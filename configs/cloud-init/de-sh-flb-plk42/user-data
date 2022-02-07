@@ -75,10 +75,8 @@ timezone: UTC
 
 # Reboot instance after provisioning.
 power_state:
-  delay: now
   mode: reboot
-  timeout: 300
-  condition: True
+  timeout: 600
 
 ## Run arbitrary commands at rc.local like time (default: none)
 ##
@@ -95,7 +93,7 @@ power_state:
 ## any characters yaml would eat (':' can be problematic)
 runcmd:
   # Activate cgroups to ensure compatibility with k3s.
-  echo "cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 $(cat /boot/firmware/cmdline.txt)" > /boot/firmware/cmdline.txt
+  - echo "cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 $(cat /boot/firmware/cmdline.txt)" > /boot/firmware/cmdline.txt
   # Remove iptables.
   - systemctl stop iptables
   - systemctl mask iptables

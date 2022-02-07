@@ -10,7 +10,7 @@ version: 2
 ethernets:
   # Public link.
   eth0:
-    dhcp4: yes
+    dhcp4: true
     dhcp4-overrides:
       use-dns: false
     nameservers:
@@ -21,27 +21,28 @@ ethernets:
         - 1.0.0.1
   # Private link.
   eth1:
-    dhcp4: no
+    dhcp4: false
+    optional: true
 
 vlans:
   # Null network.
   vlan1:
     id: 1
     link: eth1
-    dhcp4: no
+    dhcp4: false
     addresses:
       - 192.168.253.254/24
   # Management network.
   vlan4092:
     id: 4092
     link: eth1
-    dhcp4: no
+    dhcp4: false
     addresses:
       - 192.168.254.254/24
   # Home network.
   vlan4093:
     id: 4093
     link: eth1
-    dhcp4: no
+    dhcp4: false
     addresses:
       - 192.168.255.254/24
