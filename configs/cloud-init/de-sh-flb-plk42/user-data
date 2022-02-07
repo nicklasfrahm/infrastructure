@@ -142,8 +142,8 @@ write_files:
       # network, the authoritative directive should be uncommented.
       authoritative;
 
-      # vlan1
-      subnet 192.168.254.0 netmask 255.255.255.0 {
+      # vlan1 - null network
+      subnet 192.168.253.0 netmask 255.255.255.0 {
 
         # This section is only informative and
         # allows dhcpd to understand the network
@@ -151,20 +151,31 @@ write_files:
 
       }
 
-      # vlan3
+      # vlan4092 - management network
+      subnet 192.168.254.0 netmask 255.255.255.0 {
+
+        range  192.168.254.1 192.168.254.250;
+
+        option subnet-mask              255.255.255.0;
+        option routers                  192.168.254.254;
+        option broadcast-address        192.168.254.255;
+
+      }
+
+      # vlan4093 - home network
       subnet 192.168.255.0 netmask 255.255.255.0 {
 
         range  192.168.255.1 192.168.255.250;
 
-        option routers                  192.168.255.254;
         option subnet-mask              255.255.255.0;
+        option routers                  192.168.255.254;
         option broadcast-address        192.168.255.255;
 
       }
 
   - path: /etc/default/isc-dhcp-server
     content: |
-      INTERFACES="vlan3"
+      INTERFACES="vlan4093 vlan4092"
 
   - path: /etc/nftables.conf
     content: |
@@ -178,9 +189,10 @@ write_files:
 
       # Declare variables.
       define NIC_INET = eth0
-      define NIC_MGMT = vlan1
+      define NIC_NULL = vlan1
+      define NIC_MGMT = vlan4092
       define NET_MGMT = 192.168.254.0/24
-      define NIC_HOME = vlan3
+      define NIC_HOME = vlan4093
       define NET_HOME = 192.168.255.0/24
 
       # Create a table for firewalling.

@@ -24,15 +24,22 @@ ethernets:
     dhcp4: no
 
 vlans:
-  # Management network.
+  # Null network.
   vlan1:
     id: 1
     link: eth1
     dhcp4: no
     addresses:
-      - 192.168.254.253/24
+      - 192.168.253.254/24
+  # Management network.
+  vlan4092:
+    id: 4092
+    link: eth1
+    dhcp4: no
+    addresses:
+      - 192.168.254.254/24
   # Home network.
-  vlan3:
+  vlan4093:
     id: 4093
     link: eth1
     dhcp4: no
