@@ -93,7 +93,7 @@ power_state:
 ## any characters yaml would eat (':' can be problematic)
 runcmd:
   # Activate cgroups to ensure compatibility with k3s.
-  - echo "cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 $(cat /boot/firmware/cmdline.txt)" > /boot/firmware/cmdline.txt
+  - sed -i 's/^/cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 /' /boot/firmware/cmdline.txt)
   # Remove iptables.
   - systemctl stop iptables
   - systemctl mask iptables
