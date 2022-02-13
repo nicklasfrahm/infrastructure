@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,7 +12,6 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/dns/v1"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -33,7 +33,8 @@ overwritten by setting the CREDENTIALS_FILE environment
 variable. The service account in question must have the
 DNS Admin role.
 
-  Usage: dnsctl <domain>`
+Usage:
+  dnsctl <domain>`
 
 // RecordType is the type of DNS record.
 type RecordType string
@@ -126,10 +127,16 @@ type Provider interface {
 	Reconcile(domain, recordType, desired string)
 }
 
+// GoogleCredentials describes the structure
+// of the Google Cloud credentials.
+type GoogleCredentials struct {
+	ProjectID string `json:"project_id"`
+}
+
 // GoogleProvider implements the Provider interface
 // for Google Cloud DNS.
 type GoogleProvider struct {
-	credentials *google.Credentials
+	credentials *GoogleCredentials
 	service     *dns.Service
 }
 
@@ -148,16 +155,15 @@ func NewGoogleProvider() *GoogleProvider {
 	}
 
 	// Parse google credentials.
-	ctx := context.Background()
-	credentials, err := google.CredentialsFromJSON(ctx, credentialsBytes)
-	if err != nil {
+	var credentials *GoogleCredentials
+	if err := json.Unmarshal(credentialsBytes, &credentials); err != nil {
 		log.Fatalf("Failed to parse credentials secret file: %v", err)
 	}
 
 	// Create a new service to manage the DNS records. Note that we load the
 	// entire file credential file again. This is done as passing the credentials
 	// to the service will cause issues with the requested OAuth scopes.
-	service, err := dns.NewService(ctx, option.WithCredentialsFile(credentialsFile))
+	service, err := dns.NewService(context.TODO(), option.WithCredentialsFile(credentialsFile))
 	if err != nil {
 		log.Fatalf("Failed to create DNS service: %v", err)
 	}

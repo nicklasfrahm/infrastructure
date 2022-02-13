@@ -8,6 +8,5 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.17.0
 	github.com/spf13/cobra v1.3.0
 	golang.org/x/crypto v0.0.0-20211215165025-cf75a172585e // indirect
-	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	google.golang.org/api v0.68.0
 )
