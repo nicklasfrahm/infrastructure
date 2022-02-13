@@ -39,4 +39,5 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v2
         with:
+          artifact: binaries
           path: bin/*
