@@ -23,7 +23,6 @@ jobs:
           - linux/arm64
           - linux/arm
           - darwin/amd64
-          - darwin/arm64
           - windows/amd64
     steps:
       - name: Clone repository
@@ -40,5 +39,4 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v2
         with:
-          name: binaries
           path: bin/*
