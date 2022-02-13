@@ -2,6 +2,7 @@
 
 A repository to automate the configuration of my local infrastructure.
 
+[![Tools](https://github.com/nicklasfrahm/infrastructure/actions/workflows/tools.yml/badge.svg)](https://github.com/nicklasfrahm/infrastructure/actions/workflows/tools.yml)
 [![Pulumi](https://github.com/nicklasfrahm/infrastructure/actions/workflows/pulumi.yml/badge.svg)](https://github.com/nicklasfrahm/infrastructure/actions/workflows/pulumi.yml)
 
 My local infrastructure is my homelab, which I primarily use to learn about state-of-the-art technologies as well as to run applications for potential startup incubations.

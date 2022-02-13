@@ -60,11 +60,11 @@ func main() {
 	// Get the desired state.
 	ipv4, err := PublicIP(EndpointIPv4)
 	if err != nil {
-		log.Fatalf("Failed to get IPv4 address: %v", err)
+		log.Fatalf("❌\tFailed to get IPv4 address: %v", err)
 	}
 	ipv6, err := PublicIP(EndpointIPv6)
 	if err != nil {
-		log.Fatalf("Failed to get IPv6 address: %v", err)
+		log.Fatalf("❌\tFailed to get IPv6 address: %v", err)
 	}
 
 	// Reconcile the records.
@@ -151,13 +151,13 @@ func NewGoogleProvider() *GoogleProvider {
 	// Load credentials file content.
 	credentialsBytes, err := ioutil.ReadFile(credentialsFile)
 	if err != nil {
-		log.Fatalf("Failed to read credentials file: %v", err)
+		log.Fatalf("❌\tFailed to read credentials file: %v", err)
 	}
 
 	// Parse google credentials.
 	var credentials *GoogleCredentials
 	if err := json.Unmarshal(credentialsBytes, &credentials); err != nil {
-		log.Fatalf("Failed to parse credentials secret file: %v", err)
+		log.Fatalf("❌\tFailed to parse credentials secret file: %v", err)
 	}
 
 	// Create a new service to manage the DNS records. Note that we load the
@@ -165,7 +165,7 @@ func NewGoogleProvider() *GoogleProvider {
 	// to the service will cause issues with the requested OAuth scopes.
 	service, err := dns.NewService(context.TODO(), option.WithCredentialsFile(credentialsFile))
 	if err != nil {
-		log.Fatalf("Failed to create DNS service: %v", err)
+		log.Fatalf("❌\tFailed to create DNS service: %v", err)
 	}
 
 	return &GoogleProvider{
@@ -179,7 +179,7 @@ func (p *GoogleProvider) projectID() string {
 	// Fetch the project ID.
 	projectID := p.credentials.ProjectID
 	if projectID == "" {
-		log.Fatalln("Must provide valid project ID in credentials")
+		log.Fatalln("⚠️\tMust provide valid project ID in credentials")
 	}
 
 	return projectID
@@ -189,13 +189,14 @@ func (p *GoogleProvider) projectID() string {
 func (p *GoogleProvider) zoneID(domain string) string {
 	// Get domain segments for the given domain.
 	segments := strings.Split(domain, ".")
-	if len(segments) < 2 {
-		log.Fatalln("Must provide valid top-level domain")
+	length := len(segments)
+	if length < 3 {
+		log.Fatalln("⚠️\tMust provide valid top-level domain")
 	}
 
 	// We assume that the zone name is equal to the top-level
 	// domain name, except for the dot being replaced by a hyphen.
-	return strings.Join(segments[len(segments)-3:len(segments)-1], "-")
+	return strings.Join(segments[length-3:length-1], "-")
 }
 
 // Reconcile configures the DNS record for the given domain.
@@ -211,7 +212,7 @@ func (p *GoogleProvider) Reconcile(domain string, recordType RecordType, ip net.
 
 	// Skip update if the desired IP is empty.
 	if ip == nil {
-		log.Printf("Skipping update: No IPv%d connectivity\n", ipFamily)
+		log.Printf("🟡\tSkipping update: No IPv%d connectivity\n", ipFamily)
 		return
 	}
 
@@ -230,30 +231,30 @@ func (p *GoogleProvider) Reconcile(domain string, recordType RecordType, ip net.
 			// Create the record, because it does not exist yet.
 			_, err := p.service.ResourceRecordSets.Create(p.projectID(), p.zoneID(domain), targetState).Do()
 			if err != nil {
-				log.Fatalf("Failed to create record: %v", err)
+				log.Fatalf("❌\tFailed to create record: %v", err)
 			}
-			log.Printf("Created record: %s %s %s\n", domain, recordType, ip)
+			log.Printf("🟢\tCreated record: %s %s %s\n", domain, recordType, ip)
 			return
 		}
-		log.Fatalf("Failed to get record: %v", err)
+		log.Fatalf("❌\tFailed to get record: %v", err)
 	}
 
 	// Check if an update may be performed. We will only
 	// update the record if it has one a single IP address.
 	if len(record.Rrdatas) != 1 {
-		log.Printf("Skipping update: %s record must have single IPv%d address\n", recordType, ipFamily)
+		log.Printf("🟡\tSkipping update: %s record must have single IPv%d address\n", recordType, ipFamily)
 	}
 
 	// Check if an update is necessary.
 	if record.Rrdatas[0] == ip.String() {
-		log.Printf("Skipping update: %s record already up-to-date\n", recordType)
+		log.Printf("🟡\tSkipping update: %s record already up-to-date\n", recordType)
 		return
 	}
 
 	// Update the record.
 	_, err = p.service.ResourceRecordSets.Patch(p.projectID(), p.zoneID(domain), domain, string(recordType), targetState).Do()
 	if err != nil {
-		log.Fatalf("Failed to update record: %v", err)
+		log.Fatalf("❌\tFailed to update record: %v", err)
 	}
-	log.Printf("Updated record: %s %s %s\n", domain, recordType, ip)
+	log.Printf("🟢\tUpdated record: %s %s %s\n", domain, recordType, ip)
 }
