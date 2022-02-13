@@ -22,7 +22,18 @@ const (
 	EndpointIPv4 = "https://ip4.seeip.org"
 	// EndpointIPv6 is an endpoint to fetch the public IPv6 address.
 	EndpointIPv6 = "https://ip6.seeip.org"
+	// CommandName is the name of the command.
+	CommandName = "dnsctl"
 )
+
+var usage = `A dynamic DNS client to update or create Google Cloud DNS
+records. By default it will load the credentials from the
+/etc/secrets/gcp.json JSON file. This behaviour can be
+overwritten by setting the CREDENTIALS_FILE environment
+variable. The service account in question must have the
+DNS Admin role.
+
+  Usage: dnsctl <domain>`
 
 // RecordType is the type of DNS record.
 type RecordType string
@@ -65,7 +76,7 @@ func main() {
 func ParseCommandLine() string {
 	// Check if the command line contains the correct number of arguments.
 	if len(os.Args) != 2 {
-		fmt.Println("Usage: microddns <domain>")
+		fmt.Println(usage)
 		os.Exit(1)
 	}
 
@@ -125,7 +136,7 @@ type GoogleProvider struct {
 // NewGoogleProvider creates a new GoogleProvider.
 func NewGoogleProvider() *GoogleProvider {
 	// Fetch credential file location from environment variable.
-	credentialsFile := os.Getenv("CREDENTIALS")
+	credentialsFile := os.Getenv("CREDENTIALS_FILE")
 	if credentialsFile == "" {
 		credentialsFile = "/etc/secrets/gcp.json"
 	}
@@ -133,14 +144,14 @@ func NewGoogleProvider() *GoogleProvider {
 	// Load credentials file content.
 	credentialsBytes, err := ioutil.ReadFile(credentialsFile)
 	if err != nil {
-		log.Fatalf("Failed to read client secret file: %v", err)
+		log.Fatalf("Failed to read credentials file: %v", err)
 	}
 
 	// Parse google credentials.
 	ctx := context.Background()
 	credentials, err := google.CredentialsFromJSON(ctx, credentialsBytes)
 	if err != nil {
-		log.Fatalf("Failed to parse client secret file: %v", err)
+		log.Fatalf("Failed to parse credentials secret file: %v", err)
 	}
 
 	// Create a new service to manage the DNS records. Note that we load the
