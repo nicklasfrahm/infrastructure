@@ -239,7 +239,7 @@ func (p *GoogleProvider) Reconcile(domain string, recordType RecordType, ip net.
 				log.Error().Err(err).Msg("Failed to create record")
 				return err
 			}
-			log.Info().Msgf("Created record: %s %s %s\n", domain, recordType, ip)
+			log.Info().Msgf("Created record: %s %s %s", domain, recordType, ip)
 			return nil
 		}
 		log.Error().Err(err).Msg("Failed to read record")
@@ -264,6 +264,6 @@ func (p *GoogleProvider) Reconcile(domain string, recordType RecordType, ip net.
 		log.Error().Err(err).Msg("Failed to update record")
 		return err
 	}
-	log.Info().Msgf("Updated record: %s %s %s\n", domain, recordType, ip)
+	log.Info().Msgf("Updated record: %s %s %s", domain, recordType, ip)
 	return nil
 }
