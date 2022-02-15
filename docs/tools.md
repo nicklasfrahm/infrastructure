@@ -13,7 +13,7 @@ The API of these tools is subject to change and not stable. Once an API is stabl
 ```shell
 $ dnsadm -h
 A command line interface to automate DNS management tasks. Currently
-it only uses on Google Cloud DNS, but this may change in the future.
+it only uses Google Cloud DNS, but this may change in the future.
 
 Usage:
   dnsadm [flags]
