@@ -34,7 +34,7 @@ jobs:
           check-latest: true
 
       - name: Build binaries
-        run: UPX=-5 PLATFORM=${{ matrix.platform }} make build
+        run: UPX=-9 PLATFORM=${{ matrix.platform }} make build
 
       - name: Upload binaries
         uses: actions/upload-artifact@v2
