@@ -9,6 +9,7 @@ on:
       - v*
     paths:
       - .github/workflows/tools.yml
+      - cmd/**
 
 jobs:
   binaries:
