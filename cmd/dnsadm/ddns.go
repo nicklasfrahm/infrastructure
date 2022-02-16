@@ -7,11 +7,8 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"os"
 	"strings"
-	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"google.golang.org/api/dns/v1"
@@ -49,12 +46,6 @@ The recommended usage of this command is as part of a cron job,
 either using crontab or a Kubernetes CronJob.`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// Configure logger.
-		log.Logger = log.Output(zerolog.ConsoleWriter{
-			Out:        os.Stderr,
-			TimeFormat: time.RFC3339,
-		})
-
 		// Parse command line arguments.
 		domain := CanonicalDomain(args[0])
 
