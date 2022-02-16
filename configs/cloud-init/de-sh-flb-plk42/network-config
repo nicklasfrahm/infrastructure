@@ -35,8 +35,6 @@ vlans:
     link: eth1
     dhcp4: false
     dhcp6: false
-    addresses:
-      - 192.168.253.254/24
   # Lab network.
   vlan4091:
     id: 4091
@@ -44,7 +42,7 @@ vlans:
     dhcp4: false
     dhcp6: false
     addresses:
-      - 192.168.252.254/24
+      - 192.168.253.254/24
   # Management network.
   vlan4092:
     id: 4092
