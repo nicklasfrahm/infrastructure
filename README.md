@@ -17,7 +17,7 @@ Since 2018 I started to make significant changes by automating the configuration
 
 Now, I am in the process of upgrading my infrastructure to become cloud-native and fully automated. The goal is to provide a RESTful API to provision baremetal machines from scratch, configure networking, and bootstrap and autoscale Kubernetes clusters.
 
-## Networking🔌
+## Networking 🔌
 
 Below, I describe the network setup of my Homelab. Some parts of it are already implemented, while others are still being conceptualized.
 
