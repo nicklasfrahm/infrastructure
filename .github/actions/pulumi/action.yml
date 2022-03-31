@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@master
+      uses: google-github-actions/setup-gcloud@v0
       with:
         project_id: ${{ github.repository_owner }}
         service_account_key: ${{ inputs.gcp-service-account-key }}
