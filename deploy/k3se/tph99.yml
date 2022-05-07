@@ -18,6 +18,7 @@ nodes:
   - role: server
     ssh:
       host: 192.168.254.254
+      fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
     config:
