@@ -10,7 +10,7 @@ on:
     tags:
       - v*
     paths:
-      - deployments/**
+      - deploy/**
       - .github/workflows/apps.yml
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
 
         # TODO: How to handle deployment failures? Via `git revert` and Pulumi?
       - name: Install applications
-        run: ls deployments/${{ matrix.site }} | xargs -I {} cat deployments/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
+        run: ls deploy/${{ matrix.site }} | xargs -I {} cat deploy/${{ matrix.site }}/{} | envsubst | kubectl apply -f -
 
   # TODO: Set this up via Pulumi and `kubernetesx` so that environments can
   # also be deprovisioned by simply removing them from this repository.
@@ -81,7 +81,7 @@ jobs:
   #     - name: Create environment namespace and service account
   #       run: |
   #         echo $NAMESPACE
-  #         envsubst < deployments/global/environment-manifests.yml | kubectl apply -f -
+  #         envsubst < deploy/global/environment-manifests.yml | kubectl apply -f -
   #       env:
   #         NAMESPACE: ${{ env.NAMESPACE }}
 
