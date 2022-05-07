@@ -18,6 +18,7 @@ nodes:
   - role: server
     ssh:
       host: 192.168.254.254
+      fingerprint: SHA256:yXgTDBKVyCxZwkMpdDdY/sdZrIaGZt31CPP/KUJFArc
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
     config:
@@ -27,5 +28,6 @@ nodes:
 # can be used to access nodes in a private network.
 ssh-proxy:
   host: plk42.nicklasfrahm.xyz
+  fingerprint: SHA256:yXgTDBKVyCxZwkMpdDdY/sdZrIaGZt31CPP/KUJFArc
   user: nicklasfrahm
   key-file: ~/.ssh/id_ed25519
