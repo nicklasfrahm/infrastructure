@@ -17,12 +17,12 @@ cluster:
 nodes:
   - role: server
     ssh:
-      host: 192.168.254.254
+      host: 192.168.253.254
       fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
     config:
-      node-ip: 192.168.254.254
+      node-ip: 192.168.253.254
       node-external-ip: 212.112.144.171
 
 # An SSH proxy, also known as jumpbox or a bastion host
