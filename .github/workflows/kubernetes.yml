@@ -34,7 +34,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
 
       - name: Deploy k3s
-        uses: nicklasfrahm/k3se@v0
+        uses: nicklasfrahm/k3se@main
         with:
           config: deploy/k3se/tph99.yml
 
