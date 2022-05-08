@@ -21,6 +21,7 @@ jobs:
         site:
           - tph99
           - plk42
+          - bl8
     environment:
       name: ${{ matrix.site }}
     steps:
