@@ -5,11 +5,19 @@
 ## References:
 ##   - https://cloudinit.readthedocs.io/
 ##   - https://netplan.io/reference
-
 version: 2
 ethernets:
-  # Public link.
+  # LAN interface.
   eth0:
+    dhcp4: false
+    dhcp6: false
+    optional: true
+    addresses:
+      # Home network: Due to the lack of a VLAN capable switch,
+      # we use manage the home network via a regular interface.
+      - 192.168.255.254/24
+  # WAN interface.
+  eth1:
     dhcp4: true
     dhcp4-overrides:
       use-dns: false
@@ -18,27 +26,21 @@ ethernets:
       use-dns: false
     nameservers:
       search:
-        - net.nicklasfrahm.xyz
+        - nicklasfrahm.xyz
       addresses:
         - 1.1.1.1
         - 1.0.0.1
-  # Private link.
-  eth1:
-    dhcp4: false
-    dhcp6: false
-    optional: true
-
 vlans:
   # Null network.
   vlan1:
     id: 1
-    link: eth1
+    link: eth0
     dhcp4: false
     dhcp6: false
   # Lab network.
   vlan4091:
     id: 4091
-    link: eth1
+    link: eth0
     dhcp4: false
     dhcp6: false
     addresses:
@@ -46,16 +48,8 @@ vlans:
   # Management network.
   vlan4092:
     id: 4092
-    link: eth1
+    link: eth0
     dhcp4: false
     dhcp6: false
     addresses:
       - 192.168.254.254/24
-  # Home network.
-  vlan4093:
-    id: 4093
-    link: eth1
-    dhcp4: false
-    dhcp6: false
-    addresses:
-      - 192.168.255.254/24
