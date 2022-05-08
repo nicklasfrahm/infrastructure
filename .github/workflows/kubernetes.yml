@@ -37,7 +37,7 @@ jobs:
       - name: Deploy k3s
         uses: nicklasfrahm/k3se@main
         with:
-          command: up deploy/k3se/tph99.yml
+          command: up deploy/k3se/${{ matrix.site }}.yml
 
       - name: Create secret for kubeconfig
         run: |
