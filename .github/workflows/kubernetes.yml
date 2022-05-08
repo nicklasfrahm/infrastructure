@@ -20,6 +20,7 @@ jobs:
       matrix:
         site:
           - tph99
+          - plk42
     environment:
       name: ${{ matrix.site }}
     steps:
