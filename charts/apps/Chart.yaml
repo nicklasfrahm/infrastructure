@@ -1,0 +1,4 @@
+apiVersion: v2
+name: apps
+description: This Helm chart implements the app of apps pattern as described in the Argo CD documentation.
+version: 1.0.0
