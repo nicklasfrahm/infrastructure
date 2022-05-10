@@ -4,5 +4,5 @@ description: An umbrella chart to configure the Traefik ingress controller.
 version: 1.0.0
 dependencies:
   - name: traefik
-    version: 2
+    version: 10
     repository: https://helm.traefik.io/traefik
