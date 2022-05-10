@@ -1,10 +1,4 @@
 {{- range .Values.clusters }}
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: traefik
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
