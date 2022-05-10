@@ -1,2 +1,6 @@
 bin/
 credentials*.json
+
+# Ignore files related to Helm.
+Chart.lock
+charts/**/charts

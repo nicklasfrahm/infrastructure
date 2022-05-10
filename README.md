@@ -101,6 +101,10 @@ Currently, I am only running [Traefik][website-traefik] as an [Ingress Controlle
 **Keywords:** BGP, [HAProxy][website-haproxy], [Gateway API][website-gateway-api]  
 **Motivation:** Automation, ease-of-operation, client source IPs
 
+## GitOps 🔧
+
+To automate deployments, I chose to implement GitOps via Argo CD. The initial installation procedure of Argo CD is described in [this blog post][website-argo-installation].
+
 ## Limitations❗
 
 Below you may find a list of limitations with my current infrastructure setup.
@@ -151,3 +155,4 @@ This project is licensed under the terms of the [MIT license][file-license].
 [api-ipify]: https://api.ipify.org
 [docs-netplan-examples]: https://netplan.io/examples/
 [docs-netplan]: https://netplan.io
+[website-argo-installation]: https://www.arthurkoziel.com/setting-up-argocd-with-helm/
