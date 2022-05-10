@@ -1,19 +1,21 @@
+{{- range .Values.clusters }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: apps
+  name: traefik-{{ .name }}
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: argo-cd
+    namespace: traefik
   project: default
   source:
-    path: charts/apps
+    path: charts/traefik
     repoURL: https://github.com/nicklasfrahm/infrastructure.git
     targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+{{- end }}
