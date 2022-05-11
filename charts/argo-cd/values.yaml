@@ -61,8 +61,7 @@ argo-cd:
         p, role:admin, exec, create, */*, allow
 
         g, role:admin, role:readonly
-        g, nicklasfrahm-xyz, role:admin
-        g, nicklasfrahm, role:admin
+        g, nicklasfrahm-xyz:argonauts, role:admin
       #admin.enabled: "false"
     ingress:
       enabled: true
