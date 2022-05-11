@@ -20,7 +20,7 @@ argo-cd:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-production
-      ingressClassName: traefik
+      ingressClassName: traefik-tph99
       hosts:
         - argo-cd.nicklasfrahm.xyz
       tls:
