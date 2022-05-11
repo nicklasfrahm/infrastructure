@@ -19,3 +19,13 @@ argo-cd:
       policy.default: role.readonly
       policy.csv: |
         g, nicklasfrahm-xyz, role:admin
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+      hosts:
+        - argo-cd.nicklasfrahm.xyz
+      tls:
+        secretName: argocd-tls
+        hosts:
+          - argo-cd.nicklasfrahm.xyz
