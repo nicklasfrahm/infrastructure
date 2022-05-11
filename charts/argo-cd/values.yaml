@@ -1,6 +1,29 @@
 argo-cd:
   dex:
-    enabled: false
+    enabled: true
   server:
     extraArgs:
       - --insecure
+    config:
+      url: https://argo-cd.nicklasfrahm.xyz
+      dex.config: |
+        connectors:
+          - type: github
+            id: github
+            name: GitHub
+            config:
+              clientID: $github-oauth:github.clientID
+              clientSecret: $github-oauth:github.clientSecret
+              orgs:
+                - name: nicklasfrahm-xyz
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+      ingressClassName: traefik
+      hosts:
+        - argo-cd.nicklasfrahm.xyz
+      tls:
+        - secretName: argocd-tls
+          hosts:
+            - argo-cd.nicklasfrahm.xyz
