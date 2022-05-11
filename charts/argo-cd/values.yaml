@@ -16,9 +16,8 @@ argo-cd:
               clientSecret: $github-oauth:dex.github.clientSecret
               orgs:
                 - name: nicklasfrahm-xyz
-      policy.default: role.readonly
-      policy.csv: |
-        g, nicklas.frahm@gmail.com, role:admin
+      policy.default: role:admin
+      admin.enabled: "false"
     ingress:
       enabled: true
       ingressClassName: traefik-tph99
