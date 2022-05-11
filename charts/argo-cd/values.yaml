@@ -63,7 +63,7 @@ argo-cd:
         g, role:admin, role:readonly
         g, nicklasfrahm-xyz, role:admin
         g, nicklasfrahm, role:admin
-      admin.enabled: "false"
+      #admin.enabled: "false"
     ingress:
       enabled: true
       ingressClassName: traefik-tph99
