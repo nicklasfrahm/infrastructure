@@ -1,7 +1,7 @@
 apiVersion: v2
 name: argo-cd
 description: An umbrella chart to configure Argo CD.
-version: 1.0.0
+version: 1.0.1
 dependencies:
   - name: argo-cd
     version: 4
