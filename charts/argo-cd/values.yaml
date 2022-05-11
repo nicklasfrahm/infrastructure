@@ -15,7 +15,7 @@ argo-cd:
               clientID: 1435c46d92d31759da03
               clientSecret: $github-oauth:dex.github.clientSecret
               orgs:
-                - name: nicklasfrahm-xyzs
+                - name: nicklasfrahm-xyz
               teamNameField: slug
       policy.default: role:readonly
       policy.csv: |
