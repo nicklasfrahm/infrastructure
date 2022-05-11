@@ -27,6 +27,6 @@ argo-cd:
       hosts:
         - argo-cd.nicklasfrahm.xyz
       tls:
-        secretName: argocd-tls
-        hosts:
-          - argo-cd.nicklasfrahm.xyz
+        - secretName: argocd-tls
+          hosts:
+            - argo-cd.nicklasfrahm.xyz
