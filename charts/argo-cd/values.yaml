@@ -18,7 +18,7 @@ argo-cd:
                 - name: nicklasfrahm-xyz
       policy.default: role.readonly
       policy.csv: |
-        g, nicklasfrahm-xyz, role:admin
+        g, nicklas.frahm@gmail.com, role:admin
     ingress:
       enabled: true
       ingressClassName: traefik-tph99
