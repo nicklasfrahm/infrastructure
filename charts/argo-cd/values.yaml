@@ -12,8 +12,8 @@ argo-cd:
             id: github
             name: GitHub
             config:
-              clientID: $github-oauth:github.clientID
-              clientSecret: $github-oauth:github.clientSecret
+              clientID: 1435c46d92d31759da03
+              clientSecret: $github-oauth:dex.github.clientSecret
               orgs:
                 - name: nicklasfrahm-xyz
     ingress:
