@@ -4,5 +4,3 @@ argo-cd:
   server:
     extraArgs:
       - --insecure
-  applicationSet:
-    enabled: true
