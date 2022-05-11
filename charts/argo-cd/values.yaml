@@ -16,14 +16,6 @@ argo-cd:
               clientSecret: $github-oauth:dex.github.clientSecret
               orgs:
                 - name: nicklasfrahm-xyz
-    ingress:
-      enabled: true
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-production
-      ingressClassName: traefik-tph99
-      hosts:
-        - argo-cd.nicklasfrahm.xyz
-      tls:
-        - secretName: argocd-tls
-          hosts:
-            - argo-cd.nicklasfrahm.xyz
+      policy.default: role.readonly
+      policy.csv: |
+        g, nicklasfrahm-xyz, role:admin
