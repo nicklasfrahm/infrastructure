@@ -14,7 +14,7 @@ spec:
       name: traefik
     spec:
       destination:
-        server: "{{server}}" # 'server' field of the secret
+        server: '{{server}}' # 'server' field of the secret
         namespace: traefik
       project: default
       source:
