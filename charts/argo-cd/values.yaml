@@ -1,6 +1,8 @@
 argo-cd:
   dex:
     enabled: true
+  clusterAdminAccess:
+    enabled: false
   server:
     secret:
       createSecret: false
