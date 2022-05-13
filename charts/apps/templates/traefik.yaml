@@ -14,7 +14,7 @@ spec:
       name: traefik
     spec:
       destination:
-        server: "{{ printf '{{server}}' }}"
+        server: "{{ printf '{{server}}' | quote }}"
         namespace: traefik
       project: default
       source:
