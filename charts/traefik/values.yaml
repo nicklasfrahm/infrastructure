@@ -37,3 +37,11 @@ traefik:
         options: ""
         certResolver: ""
         domains: []
+
+    kubernetes:
+      ingressEndpoint:
+        useDefaultPublishedService: true
+    providers:
+      kubernetesIngress:
+        publishedService:
+          enabled: true
