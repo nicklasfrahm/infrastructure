@@ -38,10 +38,7 @@ traefik:
         certResolver: ""
         domains: []
 
-    kubernetes:
-      ingressEndpoint:
-        useDefaultPublishedService: true
-    providers:
-      kubernetesIngress:
-        publishedService:
-          enabled: true
+  providers:
+    kubernetesIngress:
+      publishedService:
+        enabled: true
