@@ -7,7 +7,7 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    server: https://kubernetes.default.svc
+    server: https://tph99.nicklasfrahm.xyz:6443
     namespace: cert-manager
   project: default
   source:
