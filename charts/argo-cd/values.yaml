@@ -4,9 +4,10 @@ argo-cd:
   controller:
     clusterAdminAccess:
       enabled: false
-  server:
+  configs:
     secret:
       createSecret: false
+  server:
     extraArgs:
       - --insecure
     config:
