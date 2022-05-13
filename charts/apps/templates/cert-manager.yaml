@@ -1,4 +1,5 @@
 {{- range .Values.clusters }}
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,7 +8,7 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    server: https://tph99.nicklasfrahm.xyz:6443
+    server: https://{{ .name }}.nicklasfrahm.xyz:6443
     namespace: cert-manager
   project: default
   source:
