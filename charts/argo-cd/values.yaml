@@ -2,6 +2,8 @@ argo-cd:
   dex:
     enabled: true
   server:
+    secret:
+      createSecret: false
     extraArgs:
       - --insecure
     config:
