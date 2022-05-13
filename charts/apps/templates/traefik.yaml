@@ -1,23 +1,29 @@
-{{- range .Values.clusters }}
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: traefik-{{ .name }}
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  name: traefik
 spec:
-  destination:
-    server: https://tph99.nicklasfrahm.xyz:6443
-    namespace: traefik
-  project: default
-  source:
-    path: charts/traefik
-    repoURL: https://github.com/nicklasfrahm/infrastructure.git
-    targetRevision: HEAD
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-{{- end }}
+  generators:
+    - clusters:
+        # Only target remote clusters.
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: cluster
+  template:
+    metadata:
+      name: traefik
+    spec:
+      destination:
+        server: "{{server}}" # 'server' field of the secret
+        namespace: traefik
+      project: default
+      source:
+        path: charts/traefik
+        repoURL: https://github.com/nicklasfrahm/infrastructure.git
+        targetRevision: HEAD
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
