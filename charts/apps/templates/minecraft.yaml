@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minecraft
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://tph99.nicklasfrahm.xyz:6443
+    namespace: minecraft
+  project: default
+  source:
+    path: charts/minecraft
+    repoURL: https://github.com/nicklasfrahm/infrastructure.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
