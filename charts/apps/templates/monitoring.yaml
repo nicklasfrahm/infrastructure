@@ -1,0 +1,75 @@
+{{- range .Values.clusters }}
+{{- if eq .name "tph99" }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-{{ .name }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://{{ .name }}.nicklasfrahm.xyz:6443
+    namespace: monitoring
+  project: default
+  source:
+    path: charts/monitoring
+    repoURL: https://github.com/nicklasfrahm/infrastructure.git
+    targetRevision: HEAD
+    helm:
+      values: |
+        kube-prometheus-stack:
+          grafana:
+            enabled: true
+            grafana.ini:
+              paths:
+                data: /var/lib/grafana/
+                logs: /var/log/grafana
+                plugins: /var/lib/grafana/plugins
+                provisioning: /etc/grafana/provisioning
+              analytics:
+                check_for_updates: true
+              log:
+                mode: console
+              grafana_net:
+                url: https://grafana.net
+              server:
+                root_url: https://grafana.nicklasfrahm.xyz
+              # Please refer to the link below to identify how to configure GitHub authentication.
+              # https://grafana.com/docs/grafana/latest/auth/github/#enable-github-in-grafana
+              auth.github:
+                enabled: true
+                allow_sign_up: true
+                scopes: user:email,read:org
+                auth_url: https://github.com/login/oauth/authorize
+                token_url: https://github.com/login/oauth/access_token
+                api_url: https://api.github.com/user
+                team_ids: 6061956
+                allowed_organizations: nicklasfrahm-xyz
+                client_id: f58cca48dc48c367f93f
+                client_secret: $__file{/etc/secrets/github-oauth/client-secret}
+            extraSecretMounts:
+              - name: github-oauth
+                secretName: github-oauth
+                defaultMode: 0440
+                mountPath: /etc/secrets/github-oauth
+                readOnly: true
+            ingress:
+              enabled: true
+              ingressClassName: traefik-{{ .name }}
+              annotations:
+                cert-manager.io/cluster-issuer: letsencrypt-production
+              hosts:
+                - grafana.nicklasfrahm.xyz
+              tls:
+                - secretName: grafana-tls
+                  hosts:
+                  - grafana.nicklasfrahm.xyz
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+{{- end }}
