@@ -49,7 +49,7 @@ spec:
                 client_secret: $__file{/etc/secrets/github-oauth/client-secret}
               auth:
                 disable_login_form: true
-                oauth_auto_login = true
+                oauth_auto_login: true
               auth.basic:
                 enabled: false
               auth.anonymous:
