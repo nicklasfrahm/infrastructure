@@ -1,5 +1,5 @@
 {{- range .Values.clusters }}
-{{- if eq .name "test" }}
+{{- if eq .name "tph99" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
