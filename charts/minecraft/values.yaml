@@ -47,7 +47,7 @@ minecraft:
     # One of: peaceful, easy, normal, and hard
     difficulty: normal
     # A comma-separated list of player names to whitelist.
-    whitelist: AnnSolo,Vegetablerian,Zitronaut,dramxo
+    whitelist: AnnSol007,AnnSolo,Vegetablerian,Zitronaut,dramxo
     # A comma-separated list of player names who should be admins.
     ops: Vegetablerian
     # A server icon URL for server listings. Auto-scaled and transcoded.
