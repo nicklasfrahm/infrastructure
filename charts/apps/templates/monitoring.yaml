@@ -22,11 +22,6 @@ spec:
           grafana:
             enabled: true
             grafana.ini:
-              paths:
-                data: /var/lib/grafana/
-                logs: /var/log/grafana
-                plugins: /var/lib/grafana/plugins
-                provisioning: /etc/grafana/provisioning
               analytics:
                 check_for_updates: true
               log:
@@ -47,13 +42,14 @@ spec:
                 allowed_organizations: nicklasfrahm-xyz
                 client_id: f58cca48dc48c367f93f
                 client_secret: $__file{/etc/secrets/github-oauth/client-secret}
-              auth:
-                disable_login_form: true
-                oauth_auto_login: true
-              auth.basic:
-                enabled: false
-              auth.anonymous:
-                enabled: false
+              # TODO: Grant myself access and then add these again.
+              # auth:
+              #   disable_login_form: true
+              #   oauth_auto_login: true
+              # auth.basic:
+              #   enabled: false
+              # auth.anonymous:
+              #   enabled: false
             extraSecretMounts:
               - name: github-oauth
                 secretName: github-oauth
