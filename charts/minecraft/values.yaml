@@ -9,10 +9,10 @@ minecraft:
   resources:
     requests:
       memory: 2560Mi
-      cpu: 1000m
+      cpu: 2000m
     limits:
       memory: 2560Mi
-      cpu: 1000m
+      cpu: 2000m
 
   securityContext:
     # Security context settings
