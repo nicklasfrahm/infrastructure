@@ -7,12 +7,12 @@ minecraft:
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ##
   resources:
-    limits:
-      memory: 2560Mi
-      cpu: 2000m
     requests:
       memory: 2560Mi
-      cpu: 2000m
+      cpu: 1000m
+    limits:
+      memory: 2560Mi
+      cpu: 1000m
 
   securityContext:
     # Security context settings
