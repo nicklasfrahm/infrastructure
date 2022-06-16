@@ -24,6 +24,14 @@ nodes:
     config:
       node-ip: 192.168.253.254
       node-external-ip: 212.112.144.171
+  - role: agent
+    ssh:
+      host: 192.168.254.230
+      fingerprint: SHA256:GnIesLNIAwgJJX9s3M26mmkXlM90DJ0LS1ZyIoCa5V0
+      user: nicklasfrahm
+      key-file: ~/.ssh/id_ed25519
+    config:
+      node-ip: 192.168.254.230
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
