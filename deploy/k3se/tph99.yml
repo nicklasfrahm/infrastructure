@@ -6,40 +6,45 @@ version: stable
 # to all nodes in the cluster. All options are equivalent to the
 # commmand line options of the `k3s` command.
 cluster:
-  # It is highly recommended to always specify this option as it
-  # is used to determine the server URL of the cluster.
-  tls-san:
-    - tph99.nicklasfrahm.xyz
-  disable:
-    - traefik
+  server:
+    # It is highly recommended to always specify this option as it
+    # is used to determine the server URL of the cluster.
+    tls-san:
+      - tph99.nicklasfrahm.xyz
+    disable:
+      - traefik
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
   - role: server
     ssh:
-      host: 192.168.253.254
+      host: 192.168.254.254
       fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
-    config:
-      node-ip: 192.168.253.254
-      node-external-ip: 212.112.144.171
+    server:
+      node-ip:
+        - 192.168.254.254
+      node-external-ip:
+        - 212.112.144.171
   - role: agent
     ssh:
       host: 192.168.254.230
       fingerprint: SHA256:GnIesLNIAwgJJX9s3M26mmkXlM90DJ0LS1ZyIoCa5V0
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
-    config:
-      node-ip: 192.168.254.230
+    agent:
+      node-ip:
+        - 192.168.254.230
   - role: agent
     ssh:
       host: 192.168.254.231
       fingerprint: SHA256:OkCD98O5RdzBYc8BIdSpPQkTeNTtYuaEGODThqi/4sk
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
-    config:
-      node-ip: 192.168.254.231
+    agent:
+      node-ip:
+        - 192.168.254.231
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
