@@ -13,43 +13,45 @@ cluster:
       - tph99.nicklasfrahm.xyz
     disable:
       - traefik
+      - servicelb
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
+  # hpc-z400w-0
   - role: server
     ssh:
-      host: 192.168.254.254
-      fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
+      host: 192.168.254.241
+      fingerprint: SHA256:GnIesLNIAwgJJX9s3M26mmkXlM90DJ0LS1ZyIoCa5V0
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
     server:
       node-ip:
-        - 192.168.254.254
-      node-external-ip:
-        - 212.112.144.171
-  - role: agent
+        - 192.168.254.241
+  # hpc-z400w-1
+  - role: server
     ssh:
-      host: 192.168.254.230
-      fingerprint: SHA256:GnIesLNIAwgJJX9s3M26mmkXlM90DJ0LS1ZyIoCa5V0
-      user: nicklasfrahm
-      key-file: ~/.ssh/id_ed25519
-    agent:
-      node-ip:
-        - 192.168.254.230
-  - role: agent
-    ssh:
-      host: 192.168.254.231
+      host: 192.168.254.242
       fingerprint: SHA256:OkCD98O5RdzBYc8BIdSpPQkTeNTtYuaEGODThqi/4sk
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
     agent:
       node-ip:
-        - 192.168.254.231
+        - 192.168.254.242
+  # workhorse-0
+  - role: server
+    ssh:
+      host: 192.168.254.243
+      fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
+      user: nicklasfrahm
+      key-file: ~/.ssh/id_ed25519
+    agent:
+      node-ip:
+        - 192.168.254.243
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
 ssh-proxy:
   host: tph99.nicklasfrahm.xyz
-  fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
+  fingerprint: SHA256:F2RZFjxyQuDQqdnv8nIC85oJru6//C9bQGwqgDE1n4w
   user: nicklasfrahm
   key-file: ~/.ssh/id_ed25519
