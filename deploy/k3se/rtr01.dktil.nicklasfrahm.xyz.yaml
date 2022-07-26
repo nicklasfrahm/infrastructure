@@ -13,6 +13,8 @@ cluster:
       - rtr01.dktil.nicklasfrahm.xyz
     disable:
       - traefik
+    snapshotter: native
+    flannel-iface: eth0
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
@@ -22,10 +24,6 @@ nodes:
       fingerprint: SHA256:YtaRBa/7wh4xENfF6+7JXoI6liCukw1BdzXSHIQf4fg
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
-    server:
-      node-ip:
-        - 172.16.0.254
-      snapshotter: native
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
