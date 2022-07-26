@@ -16,12 +16,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        site:
-          - tph99
-          - plk42
-          - bl8
+        environment:
+          - rtr01.dktil.nicklasfrahm.xyz
     environment:
-      name: ${{ matrix.site }}
+      name: ${{ matrix.environment }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
@@ -36,12 +34,12 @@ jobs:
       - name: Deploy k3s
         uses: nicklasfrahm/k3se@main
         with:
-          command: up deploy/k3se/${{ matrix.site }}.yml
+          command: up deploy/k3se/${{ matrix.environment }}.yml
 
       - name: Create secret for kubeconfig
         run: |
           echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | gh auth login --with-token
-          gh secret set KUBECONFIG -r ${{ github.repository }} -e ${{ matrix.site }} < ~/.kube/config
+          gh secret set KUBECONFIG -r ${{ github.repository }} -e ${{ matrix.environment }} < ~/.kube/config
 
       - name: Uninstall private key
         run: rm ~/.ssh/id_ed25519

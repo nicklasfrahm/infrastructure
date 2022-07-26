@@ -10,48 +10,27 @@ cluster:
     # It is highly recommended to always specify this option as it
     # is used to determine the server URL of the cluster.
     tls-san:
-      - tph99.nicklasfrahm.xyz
+      - rtr01.dktil.nicklasfrahm.xyz
     disable:
       - traefik
-      - servicelb
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
-  # hpc-z400w-0
   - role: server
     ssh:
-      host: 192.168.254.241
-      fingerprint: SHA256:GnIesLNIAwgJJX9s3M26mmkXlM90DJ0LS1ZyIoCa5V0
+      host: 172.16.0.254
+      fingerprint: SHA256:YtaRBa/7wh4xENfF6+7JXoI6liCukw1BdzXSHIQf4fg
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
     server:
       node-ip:
-        - 192.168.254.241
-  # hpc-z400w-1
-  - role: server
-    ssh:
-      host: 192.168.254.242
-      fingerprint: SHA256:OkCD98O5RdzBYc8BIdSpPQkTeNTtYuaEGODThqi/4sk
-      user: nicklasfrahm
-      key-file: ~/.ssh/id_ed25519
-    agent:
-      node-ip:
-        - 192.168.254.242
-  # workhorse-0
-  - role: server
-    ssh:
-      host: 192.168.254.243
-      fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
-      user: nicklasfrahm
-      key-file: ~/.ssh/id_ed25519
-    agent:
-      node-ip:
-        - 192.168.254.243
+        - 172.16.0.254
+      snapshotter: native
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
 ssh-proxy:
-  host: tph99.nicklasfrahm.xyz
-  fingerprint: SHA256:F2RZFjxyQuDQqdnv8nIC85oJru6//C9bQGwqgDE1n4w
+  host: rtr01.dktil.nicklasfrahm.xyz
+  fingerprint: SHA256:YtaRBa/7wh4xENfF6+7JXoI6liCukw1BdzXSHIQf4fg
   user: nicklasfrahm
   key-file: ~/.ssh/id_ed25519
