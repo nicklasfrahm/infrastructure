@@ -77,7 +77,7 @@ jobs:
         run: |
           kubectl create ns traefik || true
           helm dep update deploy/helm/traefik
-          helm upgrade -i -n traefik deploy/helm/traefik
+          helm upgrade -i -n traefik traefik deploy/helm/traefik
 
   cert-manager:
     name: Certificate manager
@@ -112,5 +112,5 @@ jobs:
         run: |
           kubectl create namespace cert-manager || true
           helm dep update deploy/helm/cert-manager
-          helm upgrade -i -n cert-manager deploy/helm/cert-manager
+          helm upgrade -i -n cert-manager cert-manager deploy/helm/cert-manager
           kubectl apply -f deploy/kubectl/cert-manager.yaml
