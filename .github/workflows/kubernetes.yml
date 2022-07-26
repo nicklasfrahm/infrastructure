@@ -75,7 +75,7 @@ jobs:
 
       - name: Install traefik
         run: |
-          kubectl create ns traefik || true
+          kubectl create ns traefik --dry-run=client -o=yaml | kubectl apply -f -
           helm dep update deploy/helm/traefik
           helm upgrade -i -n traefik traefik deploy/helm/traefik
 
@@ -84,7 +84,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs:
-      - cluster
+      - traefik
     strategy:
       fail-fast: false
       matrix:
@@ -110,7 +110,7 @@ jobs:
 
       - name: Install cert-manager
         run: |
-          kubectl create namespace cert-manager || true
+          kubectl create ns cert-manager --dry-run=client -o=yaml | kubectl apply -f -
           helm dep update deploy/helm/cert-manager
           helm upgrade -i -n cert-manager cert-manager deploy/helm/cert-manager
           kubectl apply -f deploy/kubectl/cert-manager.yaml
