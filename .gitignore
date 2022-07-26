@@ -3,3 +3,4 @@ credentials*.json
 
 # Ignore files related to Helm.
 charts/**/charts
+deploy/**/charts

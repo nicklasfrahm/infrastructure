@@ -11,9 +11,6 @@ traefik:
     requests:
       cpu: 250m
       memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
 
   ports:
     traefik:
@@ -34,9 +31,6 @@ traefik:
       protocol: TCP
       tls:
         enabled: yes
-        options: ""
-        certResolver: ""
-        domains: []
 
   providers:
     kubernetesIngress:
