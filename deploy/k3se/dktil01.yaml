@@ -14,6 +14,7 @@ cluster:
     disable:
       - traefik
     snapshotter: native
+    flannel-iface: eth0
     cluster-cidr:
       - 10.254.0.0/16
     service-cidr:
