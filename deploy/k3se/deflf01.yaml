@@ -10,7 +10,7 @@ cluster:
     # It is highly recommended to always specify this option as it
     # is used to determine the server URL of the cluster.
     tls-san:
-      - dktil01.nicklasfrahm.xyz
+      - deflf01.nicklasfrahm.xyz
     disable:
       - traefik
     snapshotter: native
@@ -26,14 +26,14 @@ cluster:
 nodes:
   - role: server
     ssh:
-      host: 172.16.0.254
-      fingerprint: SHA256:g6n75j5ZwvNGVaaQlPVotH0PRoKnIx/Iaz3DGpj6ETQ
+      host: 172.16.1.254
+      fingerprint: SHA256:spzDFMfWouRnCLwn3Ls1yufKkaI+TXXGisUnJSrBJ2U
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
 ssh-proxy:
-  host: dktil01.nicklasfrahm.xyz
+  host: deflf01.nicklasfrahm.xyz
   user: nicklasfrahm
   key-file: ~/.ssh/id_ed25519
