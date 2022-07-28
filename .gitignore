@@ -1,5 +1,8 @@
-bin/
+# Ingore Google Cloud credentials.
 credentials*.json
+
+# Ignore Terraform files.
+.terraform*
 
 # Ignore files related to Helm.
 charts/**/charts
