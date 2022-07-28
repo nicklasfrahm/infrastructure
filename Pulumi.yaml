@@ -1,3 +1,0 @@
-name: infrastructure
-runtime: go
-description: Manage my on-premise and cloud infrastructure.
