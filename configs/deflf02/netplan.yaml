@@ -1,0 +1,54 @@
+network:
+  version: 2
+  ethernets:
+    eth0:
+      # Spoof MAC address to avoid same IP on multiple sites.
+      match:
+        macaddress: ae:99:7d:fb:4f:13
+      macaddress: ae:99:7d:fb:4f:12
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      dhcp6: true
+      dhcp6-overrides:
+        use-dns: false
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 1.0.0.1
+        search:
+          - nicklasfrahm.xyz
+    eth1:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    eth2:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+  bridges:
+    br0:
+      interfaces:
+        - eth1
+        - eth2
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 172.16.2.254/24
+  vlans:
+    # Home network.
+    vlan0010:
+      id: 10
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.2.10.254/24
+      link: br0
+    # Lab network.
+    vlan0011:
+      id: 11
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.2.11.254/24
+      link: br0
