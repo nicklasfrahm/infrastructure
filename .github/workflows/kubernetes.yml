@@ -19,6 +19,7 @@ jobs:
         environment:
           - dktil01
           - deflf01
+          - deflf02
     environment:
       name: ${{ matrix.environment }}
     steps:
@@ -57,6 +58,7 @@ jobs:
         environment:
           - dktil01
           - deflf01
+          - deflf02
     environment:
       name: ${{ matrix.environment }}
     steps:
@@ -93,6 +95,7 @@ jobs:
         environment:
           - dktil01
           - deflf01
+          - deflf02
     environment:
       name: ${{ matrix.environment }}
     steps:
