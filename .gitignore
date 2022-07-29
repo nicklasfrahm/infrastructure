@@ -3,6 +3,7 @@ credentials*.json
 
 # Ignore Terraform files.
 .terraform*
+*.tfstate*
 
 # Ignore files related to Helm.
 charts/**/charts
