@@ -1,32 +1,30 @@
-data "google_compute_image" "ubuntu" {
-  project = "ubuntu-os-cloud"
-  family  = "ubuntu-2204-lts"
+variable "RUNNER_TOKEN" {
+  description = "The runner token to register the runner."
+  type        = string
+  sensitive   = true
 }
 
-resource "google_compute_instance" "github_actions_runner" {
-  name         = "github-actions-runner"
-  machine_type = "e2-micro"
+module "runner" {
+  source = "../modules/gce_github_actions_runner"
 
-  boot_disk {
-    initialize_params {
-      image = data.google_compute_image.ubuntu.self_link
-      size  = 25
-    }
+  runner = {
+    version = "2.294.0"
+    token   = var.RUNNER_TOKEN
   }
 
-  network_interface {
-    network = "default"
-
-    access_config {
-      # Provision an ephemeral IP address for the instance.
-    }
+  github = {
+    username   = "nicklasfrahm"
+    repository = "infrastructure"
   }
 
-  service_account {
-    email  = "compute@nicklasfrahm.iam.gserviceaccount.com"
-    scopes = ["cloud-platform"]
+  vm = {
+    hostname     = "echo"
+    fqdn         = "nicklasfrahm.xyz"
+    machine_type = "e2-micro"
   }
+}
 
-  # TODO: Install the GitHub Actions runner.
-  metadata_startup_script = "echo hi > /test.txt"
+output "ip" {
+  description = "The IP address of the runner's VM."
+  value       = module.runner.ip
 }
