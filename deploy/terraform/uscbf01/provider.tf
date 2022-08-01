@@ -1,6 +1,7 @@
 terraform {
-  backend "local" {
-    path = "./.terraform/uscbf01.tfstate"
+  backend "gcs" {
+    bucket = "nicklasfrahm"
+    prefix = "terraform/state"
   }
 }
 

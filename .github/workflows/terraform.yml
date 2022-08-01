@@ -1,0 +1,60 @@
+name: Terraform
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/terraform.yml
+      - deploy/terraform/**
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  runner:
+    name: Runner
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - uscbf01
+    environment:
+      name: ${{ matrix.environment }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.6
+
+      - name: Configure credentials
+        run: |
+          echo "${{ secrets.GCP_CREDENTIALS }}" > credentials.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=credentials.json" >> $GITHUB_ENV
+          echo "TF_VAR_RUNNER_TOKEN=${{ secrets.RUNNER_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Initialize backend
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} init
+
+      - name: Select workspace
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} workspace select ${{ matrix.environment }}
+
+      - name: Validate configuration
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} validate
+
+      - name: Validate Terraform formatting
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} fmt -check
+
+      - name: Create execution plan
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} plan -out=${{ matrix.environment }}.tfplan
+
+      - name: Run execution plan
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} apply ${{ matrix.environment }}.tfplan
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
