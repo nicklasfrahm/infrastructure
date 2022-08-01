@@ -36,8 +36,8 @@ jobs:
 
       - name: Configure credentials
         run: |
-          echo "${{ secrets.GCP_CREDENTIALS }}" > credentials.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=credentials.json" >> $GITHUB_ENV
+          echo '${{ secrets.GCP_CREDENTIALS }}' > credentials.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=../../../credentials.json" >> $GITHUB_ENV
           echo "TF_VAR_RUNNER_TOKEN=${{ secrets.RUNNER_TOKEN }}" >> $GITHUB_ENV
 
       - name: Initialize backend
