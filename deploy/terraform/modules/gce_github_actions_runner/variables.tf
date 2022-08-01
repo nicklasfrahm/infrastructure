@@ -29,6 +29,8 @@ variable "runner" {
 
   type = object({
     version = string
-    token   = string
+    # This is not a runner registration token, but a personal access token with
+    # the `repo` scope, because the runner registration token is too short lived.
+    token = string
   })
 }

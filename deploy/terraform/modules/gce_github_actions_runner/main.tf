@@ -16,8 +16,6 @@ resource "google_compute_instance" "runner" {
   name         = var.vm.hostname
   machine_type = "e2-micro"
 
-  # desc
-
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu.self_link
@@ -44,6 +42,9 @@ hostname: ${var.vm.hostname}
 fqdn: ${var.vm.hostname}.${var.vm.fqdn}
 prefer_fqdn_over_hostname: true
 
+packages:
+  - jq
+
 runcmd:
   - |
     #!/bin/bash
@@ -57,8 +58,10 @@ runcmd:
     # Extract the installer.
     tar xzf ./actions-runner-linux-x64-${var.runner.version}.tar.gz
 
+    REGISTRATION_TOKEN=$(curl -s -XPOST -H "Authorization: token ${var.runner.token}" https://api.github.com/repos/${var.github.username}/${var.github.repository}/actions/runners/registration-token | jq -r .token)
+
     # Configure the runner and start the configuration experience.
-    RUNNER_ALLOW_RUNASROOT=1 ./config.sh --url https://github.com/${var.github.username}/${var.github.repository} --token ${var.runner.token} --unattended --ephemeral
+    RUNNER_ALLOW_RUNASROOT=1 ./config.sh --url https://github.com/${var.github.username}/${var.github.repository} --token $REGISTRATION_TOKEN --unattended --ephemeral
 
     # Install the runner as a systemd service.
     RUNNER_ALLOW_RUNASROOT=1 ./svc.sh install

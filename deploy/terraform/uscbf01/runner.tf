@@ -1,5 +1,5 @@
-variable "RUNNER_TOKEN" {
-  description = "The runner token to register the runner."
+variable "PERSONAL_ACCESS_TOKEN" {
+  description = "A personal access token with the `repo` scope."
   type        = string
   sensitive   = true
 }
@@ -9,7 +9,7 @@ module "runner" {
 
   runner = {
     version = "2.294.0"
-    token   = var.RUNNER_TOKEN
+    token   = var.PERSONAL_ACCESS_TOKEN
   }
 
   github = {
