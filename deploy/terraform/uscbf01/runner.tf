@@ -18,7 +18,7 @@ module "runner" {
   }
 
   vm = {
-    hostname     = "echo"
+    hostname     = "delta"
     fqdn         = "nicklasfrahm.xyz"
     machine_type = "e2-micro"
   }
