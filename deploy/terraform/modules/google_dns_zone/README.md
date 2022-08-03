@@ -5,7 +5,7 @@ This module creates a Google Cloud DNS zone. It enforces a very strict DNSSEC se
 ## Usage
 
 ```hcl
-module "example_com" {
+module "google_dns_zone_example_com" {
   source = "../modules/google_dns_zone"
 
   # This name must not end with a dot.

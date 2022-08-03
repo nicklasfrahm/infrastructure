@@ -5,7 +5,7 @@ This module configures a domain on Google Cloud DNS to point to a GitHub Pages s
 ## Usage
 
 ```hcl
-module "example_com_github_pages" {
+module "google_dns_github_pages_example_com" {
   source = "../modules/google_dns_github_pages"
 
   organization = "example"
