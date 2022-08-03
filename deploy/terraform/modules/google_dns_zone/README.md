@@ -6,16 +6,16 @@ This module creates a Google Cloud DNS zone. It enforces a very strict DNSSEC se
 
 ```hcl
 module "example_com" {
-  source = "../google_dns_zone"
+  source = "../modules/google_dns_zone"
 
   # This name must not end with a dot.
-  name        = "example.com"
+  domain      = "example.com"
   description = "Example DNS zone"
 }
 ```
 
 ## Outputs
 
-| Name | Description             |
-| ---- | ----------------------- |
-| `id` | The ID of the DNS zone. |
+| Name   | Description               |
+| ------ | ------------------------- |
+| `name` | The name of the DNS zone. |

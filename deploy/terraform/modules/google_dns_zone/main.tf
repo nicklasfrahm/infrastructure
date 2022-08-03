@@ -3,7 +3,7 @@ variable "domain" {
   type        = string
 
   validation {
-    condition     = substr(var.domain, -1, -1) != "."
+    condition     = substr(var.domain, -1, -1) == "."
     error_message = "The domain name must not end with a dot."
   }
 }
@@ -14,13 +14,19 @@ variable "description" {
 }
 
 resource "google_dns_managed_zone" "default" {
-  name        = replace(var.domain, ".", "-")
-  dns_name    = "${var.domain}."
+  name        = replace(substr(var.domain, 0, length(var.domain) - 1), ".", "-")
+  dns_name    = var.domain
   description = var.description
 
   dnssec_config {
     state         = "on"
     non_existence = "nsec3"
+
+    default_key_specs {
+      algorithm  = "ecdsap384sha384"
+      key_type   = "zoneSigning"
+      key_length = 384
+    }
 
     default_key_specs {
       algorithm  = "ecdsap384sha384"
@@ -30,7 +36,7 @@ resource "google_dns_managed_zone" "default" {
   }
 }
 
-output "id" {
-  description = "The ID of the DNS zone."
-  value       = google_dns_managed_zone.default.id
+output "name" {
+  description = "The name of the DNS zone."
+  value       = google_dns_managed_zone.default.name
 }
