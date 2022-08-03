@@ -3,7 +3,7 @@ name: Terraform
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "45 5 * * *"
   push:
     branches:
       - main
