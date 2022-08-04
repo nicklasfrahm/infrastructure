@@ -1,0 +1,4 @@
+apiVersion: v2
+name: root
+description: An app of apps for the site deflf01.
+version: 1.0.0
