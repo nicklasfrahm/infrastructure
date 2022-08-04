@@ -1,0 +1,41 @@
+dex:
+  enabled: true
+controller:
+  clusterAdminAccess:
+    enabled: false
+configs:
+  secret:
+    createSecret: false
+server:
+  extraArgs:
+    - --insecure
+  config:
+    url: "https://gitops.${INGRESS_DOMAIN}"
+    dex.config: |
+      connectors:
+        - type: github
+          id: github
+          name: GitHub
+          config:
+            clientID: ${OAUTH_CLIENT_ID}
+            clientSecret: ${OAUTH_CLIENT_SECRET}
+            orgs:
+              - name: nicklasfrahm-xyz
+            teamNameField: slug
+    admin.enabled: "true"
+  rbacConfig:
+    policy.default: role:readonly
+    policy.csv: |
+      g, nicklasfrahm-xyz:argonauts, role:admin
+    scopes: "[groups, email]"
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    hosts:
+      - "gitops.${INGRESS_DOMAIN}"
+    tls:
+      - secretName: argocd-tls
+        hosts:
+          - "gitops.${INGRESS_DOMAIN}"

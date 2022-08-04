@@ -51,8 +51,8 @@ jobs:
       - name: Uninstall private key
         run: rm ~/.ssh/id_ed25519
 
-  traefik:
-    name: Ingress controller
+  gitops:
+    name: GitOps
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs:
@@ -82,46 +82,19 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Install traefik
+      - name: Configure OAuth credentials
         run: |
-          kubectl create ns traefik --dry-run=client -o=yaml | kubectl apply -f -
-          helm dep update deploy/helm/traefik
-          helm upgrade -i -n traefik traefik deploy/helm/traefik
+          echo "OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "INGRESS_DOMAIN=${{ matrix.environment }}.nicklasfrahm.dev" >> $GITHUB_ENV
 
-  cert-manager:
-    name: Certificate manager
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    needs:
-      - traefik
-    strategy:
-      fail-fast: false
-      matrix:
-        environment:
-          - dktil01
-          - deflf01
-          - deflf02
-    environment:
-      name: ${{ matrix.environment }}
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v1
-
-      - name: Install helm
-        uses: azure/setup-helm@v1
-
-      - name: Set up kubeconfig
+      - name: Install Argo CD
         run: |
-          mkdir -m 700 -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-      - name: Install cert-manager
-        run: |
-          kubectl create ns cert-manager --dry-run=client -o=yaml | kubectl apply -f -
-          helm dep update deploy/helm/cert-manager
-          helm upgrade -i -n cert-manager cert-manager deploy/helm/cert-manager
-          kubectl apply -f deploy/kubectl/cert-manager.yaml
+          kubectl create ns argocd --dry-run=client -o=yaml | kubectl apply -f -
+          helm repo add argocd https://argoproj.github.io/argo-helm
+          envsubst < deploy/helm/argocd.yaml | \
+            helm upgrade argocd argocd/argo-cd \
+              --install \
+              --atomic \
+              --namespace argocd \
+              --values -
