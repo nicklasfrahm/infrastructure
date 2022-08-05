@@ -96,5 +96,6 @@ jobs:
             helm upgrade argocd argocd/argo-cd \
               --install \
               --atomic \
+              --timeout 15m \
               --namespace argocd \
               --values -
