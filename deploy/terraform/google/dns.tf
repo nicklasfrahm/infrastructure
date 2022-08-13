@@ -18,7 +18,7 @@ module "google_dns_site_dktil01" {
 
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "dktil01"
-  router   = "alfa.nicklasfrahm.xyz."
+  router   = "delta.nicklasfrahm.xyz."
 }
 
 module "google_dns_site_deflf01" {
