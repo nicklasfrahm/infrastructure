@@ -13,7 +13,7 @@ You will need the following things to install the server:
 - [Ubuntu server ISO][website-ubuntu-server]
 - 4 GB USB stick
 
-If you are using Windows, you may use a tool, such as [rufus][website-rufus] to create to create an installation medium. On Linux you may use `dd` via the following command.
+If you are using Windows, you may use a tool, such as [balenaEtcher][website-balena-etcher] to create to create an installation medium. On Linux you may use `dd` via the following command.
 
 ```bash
 sudo dd if=ubuntu.iso of=/dev/sdb bs=1M status=progress
@@ -32,7 +32,7 @@ When configuring the partitions, make sure to select the **Custom** option. Sele
 | Partition | Mount point | Size  | Type    |
 | --------- | ----------- | ----- | ------- |
 | `sdX1`    | `/boot/efi` | `1G`  | `fat32` |
-| `sdX2`    | `n/a`       | `1G`  | `n/a`   |
+| `sdX2`    | `/boot`     | `1G`  | `ext4`  |
 | `sdX3`    | `n/a`       | `max` | `n/a`   |
 
 If you have multiple drives of the same size for the **operating system**, create two software RAID arrays, `md0` and `md1` and use `md0` with an `ext4` filesystem for `/boot`. If you did not create `md0` use `sdX2` directly.
@@ -53,10 +53,6 @@ Uninstall `snapd` by running `sudo apt-get purge --autoremove snapd`.
 
 Disable any swap by running `sudo swapoff -a`. Further make this permanent by commenting out all lines in `/etc/fstab` that define a swap.
 
-## Cloud-init ☁️
-
-_To be defined._
-
 [website-ubuntu-server]: https://ubuntu.com/download/server
-[website-rufus]: https://rufus.ie
+[website-balena-etcher]: https://balena.io/etcher/
 [website-rook]: https://rook.io
