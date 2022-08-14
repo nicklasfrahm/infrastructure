@@ -1,5 +1,3 @@
-dex:
-  enabled: true
 server:
   extraArgs:
     - --insecure
@@ -33,3 +31,6 @@ server:
       - secretName: argocd-tls
         hosts:
           - "gitops.${INGRESS_DOMAIN}"
+
+notifications:
+  enabled: false
