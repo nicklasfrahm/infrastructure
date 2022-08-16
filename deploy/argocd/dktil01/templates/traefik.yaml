@@ -6,10 +6,10 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
+  project: default
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
-  project: default
   source:
     path: deploy/helm/traefik
     repoURL: https://github.com/nicklasfrahm/infrastructure.git
