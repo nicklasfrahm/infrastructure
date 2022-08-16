@@ -21,6 +21,14 @@ module "google_dns_site_dktil01" {
   router   = "alfa.nicklasfrahm.xyz."
 }
 
+module "google_dns_site_dksjb01" {
+  source = "../modules/google_dns_site"
+
+  zone     = module.google_dns_zone_nicklasfrahm_dev.name
+  location = "dksjb01"
+  router   = "foxtrot.nicklasfrahm.xyz."
+}
+
 module "google_dns_site_deflf01" {
   source = "../modules/google_dns_site"
 
@@ -35,12 +43,4 @@ module "google_dns_site_deflf02" {
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "deflf02"
   router   = "charlie.nicklasfrahm.xyz."
-}
-
-module "google_dns_site_uscbf01" {
-  source = "../modules/google_dns_site"
-
-  zone     = module.google_dns_zone_nicklasfrahm_dev.name
-  location = "uscbf01"
-  router   = "juliett.nicklasfrahm.xyz."
 }
