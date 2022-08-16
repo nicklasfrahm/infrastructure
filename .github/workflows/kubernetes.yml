@@ -9,8 +9,7 @@ on:
       - main
     paths:
       - .github/workflows/kubernetes.yml
-      - deploy/kubectl/**
-      - deploy/helm/**
+      - deploy/helm/argocd.yaml
       - deploy/k3se/**
 
 jobs:
