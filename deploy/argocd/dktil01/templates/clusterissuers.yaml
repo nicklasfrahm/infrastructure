@@ -11,4 +11,4 @@ spec:
   source:
     repoURL: https://github.com/nicklasfrahm/infrastructure.git
     targetRevision: HEAD
-    path: deploy/kubectl/clusterissuers.yaml
+    path: deploy/kubectl/clusterissuers
