@@ -27,6 +27,21 @@ data "http" "ssh_keys" {
   url = "https://github.com/${var.github_username}.keys"
 }
 
+resource "google_compute_firewall" "kubeapi" {
+  name    = "kubeapi"
+  network = "default"
+
+  source_ranges = ["0.0.0.0/0"]
+
+  allow {
+    ports    = ["80", "443", "6443"]
+    protocol = "tcp"
+  }
+
+  target_tags = ["kubeapi"]
+  priority    = 1000
+}
+
 resource "google_compute_instance" "vm" {
   name         = var.hostname
   machine_type = "e2-micro"
@@ -45,6 +60,8 @@ resource "google_compute_instance" "vm" {
       network_tier = google_compute_address.vm.network_tier
     }
   }
+
+  tags = google_compute_firewall.kubeapi.target_tags
 
   metadata = {
     "ssh-keys" = "${var.github_username}:${data.http.ssh_keys.response_body}"
