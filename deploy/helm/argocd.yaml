@@ -14,7 +14,7 @@ server:
             orgs:
               - name: nicklasfrahm-xyz
             teamNameField: slug
-    admin.enabled: "true"
+    admin.enabled: "false"
   rbacConfig:
     policy.default: role:readonly
     policy.csv: |
