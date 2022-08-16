@@ -1,0 +1,33 @@
+
+
+# kind: "Service"
+#   apiVersion: "v1"
+#   metadata:
+#     name: "external-mysql-service"
+#   spec:
+#     ports:
+#       -
+#         name: "mysql"
+#         protocol: "TCP"
+#         port: 3306
+#         targetPort: 3306
+#         nodePort: 0
+#   selector: {}
+# Optional: The port on the backing pods to which the service forwards connections.
+# The selector field to leave blank.
+# Next, create the required endpoints for the service. This gives the service proxy and router the location to send traffic directed to the service:
+
+
+#   kind: "Endpoints"
+#   apiVersion: "v1"
+#   metadata:
+#     name: "external-mysql-service"
+#   subsets:
+#     -
+#       addresses:
+#         -
+#           ip: "10.0.0.0"
+#       ports:
+#         -
+#           port: 3306
+#           name: "mysql"
