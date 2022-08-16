@@ -98,3 +98,8 @@ jobs:
               --atomic \
               --namespace argocd \
               --values -
+
+      - name: Install root app
+        run: |
+          helm template argocd deploy/argocd/${{ matrix.environment }} -n argocd | \
+            kubectl apply -f -
