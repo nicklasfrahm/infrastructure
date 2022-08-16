@@ -36,3 +36,11 @@ module "google_dns_site_deflf02" {
   location = "deflf02"
   router   = "charlie.nicklasfrahm.xyz."
 }
+
+module "google_dns_site_uscbf01" {
+  source = "../modules/google_dns_site"
+
+  zone     = module.google_dns_zone_nicklasfrahm_dev.name
+  location = "uscbf01"
+  router   = "juliett.nicklasfrahm.xyz."
+}
