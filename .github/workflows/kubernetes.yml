@@ -22,6 +22,7 @@ jobs:
       matrix:
         environment:
           - dktil01
+          - dksjb01
           - deflf01
           - deflf02
     environment:
@@ -61,6 +62,7 @@ jobs:
       matrix:
         environment:
           - dktil01
+          - dksjb01
           - deflf01
           - deflf02
     environment:
