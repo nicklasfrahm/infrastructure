@@ -29,6 +29,9 @@ nodes:
       fingerprint: SHA256:spzDFMfWouRnCLwn3Ls1yufKkaI+TXXGisUnJSrBJ2U
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
+    server:
+      node-label:
+        - svccontroller.k3s.cattle.io/enablelb=true
 
   - role: agent
     ssh:
