@@ -12,13 +12,13 @@ server:
             clientID: ${OAUTH_CLIENT_ID}
             clientSecret: ${OAUTH_CLIENT_SECRET}
             orgs:
-              - name: nicklasfrahm-xyz
+              - name: nicklasfrahm-dev
             teamNameField: slug
     admin.enabled: "false"
   rbacConfig:
     policy.default: role:readonly
     policy.csv: |
-      g, nicklasfrahm-xyz:argonauts, role:admin
+      g, nicklasfrahm-dev:argocd-admins, role:admin
     scopes: "[groups, email]"
   ingress:
     enabled: true
