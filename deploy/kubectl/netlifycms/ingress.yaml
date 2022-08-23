@@ -10,13 +10,13 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - api.nicklasfrahm.dev
-      secretName: api-nicklasfrahm-dev-tls
+        - netlifycms.nicklasfrahm.dev
+      secretName: netlifycms-nicklasfrahm-dev-tls
   rules:
-    - host: api.nicklasfrahm.dev
+    - host: netlifycms.nicklasfrahm.dev
       http:
         paths:
-          - path: /netlifycms-github-auth/
+          - path: /
             pathType: Prefix
             backend:
               service:
