@@ -47,7 +47,7 @@ module "google_dns_site_deflf02" {
 
 resource "google_dns_record_set" "dev_nicklasfrahm_api" {
   managed_zone = module.google_dns_zone_nicklasfrahm_dev.name
-  name         = "api.nicklasfrahm.dev."
+  name         = "netlifycms.nicklasfrahm.dev."
   type         = "CNAME"
   ttl          = 600
 
