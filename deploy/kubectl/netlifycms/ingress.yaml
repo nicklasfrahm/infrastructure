@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: github-auth
+  labels:
+    app.kubernetes.io/name: github-auth
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - api.nicklasfrahm.dev
+      secretName: api-nicklasfrahm-dev-tls
+  rules:
+    - host: api.nicklasfrahm.dev
+      http:
+        paths:
+          - path: /netlifycms-github-auth/
+            pathType: Prefix
+            backend:
+              service:
+                name: github-auth
+                port:
+                  name: http

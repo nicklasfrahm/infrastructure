@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-auth
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: github-auth
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: github-auth
+    spec:
+      containers:
+        - image: ghcr.io/digitalinteraction/netlify-cms-github-auth:0.1.3
+          imagePullPolicy: Always
+          name: github-auth
+          ports:
+            - containerPort: 3000
+              name: http
+          resources:
+            requests:
+              cpu: 128m
+              memory: 128Mi
+            limits:
+              cpu: 128m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          env:
+            - name: SELF_URL
+              valueFrom:
+                secretKeyRef:
+                  name: github-auth
+                  key: SELF_URL
+            - name: OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-auth
+                  key: OAUTH_CLIENT_ID
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: github-auth
+                  key: OAUTH_CLIENT_SECRET

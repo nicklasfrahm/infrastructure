@@ -9,3 +9,4 @@ credentials*.json
 # Ignore files related to Helm.
 charts/**/charts
 deploy/**/charts
+secret*.yaml
