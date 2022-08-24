@@ -22,12 +22,12 @@ traefik:
     metrics:
       - type: Resource
         resource:
-          name: cpu
+          name: memory
           targetAverageUtilization: 75
       - type: Resource
         resource:
-          name: memory
-          targetAverageUtilization: 80
+          name: cpu
+          targetAverageUtilization: 75
 
   ports:
     traefik:
