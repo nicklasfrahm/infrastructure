@@ -69,10 +69,10 @@ controller:
 dex:
   resources:
     requests:
-      cpu: 10m
+      cpu: 50m
       memory: 32Mi
     limits:
-      cpu: 50m
+      cpu: 100m
       memory: 64Mi
 
 notifications:
