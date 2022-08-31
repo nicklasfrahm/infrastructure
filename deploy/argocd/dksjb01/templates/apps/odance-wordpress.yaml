@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wordpress
+  namespace: argocd
+spec:
+  project: odance
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: odance
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 15.1.5
+    chart: wordpress
+    helm:
+      values: |
+        wordpressUserName: olaaap
+        existingSecret: wordpress-admin
+        wordpressEmail: o.poziomkowska@gmail.com
+        wordpressFirstName: Ola
+        wordpressLastName: Poziomkowska
+        wordpressBlogName: "Ola's website"
+        allowEmptyPassword: false
+
+        resources:
+        limits:
+          cpu: 2000m
+          memory: 2048Mi
+        requests:
+          memory: 512Mi
+          cpu: 500m
+
+        service:
+          type: ClusterIP
+
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-production
+          hostname: odance.dksjb01.nicklasfrahm.dev
+          tls: true
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

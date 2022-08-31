@@ -11,6 +11,7 @@ spec:
   # Allow manifests to deploy from any Git repos
   sourceRepos:
     - https://github.com/nicklasfrahm/infrastructure.git
+    - https://charts.bitnami.com/bitnami
 
   # Only permit applications to deploy to the guestbook namespace in the same cluster
   destinations:
