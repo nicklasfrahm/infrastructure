@@ -1,19 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root
+  name: clusterissuers
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: default
   source:
-    path: deploy/argocd/dksjb02
     repoURL: https://github.com/nicklasfrahm/infrastructure.git
     targetRevision: HEAD
+    path: deploy/kubectl/clusterissuers
   syncPolicy:
     automated:
       prune: true

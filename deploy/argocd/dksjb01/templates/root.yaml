@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: argocd
   source:
-    path: deploy/argocd/dksjb02
+    path: deploy/argocd/dksjb01
     repoURL: https://github.com/nicklasfrahm/infrastructure.git
     targetRevision: HEAD
   syncPolicy:
