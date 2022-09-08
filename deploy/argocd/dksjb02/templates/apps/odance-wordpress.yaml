@@ -38,7 +38,7 @@ spec:
           ingressClassName: traefik
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-production
-          hostname: odance.dksjb01.nicklasfrahm.dev
+          hostname: odance.dksjb02.nicklasfrahm.dev
           tls: true
 
   syncPolicy:
