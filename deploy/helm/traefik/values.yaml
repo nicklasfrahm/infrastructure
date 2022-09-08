@@ -39,12 +39,14 @@ traefik:
       port: 8080
       expose: yes
       exposedPort: 80
+      nodePort: 30080
       protocol: TCP
       redirectTo: websecure
     websecure:
       port: 8443
       expose: yes
       exposedPort: 443
+      nodePort: 30443
       protocol: TCP
       tls:
         enabled: yes
