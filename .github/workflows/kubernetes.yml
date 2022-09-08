@@ -21,8 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         environment:
-          # - dktil01
-          - dksjb01
+          - dksjb02
           - deflf01
           - deflf02
     environment:
@@ -61,8 +60,7 @@ jobs:
       fail-fast: false
       matrix:
         environment:
-          # - dktil01
-          - dksjb01
+          # - dksjb02
           - deflf01
           - deflf02
     environment:
