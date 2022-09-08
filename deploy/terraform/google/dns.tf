@@ -29,6 +29,14 @@ module "google_dns_site_dksjb01" {
   router   = "mike.nicklasfrahm.xyz."
 }
 
+module "google_dns_site_dksjb02" {
+  source = "../modules/google_dns_site"
+
+  zone     = module.google_dns_zone_nicklasfrahm_dev.name
+  location = "dksjb02"
+  router   = "mike.nicklasfrahm.xyz."
+}
+
 module "google_dns_site_deflf01" {
   source = "../modules/google_dns_site"
 
