@@ -31,7 +31,3 @@ spec:
       kind: LimitRange
     - group: ""
       kind: NetworkPolicy
-
-  # Enables namespace orphaned resource monitoring.
-  orphanedResources:
-    warn: true

@@ -41,7 +41,3 @@ spec:
       kind: Service
     - group: "networking.k8s.io"
       kind: Ingress
-
-  # Enables namespace orphaned resource monitoring.
-  orphanedResources:
-    warn: true
