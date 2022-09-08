@@ -26,7 +26,7 @@ module "google_dns_site_dksjb01" {
 
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "dksjb01"
-  router   = "foxtrot.nicklasfrahm.xyz."
+  router   = "mike.nicklasfrahm.xyz."
 }
 
 module "google_dns_site_deflf01" {
@@ -51,5 +51,5 @@ resource "google_dns_record_set" "dev_nicklasfrahm_api" {
   type         = "CNAME"
   ttl          = 600
 
-  rrdatas = ["foxtrot.nicklasfrahm.xyz."]
+  rrdatas = ["mike.nicklasfrahm.xyz."]
 }
