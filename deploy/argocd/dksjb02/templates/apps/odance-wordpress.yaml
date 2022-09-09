@@ -40,7 +40,6 @@ spec:
             cert-manager.io/cluster-issuer: letsencrypt-production
           hostname: odance.dksjb02.nicklasfrahm.dev
           tls: true
-
   syncPolicy:
     automated:
       prune: true
