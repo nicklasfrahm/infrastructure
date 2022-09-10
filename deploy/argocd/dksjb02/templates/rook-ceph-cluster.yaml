@@ -14,7 +14,40 @@ spec:
     chart: rook-ceph-cluster
     helm:
       values: |
-        # Rely on the default values for now.
+        cephClusterSpec:
+          resources:
+            mgr:
+              requests:
+                cpu: "100m"
+                memory: "128Mi"
+            mon:
+              requests:
+                cpu: "200m"
+                memory: "256Mi"
+            osd:
+              requests:
+                cpu: "200m"
+                memory: "256Mi"
+            prepareosd:
+              requests:
+                cpu: "100m"
+                memory: "50Mi"
+            mgr-sidecar:
+              requests:
+                cpu: "100m"
+                memory: "40Mi"
+            crashcollector:
+              requests:
+                cpu: "100m"
+                memory: "60Mi"
+            logcollector:
+              requests:
+                cpu: "100m"
+                memory: "100Mi"
+            cleanup:
+              requests:
+                cpu: "100m"
+                memory: "100Mi"
   syncPolicy:
     automated:
       prune: true
