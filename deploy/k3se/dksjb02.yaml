@@ -13,6 +13,7 @@ cluster:
       - dksjb02.nicklasfrahm.dev
     disable:
       - traefik
+      - local-storage
     flannel-iface: bond0
     cluster-cidr:
       - 10.254.0.0/16
