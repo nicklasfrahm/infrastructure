@@ -11,6 +11,7 @@ spec:
   # Allow manifests to deploy from any Git repos
   sourceRepos:
     - https://github.com/nicklasfrahm/infrastructure.git
+    - https://itzg.github.io/minecraft-server-charts
 
   # Only permit applications to deploy to the guestbook namespace in the same cluster
   destinations:
@@ -39,3 +40,7 @@ spec:
       kind: StatefulSet
     - group: ""
       kind: Service
+    - group: ""
+      kind: Secret
+    - group: ""
+      kind: PersistentVolumeClaim
