@@ -61,3 +61,12 @@ resource "google_dns_record_set" "dev_nicklasfrahm_api" {
 
   rrdatas = ["mike.nicklasfrahm.xyz."]
 }
+
+resource "google_dns_record_set" "dev_nicklasfrahm_mc_survival" {
+  managed_zone = module.google_dns_zone_nicklasfrahm_dev.name
+  name         = "mc-survival.nicklasfrahm.dev."
+  type         = "CNAME"
+  ttl          = 600
+
+  rrdatas = ["mike.nicklasfrahm.xyz."]
+}
