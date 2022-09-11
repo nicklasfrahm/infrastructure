@@ -29,16 +29,6 @@ nodes:
       fingerprint: SHA256:spzDFMfWouRnCLwn3Ls1yufKkaI+TXXGisUnJSrBJ2U
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
-    server:
-      node-label:
-        - svccontroller.k3s.cattle.io/enablelb=true
-
-  - role: agent
-    ssh:
-      host: 172.16.1.241
-      fingerprint: SHA256:RZ5DRTVIJDZfUJmY4EOQGIFw7JWf5RXh3hShGZUi1DE
-      user: nicklasfrahm
-      key-file: ~/.ssh/id_ed25519
 
 # An SSH proxy, also known as jumpbox or a bastion host
 # can be used to access nodes in a private network.
