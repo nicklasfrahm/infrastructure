@@ -26,19 +26,19 @@ cluster:
 nodes:
   - role: server
     ssh:
-      host: 10.3.11.104
+      host: 10.3.12.101
       fingerprint: SHA256:t/bwWCelgcAEYmQW9XbM4p31e1Qq70ZPWOKK+FRxBCc
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
   - role: server
     ssh:
-      host: 10.3.11.105
+      host: 10.3.12.102
       fingerprint: SHA256:OkCD98O5RdzBYc8BIdSpPQkTeNTtYuaEGODThqi/4sk
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
   - role: server
     ssh:
-      host: 10.3.11.106
+      host: 10.3.12.103
       fingerprint: SHA256:GnIesLNIAwgJJX9s3M26mmkXlM90DJ0LS1ZyIoCa5V0
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
