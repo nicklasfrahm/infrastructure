@@ -25,6 +25,7 @@ jobs:
           - dksjb02
           - deflf01
           - deflf02
+          - dktil01
     environment:
       name: ${{ matrix.environment }}
     steps:
@@ -63,8 +64,6 @@ jobs:
         environment:
           - dksjb01
           - dksjb02
-          - deflf01
-          - deflf02
     environment:
       name: ${{ matrix.environment }}
     steps:
