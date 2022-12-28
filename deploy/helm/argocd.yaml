@@ -1,7 +1,7 @@
-server:
-  extraArgs:
-    - --insecure
-  config:
+configs:
+  params:
+    server.insecure: yes
+  cm:
     url: "https://gitops.${INGRESS_DOMAIN}"
     dex.config: |
       connectors:
@@ -15,11 +15,13 @@ server:
               - name: nicklasfrahm-dev
             teamNameField: slug
     admin.enabled: "false"
-  rbacConfig:
+  rbac:
     policy.default: role:readonly
     policy.csv: |
       g, nicklasfrahm-dev:argocd-admins, role:admin
     scopes: "[groups, email]"
+
+server:
   ingress:
     enabled: true
     ingressClassName: traefik
