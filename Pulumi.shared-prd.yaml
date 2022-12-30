@@ -1,0 +1,4 @@
+config:
+  google-native:project: nicklasfrahm
+  google-native:region: us-central1
+  google-native:zone: us-central1-a
