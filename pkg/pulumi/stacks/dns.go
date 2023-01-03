@@ -13,12 +13,16 @@ var dnsScope = "dns"
 func dnsRunFunc(ctx *pulumi.Context) error {
 	name := dnsScope
 
-	provider, err := gcp.GetProvider(ctx)
+	provider, err := gcp.NewProvider(ctx, name)
 	if err != nil {
 		return err
 	}
 
-	dynDNSFunction, err := gcp.NewPublicFunction(ctx, fmt.Sprintf("%s-c.function-dynDNS", name), &gcp.PublicFunctionArgs{}, pulumi.Provider(provider))
+	dynDNSFunction, err := gcp.NewPublicFunction(ctx, fmt.Sprintf("%s-c.function-dynDNS", name), &gcp.PublicFunctionArgs{
+		Name:       "dyndns",
+		EntryPoint: "UpdateDNSRecord",
+		Runtime:    "go119",
+	}, pulumi.Provider(provider))
 	if err != nil {
 		return err
 	}

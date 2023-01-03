@@ -14,7 +14,7 @@ var sharedScope = "shared"
 func sharedRunFunc(ctx *pulumi.Context) error {
 	name := sharedScope
 
-	provider, err := gcp.GetProvider(ctx)
+	provider, err := gcp.NewProvider(ctx, name)
 	if err != nil {
 		return err
 	}
@@ -31,9 +31,11 @@ func sharedRunFunc(ctx *pulumi.Context) error {
 			},
 		},
 		Versioning: &storage.BucketVersioningArgs{
-			Enabled: pulumi.Bool(false),
+			// This is necessary to ensure that Google Cloud Functions can
+			// detect changes to the source code to rebuild the function.
+			Enabled: pulumi.Bool(true),
 		},
-	}, pulumi.Provider(provider))
+	}, pulumi.Provider(provider), pulumi.DeleteBeforeReplace(true))
 	if err != nil {
 		return err
 	}
