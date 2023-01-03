@@ -14,7 +14,7 @@ cluster:
     https-listen-port: 7443
     disable:
       - traefik
-    flannel-iface: eth0
+    flannel-iface: enp2s0
     cluster-cidr:
       - 10.254.0.0/16
     service-cidr:
