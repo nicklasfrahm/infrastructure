@@ -56,7 +56,7 @@ spec:
           # This must be overridden, since we can't accept this for the user.
           eula: "true"
           # One of: LATEST, SNAPSHOT, or a specific version (ie: "1.7.9").
-          version: "1.19.2"
+          version: "LATEST"
           # This can be one of "VANILLA", "FORGE", "SPIGOT", "BUKKIT", "PAPER", "FTBA", "SPONGEVANILLA", "CURSEFORGE"
           type: "VANILLA"
           # One of: peaceful, easy, normal, and hard
