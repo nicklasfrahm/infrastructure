@@ -27,7 +27,7 @@ nodes:
   - role: server
     ssh:
       host: 172.16.0.254
-      fingerprint: SHA256:g6n75j5ZwvNGVaaQlPVotH0PRoKnIx/Iaz3DGpj6ETQ
+      fingerprint: SHA256:GxNvyufD71QuCnH04eNp3LzCGuTV+ookFzVGUtlWvCI
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
 
