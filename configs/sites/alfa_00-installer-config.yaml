@@ -1,0 +1,52 @@
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    enp2s0:
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      dhcp6: true
+      dhcp6-overrides:
+        use-dns: false
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 1.0.0.1
+        search:
+          - nicklasfrahm.xyz
+    enp3s0:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+  bridges:
+    br0:
+      interfaces:
+        - enp3s0
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 172.16.3.254/24
+  vlans:
+    # Management network.
+    vlan0010:
+      id: 10
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.3.10.254/24
+      link: br0
+    vlan0011:
+      id: 11
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.3.11.254/24
+      link: br0
+    vlan0012:
+      id: 12
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.3.12.254/24
+      link: br0
+  version: 2
