@@ -18,7 +18,7 @@ module "google_dns_site_dktil01" {
 
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "dktil01"
-  router   = "delta.nicklasfrahm.xyz."
+  router   = "alfa.nicklasfrahm.xyz."
 }
 
 module "google_dns_site_dksjb00" {
@@ -26,7 +26,7 @@ module "google_dns_site_dksjb00" {
 
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "dksjb00"
-  router   = "alfa.nicklasfrahm.xyz."
+  router   = "delta.nicklasfrahm.xyz."
 }
 
 module "google_dns_site_dksjb01" {
@@ -34,7 +34,7 @@ module "google_dns_site_dksjb01" {
 
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "dksjb01"
-  router   = "alfa.nicklasfrahm.xyz."
+  router   = "delta.nicklasfrahm.xyz."
 }
 
 module "google_dns_site_dksjb02" {
@@ -42,7 +42,7 @@ module "google_dns_site_dksjb02" {
 
   zone     = module.google_dns_zone_nicklasfrahm_dev.name
   location = "dksjb02"
-  router   = "alfa.nicklasfrahm.xyz."
+  router   = "delta.nicklasfrahm.xyz."
 }
 
 module "google_dns_site_deflf01" {
@@ -67,7 +67,7 @@ resource "google_dns_record_set" "dev_nicklasfrahm_api" {
   type         = "CNAME"
   ttl          = 600
 
-  rrdatas = ["alfa.nicklasfrahm.xyz."]
+  rrdatas = ["delta.nicklasfrahm.xyz."]
 }
 
 resource "google_dns_record_set" "dev_nicklasfrahm_mc_survival" {
@@ -76,5 +76,5 @@ resource "google_dns_record_set" "dev_nicklasfrahm_mc_survival" {
   type         = "CNAME"
   ttl          = 600
 
-  rrdatas = ["alfa.nicklasfrahm.xyz."]
+  rrdatas = ["delta.nicklasfrahm.xyz."]
 }
