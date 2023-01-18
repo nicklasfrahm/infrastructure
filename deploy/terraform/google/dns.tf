@@ -13,6 +13,14 @@ module "google_dns_github_pages_nicklasfrahm_dev" {
   zone         = module.google_dns_zone_nicklasfrahm_dev.name
 }
 
+module "google_dns_github_pages_kubestack_nicklasfrahm_dev" {
+  source = "../modules/google_dns_github_pages"
+
+  organization = "nicklasfrahm"
+  domain       = "kubestack.nicklasfrahm.dev."
+  zone         = module.google_dns_zone_nicklasfrahm_dev.name
+}
+
 module "google_dns_site_dktil01" {
   source = "../modules/google_dns_site"
 

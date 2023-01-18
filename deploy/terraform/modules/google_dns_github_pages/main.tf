@@ -18,9 +18,22 @@ variable "organization" {
   type        = string
 }
 
+locals {
+  is_apex_domain = length(var.domain) - length(replace(var.domain, ".", "")) > 2
+}
+
+resource "google_dns_record_set" "cname_www" {
+  name         = "www.${var.domain}"
+  managed_zone = var.zone
+  type         = "CNAME"
+  ttl          = 600
+
+  rrdatas = ["${var.organization}.github.io."]
+}
+
 resource "google_dns_record_set" "a" {
   # Only create A records if the domain is an apex domain.
-  count = length(var.domain) - length(replace(var.domain, ".", "")) > 2 ? 0 : 1
+  count = local.is_apex_domain ? 0 : 1
 
   name         = var.domain
   managed_zone = var.zone
@@ -36,7 +49,10 @@ resource "google_dns_record_set" "a" {
 }
 
 resource "google_dns_record_set" "cname" {
-  name         = "www.${var.domain}"
+  # Only create CNAME records if the domain is a subdomain.
+  count = local.is_apex_domain ? 1 : 0
+
+  name         = var.domain
   managed_zone = var.zone
   type         = "CNAME"
   ttl          = 600
