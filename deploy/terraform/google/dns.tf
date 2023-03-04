@@ -86,3 +86,12 @@ resource "google_dns_record_set" "dev_nicklasfrahm_mc_survival" {
 
   rrdatas = ["delta.nicklasfrahm.xyz."]
 }
+
+resource "google_dns_record_set" "dev_nicklasfrahm_gitops" {
+  managed_zone = module.google_dns_zone_nicklasfrahm_dev.name
+  name         = "gitops.nicklasfrahm.dev."
+  type         = "CNAME"
+  ttl          = 600
+
+  rrdatas = ["alfa.nicklasfrahm.xyz."]
+}
