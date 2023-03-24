@@ -44,6 +44,7 @@ jobs:
         uses: pulumi/actions@v3
         if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
         with:
+          comment-on-pr: true
           command: preview
           stack-name: ${{ matrix.stack }}
         env:
