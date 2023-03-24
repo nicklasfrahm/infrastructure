@@ -40,11 +40,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=../../../credentials.json" >> $GITHUB_ENV
 
       - name: Initialize backend
-        run: |
-          cat credentials.json | jq -r .project_id
-          terraform -chdir=deploy/terraform/${{ matrix.environment }} init
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: "../../../credentials.json"
+        run: terraform -chdir=deploy/terraform/${{ matrix.environment }} init
 
       - name: Select workspace
         run: terraform -chdir=deploy/terraform/${{ matrix.environment }} workspace select ${{ matrix.environment }}
