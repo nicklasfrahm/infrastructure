@@ -37,6 +37,9 @@ jobs:
         with:
           go-version: stable
 
+      - name: Download dependencies
+        run: go mod download
+
       - name: Preview infrastructure
         uses: pulumi/actions@v3
         if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
