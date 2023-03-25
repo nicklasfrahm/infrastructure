@@ -41,7 +41,7 @@ jobs:
         run: go mod download
 
       - name: Preview infrastructure
-        uses: pulumi/actions@v3
+        uses: pulumi/actions@v4
         if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
         with:
           comment-on-pr: true
@@ -53,7 +53,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Update infrastructure
-        uses: pulumi/actions@v3
+        uses: pulumi/actions@v4
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           command: preview
