@@ -13,9 +13,9 @@ type RecordSpec struct {
 // ZoneSpec is a data structure that describes a DNS zone.
 type ZoneSpec struct {
 	// Provider is the name of the DNS provider.
-	Provider string `yaml:"provider"`
+	Provider string `yaml:"provider" validate:"required,oneof=cloudflare"`
 	// Name is the name of the DNS zone.
-	Name string `yaml:"name"`
+	Name string `yaml:"name" validate:"required"`
 	// ID is unique identifier of the DNS zone.
 	ID string `yaml:"id"`
 }
@@ -23,5 +23,5 @@ type ZoneSpec struct {
 // Spec is a data structure that describes the DNS configuration.
 type Spec struct {
 	// Zones is a list of DNS zones.
-	Zones []ZoneSpec `yaml:"zones"`
+	Zones []ZoneSpec `yaml:"zones" validate:"required,dive,required"`
 }

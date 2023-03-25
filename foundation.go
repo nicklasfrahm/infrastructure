@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nicklasfrahm/infrastructure/pkg/pulumi/dns"
+	"github.com/go-playground/validator/v10"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"gopkg.in/yaml.v3"
+
+	"github.com/nicklasfrahm/infrastructure/pkg/pulumi/dns"
 )
 
 const (
@@ -36,6 +38,10 @@ func configureDNS(ctx *pulumi.Context) error {
 
 	var dnsSpec dns.Spec
 	if err := yaml.Unmarshal(dnsSpecBytes, &dnsSpec); err != nil {
+		return err
+	}
+
+	if err := validator.New().Struct(dnsSpec); err != nil {
 		return err
 	}
 
