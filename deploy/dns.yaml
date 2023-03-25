@@ -1,0 +1,12 @@
+zones:
+  - provider: cloudflare
+    name: nicklasfrahm.dev
+    id: 442d9a98959264fccc1d81254a824105
+
+  - provider: cloudflare
+    name: odance.dk
+    id: 597fb23f0eeadae3da08e9fb577f6937
+
+  - provider: cloudflare
+    name: odance.nl
+    id: 18b31176a6b2da8d832b95095ebc9c07
