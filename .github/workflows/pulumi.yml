@@ -56,7 +56,7 @@ jobs:
         uses: pulumi/actions@v4
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
-          command: preview
+          command: up
           stack-name: ${{ matrix.stack }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
