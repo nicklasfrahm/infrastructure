@@ -15,6 +15,7 @@ const (
 	// StackFoundation is the name of the stack that deploys DNS,
 	// Kubernetes at the network edge and underlay networking.
 	StackFoundation = "foundation"
+
 	// dnsSpecPath is the path to the DNS specification.
 	dnsSpecPath = "deploy/dns.yaml"
 )
