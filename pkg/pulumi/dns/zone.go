@@ -42,9 +42,7 @@ func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.Re
 		if err != nil {
 			return nil, err
 		}
-		_ = provider
 
-		// TODO: Create or import the DNS zone.
 		zoneOptions := []pulumi.ResourceOption{pulumi.Parent(provider), pulumi.Provider(provider)}
 		if args.ID != "" {
 			zoneOptions = append(zoneOptions, pulumi.Import(pulumi.ID(args.ID)))
@@ -58,6 +56,10 @@ func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.Re
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{}); err != nil {
+		return nil, err
 	}
 
 	return component, nil
