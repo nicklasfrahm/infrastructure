@@ -1,9 +1,20 @@
 zones:
   - provider: cloudflare
     name: nicklasfrahm.dev
+    records:
+      - name: "@"
+        type: GITHUB_PAGES
+        githubPages:
+          org: nicklasfrahm
+      - name: kubestack
+        type: GITHUB_PAGES
+        githubPages:
+          org: nicklasfrahm
 
   - provider: cloudflare
     name: odance.dk
+    records: []
 
   - provider: cloudflare
     name: odance.nl
+    records: []
