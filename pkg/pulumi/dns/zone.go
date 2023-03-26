@@ -48,13 +48,25 @@ func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.Re
 			zoneOptions = append(zoneOptions, pulumi.Import(pulumi.ID(args.ID)))
 		}
 
-		_, err = cloudflare.NewZone(ctx, fmt.Sprintf("%s-r.zone", name), &cloudflare.ZoneArgs{
+		zone, err := cloudflare.NewZone(ctx, fmt.Sprintf("%s-r.zone", name), &cloudflare.ZoneArgs{
 			AccountId: pulumi.String(os.Getenv(cloudflareEnvVarAccountID)),
 			Zone:      pulumi.String(args.Name),
 			Plan:      pulumi.StringPtr(cloudflarePlan),
 		}, zoneOptions...)
 		if err != nil {
 			return nil, err
+		}
+
+		for j := 0; j < len(args.Records); j++ {
+			record := &args.Records[j]
+
+			switch record.Type {
+			case RecordTypeGithubPages:
+				_, err = NewGithubPages(ctx, fmt.Sprintf("%s-c.githubpages-%s", name, record.Name), zone, record, pulumi.Parent(component))
+			}
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
