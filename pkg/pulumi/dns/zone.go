@@ -63,6 +63,8 @@ func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.Re
 			switch record.Type {
 			case RecordTypeGithubPages:
 				_, err = NewGithubPages(ctx, fmt.Sprintf("%s-c.githubpages-%s", name, record.Name), zone, record, pulumi.Parent(component))
+			case RecordTypeSite:
+				_, err = NewSite(ctx, fmt.Sprintf("%s-c.site-%s", name, record.Name), zone, record, pulumi.Parent(component))
 			}
 			if err != nil {
 				return nil, err
