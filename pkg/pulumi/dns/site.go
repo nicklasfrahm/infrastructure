@@ -12,12 +12,12 @@ const (
 	SiteComponentType = "nicklasfrahm:dns:Site"
 )
 
-// GithubPages creates DNS records for a Github pages site.
+// Site is a set of DNS records for a physical site.
 type Site struct {
 	pulumi.ResourceState
 }
 
-// NewSite configures DNS for a Github pages site.
+// NewSite configures DNS for a physical site.
 func NewSite(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordSpec, opts ...pulumi.ResourceOption) (*Site, error) {
 	component := &Site{}
 	if err := ctx.RegisterComponentResource(SiteComponentType, name, component, opts...); err != nil {
