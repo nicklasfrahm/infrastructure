@@ -10,6 +10,30 @@ zones:
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
+      - name: dktil01
+        type: SITE
+        site:
+          router: alfa.nicklasfrahm.dev
+      - name: deflf01
+        type: SITE
+        site:
+          router: bravo.nicklasfrahm.dev
+      - name: deflf02
+        type: SITE
+        site:
+          router: charlie.nicklasfrahm.dev
+      - name: dksjb00
+        type: SITE
+        site:
+          router: delta.nicklasfrahm.dev
+      - name: dksjb01
+        type: SITE
+        site:
+          router: delta.nicklasfrahm.dev
+      - name: dksjb02
+        type: SITE
+        site:
+          router: delta.nicklasfrahm.dev
 
   - provider: cloudflare
     name: odance.dk
