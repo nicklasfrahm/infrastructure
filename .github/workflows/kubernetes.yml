@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         environment:
-          - dksjb01
+          - dksjb00
           - dksjb02
           - deflf01
           - deflf02
