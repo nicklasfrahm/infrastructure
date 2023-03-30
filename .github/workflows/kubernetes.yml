@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         environment:
-          - dksjb00
+          - dksjb01
           - dksjb02
           - deflf01
           - deflf02
@@ -63,7 +63,6 @@ jobs:
       fail-fast: false
       matrix:
         environment:
-          - dksjb01
           - dksjb02
     environment:
       name: ${{ matrix.environment }}

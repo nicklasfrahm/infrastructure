@@ -26,10 +26,6 @@ zones:
         type: SITE
         site:
           router: delta.nicklasfrahm.dev
-      - name: dksjb01
-        type: SITE
-        site:
-          router: delta.nicklasfrahm.dev
       - name: dksjb02
         type: SITE
         site:
