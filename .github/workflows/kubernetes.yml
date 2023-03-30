@@ -22,11 +22,11 @@ jobs:
       matrix:
         environment:
           - dksjb00
-          - dksjb01
           - dksjb02
           - deflf01
           - deflf02
           - dktil01
+          - moos
     environment:
       name: ${{ matrix.environment }}
     steps:
