@@ -13,11 +13,11 @@ spec:
           # - cluster: delta
   template:
     metadata:
-      name: "{{cluster}}-traefik"
+      name: {{ printf "{{cluster}}-traefik" | quote }}
     spec:
       project: default
       destination:
-        name: "{{cluster}}"
+        name: {{ printf "{{cluster}}" | quote }}
         namespace: traefik
       syncPolicy:
         automated:
