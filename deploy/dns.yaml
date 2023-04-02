@@ -6,6 +6,10 @@ zones:
         type: CNAME
         values:
           - alfa.nicklasfrahm.dev
+      - name: mc-survival
+        type: CNAME
+        values:
+          - delta.nicklasfrahm.dev
       - name: "@"
         type: GITHUB_PAGES
         githubPages:
