@@ -1,0 +1,95 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: traefik
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: alfa
+          - cluster: bravo
+          - cluster: charlie
+          # TODO: Enable delta once port conflict with HAProxy is resolved.
+          # - cluster: delta
+  template:
+    metadata:
+      name: "{{cluster}}-traefik"
+    spec:
+      project: default
+      destination:
+        name: "{{cluster}}"
+        namespace: traefik
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+      source:
+        repoURL: https://traefik.github.io/charts
+        chart: traefik
+        targetRevision: 22.0.0
+        helm:
+          releaseName: traefik
+          values: |
+            ingressClass:
+              enabled: yes
+              isDefaultClass: yes
+
+            service:
+              enabled: yes
+              type: LoadBalancer
+              single: false
+
+            resources:
+              requests:
+                cpu: 250m
+                memory: 256Mi
+              limits:
+                cpu: 1000m
+                memory: 1024Mi
+
+            autoscaling:
+              enabled: true
+              minReplicas: 1
+              maxReplicas: 10
+              metrics:
+                - type: Resource
+                  resource:
+                    name: memory
+                    target:
+                      type: Utilization
+                      averageUtilization: 75
+                - type: Resource
+                  resource:
+                    name: cpu
+                    target:
+                      type: Utilization
+                      averageUtilization: 75
+
+            ports:
+              traefik:
+                port: 9000
+                expose: no
+                exposedPort: 9000
+                protocol: TCP
+              web:
+                port: 8080
+                expose: yes
+                exposedPort: 80
+                nodePort: 30080
+                protocol: TCP
+                redirectTo: websecure
+              websecure:
+                port: 8443
+                expose: yes
+                exposedPort: 443
+                nodePort: 30443
+                protocol: TCP
+                tls:
+                  enabled: yes
+
+            providers:
+              kubernetesIngress:
+                publishedService:
+                  enabled: true
