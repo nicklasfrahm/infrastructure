@@ -2,6 +2,10 @@ zones:
   - provider: cloudflare
     name: nicklasfrahm.dev
     records:
+      - name: gitops
+        type: CNAME
+        values:
+          - alfa.nicklasfrahm.dev
       - name: "@"
         type: GITHUB_PAGES
         githubPages:
