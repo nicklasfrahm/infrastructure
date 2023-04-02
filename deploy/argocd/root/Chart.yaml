@@ -1,0 +1,4 @@
+apiVersion: v2
+name: root
+description: An app of apps for all clusters.
+version: 1.0.0
