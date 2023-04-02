@@ -21,11 +21,11 @@ jobs:
       fail-fast: false
       matrix:
         environment:
+          - alfa
           - dksjb00
           - dksjb02
           - deflf01
           - deflf02
-          - dktil01
           - moos
     environment:
       name: ${{ matrix.environment }}
