@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: clusterissuers
+spec:
+  generators:
+    - list:
+        elements:
+          {{- range .Values.clusters.ingress }}
+          - cluster: {{ . }}
+          {{- end }}
+  template:
+    metadata:
+      name: {{ printf "{{cluster}}-clusterissuers" | quote }}
+    spec:
+      project: default
+      destination:
+        name: {{ printf "{{cluster}}" | quote }}
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+      source:
+        repoURL: https://github.com/nicklasfrahm/infrastructure.git
+        path: deploy/kubectl/clusterissuers
+        targetRevision: HEAD
