@@ -8,7 +8,9 @@ metadata:
 spec:
   project: default
   destination:
-    server: https://kubernetes.default.svc
+    # Argo CD runs on alfa, so we need to orchestrate
+    # the root application via this cluster.
+    name: alfa
     namespace: argocd
   source:
     repoURL: https://github.com/nicklasfrahm/infrastructure.git
