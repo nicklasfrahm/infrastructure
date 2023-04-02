@@ -1,3 +1,6 @@
+# The DNS name of the Argo CD server.
+argoURL: gitops.nicklasfrahm.dev
+
 # Configures the rollout of core functionality to a set of clusters.
 clusters:
   # Argo CD runs on alfa, so we need to orchestrate
