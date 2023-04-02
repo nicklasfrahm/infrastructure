@@ -5,6 +5,8 @@ const (
 	RecordTypeGithubPages = "GITHUB_PAGES"
 	// RecordTypeSite is the type of a DNS record for a site.
 	RecordTypeSite = "SITE"
+	// RecordTypeCNAME is the type of a CNAME DNS record.
+	RecordTypeCNAME = "CNAME"
 )
 
 // GitHubPagesRecordSpec is a data structure that describes a GitHub Pages DNS record.
@@ -24,7 +26,7 @@ type RecordSpec struct {
 	// Name is the name of the DNS record.
 	Name string `yaml:"name" validate:"required"`
 	// Type is the type of the DNS record.
-	Type string `yaml:"type" validate:"required,oneof=GITHUB_PAGES SITE"`
+	Type string `yaml:"type" validate:"required,oneof=GITHUB_PAGES SITE CNAME"`
 	// Values is a list of values for the DNS record.
 	Values []string `yaml:"values"`
 	// GithubPages is configures the GitHub pages site.
