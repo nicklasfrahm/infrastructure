@@ -21,12 +21,15 @@ jobs:
       fail-fast: false
       matrix:
         environment:
+          # Edge clusters.
           - alfa
-          - dksjb00
-          - dksjb02
-          - deflf01
-          - deflf02
+          - bravo
+          - charlie
+          - delta
+          # Project clusters.
           - moos
+          # Legacy clusters.
+          - dksjb02
     environment:
       name: ${{ matrix.environment }}
     steps:
