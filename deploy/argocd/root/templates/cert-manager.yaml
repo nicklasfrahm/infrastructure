@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cert-manager
+spec:
+  generators:
+    - list:
+        elements:
+          {{- range .Values.clusters.ingress }}
+          - cluster: {{ . }}
+          {{- end }}
+  template:
+    metadata:
+      name: {{ printf "{{cluster}}-cert-manager" | quote }}
+    spec:
+      project: default
+      destination:
+        name: {{ printf "{{cluster}}" | quote }}
+        namespace: cert-manager
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+      source:
+        repoURL: https://charts.jetstack.io
+        chart: cert-manager
+        targetRevision: "{{ .Values.versions.certManager }}"
+        helm:
+          releaseName: cert-manager
+          values: |
+            installCRDs: true

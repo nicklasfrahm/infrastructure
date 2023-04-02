@@ -1,0 +1,23 @@
+# Configures the rollout of core functionality to a set of clusters.
+clusters:
+  # Argo CD runs on alfa, so we need to orchestrate
+  # the root application via this cluster.
+  gitops: alfa
+  # Configue the clusters that need ingress configuration.
+  # This will deploy the following items:
+  # - traefik
+  # - cert-manager
+  # - clusterissuers
+  ingress:
+    # Edge clusters.
+    - alfa
+    - bravo
+    - charlie
+    # TODO: Enable delta once port conflict with HAProxy is resolved.
+    # - cluster: delta
+    # Project clusters.
+    - moos
+
+versions:
+  traefik: 22.0.0
+  certManager: 1.11.0

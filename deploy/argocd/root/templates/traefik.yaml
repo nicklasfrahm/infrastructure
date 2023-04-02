@@ -6,11 +6,9 @@ spec:
   generators:
     - list:
         elements:
-          - cluster: alfa
-          - cluster: bravo
-          - cluster: charlie
-          # TODO: Enable delta once port conflict with HAProxy is resolved.
-          # - cluster: delta
+          {{- range .Values.clusters.ingress }}
+          - cluster: {{ . }}
+          {{- end }}
   template:
     metadata:
       name: {{ printf "{{cluster}}-traefik" | quote }}
@@ -28,7 +26,7 @@ spec:
       source:
         repoURL: https://traefik.github.io/charts
         chart: traefik
-        targetRevision: 22.0.0
+        targetRevision: "{{ .Values.versions.traefik }}"
         helm:
           releaseName: traefik
           values: |
