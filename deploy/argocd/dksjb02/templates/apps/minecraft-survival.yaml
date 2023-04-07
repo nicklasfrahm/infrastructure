@@ -96,7 +96,7 @@ spec:
           # Max view distance (in chunks).
           viewDistance: 10
           # Define this if you want a specific map generation seed.
-          levelSeed: "320191849765261"
+          #levelSeed: "320191849765261"
           # One of: creative, survival, adventure, spectator
           gameMode: survival
           # Message of the Day
