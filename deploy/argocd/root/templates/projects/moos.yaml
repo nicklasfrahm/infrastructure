@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: moos
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: A container for the moos project.
+  # Allow manifests to deploy from any repo.
+  sourceRepos:
+    - "*"
+  # Only permit deployments to the dedicated cluster.
+  destinations:
+    # Argo CD will only match against server addresses not names.
+    - server: https://moos.nicklasfrahm.dev:6443
