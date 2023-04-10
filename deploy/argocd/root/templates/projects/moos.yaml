@@ -14,3 +14,4 @@ spec:
   destinations:
     # Argo CD will only match against server addresses not names.
     - server: https://moos.nicklasfrahm.dev:6443
+      namespace: "*"
