@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: moos-root
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    name: "{{ .Values.clusters.gitops }}"
+    namespace: argocd
+  source:
+    repoURL: https://github.com/nicklasfrahm/moos.git
+    targetRevision: HEAD
+    path: deploy/argocd/root
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
