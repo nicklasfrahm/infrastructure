@@ -15,3 +15,11 @@ spec:
     # Argo CD will only match against server addresses not names.
     - server: https://moos.nicklasfrahm.dev:6443
       namespace: "*"
+  # Allow deployment of any cluster-level resource.
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  # Allow deployment of any namespaced resource.
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
