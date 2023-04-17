@@ -16,8 +16,8 @@ spec:
     spec:
       project: moos
       destination:
-        name: "{{ .Values.clusters.gitops }}"
-        namespace: argocd
+        name: moos
+        namespace: {{ printf "{{path.basename}}" | quote }}
       source:
         repoURL: https://github.com/nicklasfrahm/moos.git
         targetRevision: HEAD
