@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: moos-root
+  name: moos
   namespace: argocd
 spec:
   generators:
@@ -22,6 +22,8 @@ spec:
         repoURL: https://github.com/nicklasfrahm/moos.git
         targetRevision: HEAD
         path: {{ printf "{{path}}" | quote }}
+        helm:
+          releaseName: {{ printf "{{path.basename}}" | quote }}
       syncPolicy:
         automated:
           prune: true
