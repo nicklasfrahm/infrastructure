@@ -22,8 +22,6 @@ spec:
         repoURL: https://github.com/nicklasfrahm/moos.git
         targetRevision: HEAD
         path: {{ printf "{{path}}" | quote }}
-        helm:
-          releaseName: {{ printf "{{path.basename}}" | quote }}
       syncPolicy:
         automated:
           prune: true
