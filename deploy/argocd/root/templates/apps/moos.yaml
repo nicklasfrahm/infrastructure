@@ -28,5 +28,3 @@ spec:
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
-          # This should fix the annoying issues with the kube-prometheus stack.
-          - ServerSideApply=true

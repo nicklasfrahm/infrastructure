@@ -19,6 +19,7 @@ configs:
               - name: nicklasfrahm-dev
             teamNameField: slug
     admin.enabled: "false"
+    kustomize.buildOptions: --enable-helm
   rbac:
     policy.default: role:readonly
     policy.csv: |
