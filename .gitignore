@@ -1,4 +1,4 @@
-# Ingore Google Cloud credentials.
+# Ignore Google Cloud credentials.
 credentials*.json
 
 # Ignore Terraform files.
@@ -10,3 +10,6 @@ credentials*.json
 charts/**/charts
 deploy/**/charts
 secret*.yaml
+
+# Built binary files.
+bin/
