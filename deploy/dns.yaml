@@ -48,9 +48,5 @@ zones:
           router: delta.nicklasfrahm.dev
 
   - provider: cloudflare
-    name: odance.dk
-    records: []
-
-  - provider: cloudflare
     name: odance.nl
     records: []
