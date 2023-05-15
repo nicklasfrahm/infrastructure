@@ -10,6 +10,10 @@ zones:
         type: CNAME
         values:
           - delta.nicklasfrahm.dev
+      - name: cloud
+        type: CNAME
+        values:
+          - ghs.googlehosted.com
       - name: "@"
         type: GITHUB_PAGES
         githubPages:
