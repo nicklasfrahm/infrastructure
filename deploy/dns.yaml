@@ -45,7 +45,7 @@ zones:
       - name: moos
         type: SITE
         site:
-          router: alfa.nicklasfrahm.dev
+          router: delta.nicklasfrahm.dev
 
   - provider: cloudflare
     name: odance.nl
