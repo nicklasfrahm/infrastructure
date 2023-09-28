@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: inception
+  labels:
+    app.kubernetes.io/name: k3s-poc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k3s-poc
+  namespace: inception
+  labels:
+    app.kubernetes.io/name: k3s-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k3s-poc
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k3s-poc
+    spec:
+      containers:
+        - name: k3s
+          image: rancher/k3s:v1.28.2-k3s1
+          command:
+             - /bin/sh
+          args:
+            - -c
+            - |
+              /bin/k3s server \
+                --disable-agent \
+                --tls-san k3s-poc.moos.nicklasfrahm.dev \
+                --https-listen-port 443 \
+                && true
+          imagePullPolicy: Always
+          ports:
+            - name: https
+              containerPort: 443
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1000Mi
+            limits:
+              cpu: 1000m
+              memory: 1000Mi
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k3s-poc
+  namespace: inception
+  labels:
+    app.kubernetes.io/name: k3s-poc
+spec:
+  type: ClusterIP
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443
+  selector:
+    app.kubernetes.io/name: k3s-poc
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: k3s-poc
+  namespace: inception
+  labels:
+    app.kubernetes.io/name: k3s-poc
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: HostSNI(`k3s-poc.moos.nicklasfrahm.dev`)
+    services:
+    - name: k3s-poc
+      port: 443
+  tls:
+    passthrough: true
