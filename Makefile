@@ -34,3 +34,16 @@ docker:
 	  --build-arg TARGET=$(TARGET) \
 	  --build-arg VERSION=$(VERSION) \
 	  -f build/package/Dockerfile .
+
+.PHONY: inception-up
+inception-up:
+	kubectl -n inception apply -f configs/inception/inception.yaml
+	kubectl -n inception wait --for=condition=Ready pod -l app.kubernetes.io/name=k3s-poc
+	kubectl -n inception get pods -l app.kubernetes.io/name=k3s-poc -o jsonpath='{.items[0].metadata.name}'
+	kubectl -n inception cp $$(kubectl -n inception get pods -l app.kubernetes.io/name=k3s-poc -o jsonpath='{.items[0].metadata.name}'):/etc/rancher/k3s/k3s.yaml kubeconfig.yaml
+	sed -i "s/127.0.0.1/k3s-poc.moos.nicklasfrahm.dev/" kubeconfig.yaml
+
+.PHONY: inception-down
+inception-down:
+	rm kubeconfig.yaml || true
+	kubectl delete -f configs/inception/inception.yaml

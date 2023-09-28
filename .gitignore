@@ -13,3 +13,6 @@ secret*.yaml
 
 # Built binary files.
 bin/
+
+# Ignore kubeconfig files.
+kubeconfig*.yaml
