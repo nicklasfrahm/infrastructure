@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: odance
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: A project to deploy components for Ola's website.
+
+  # Allow manifests to deploy from any Git repos
+  sourceRepos:
+    - https://github.com/nicklasfrahm/infrastructure.git
+    - https://charts.bitnami.com/bitnami
+
+  # Only permit applications to deploy to the guestbook namespace in the same cluster
+  destinations:
+    - namespace: odance
+      server: https://kubernetes.default.svc
+
+  # Deny all cluster-scoped resources from being created, except for Namespace
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+
+  # Allow all namespaced-scoped resources to be created, except for ResourceQuota, LimitRange, NetworkPolicy
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
+    - group: ""
+      kind: NetworkPolicy
