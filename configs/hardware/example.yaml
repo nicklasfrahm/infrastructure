@@ -1,0 +1,7 @@
+apiVersion: nicklasfrahm.dev/v1alpha1
+kind: Hardware
+metadata:
+  name: example
+spec:
+  cores: 4
+  memory: 8Gi
