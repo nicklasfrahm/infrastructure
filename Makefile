@@ -34,3 +34,8 @@ docker:
 	  --build-arg TARGET=$(TARGET) \
 	  --build-arg VERSION=$(VERSION) \
 	  -f build/package/Dockerfile .
+
+.PHONY: cluster-addons
+cluster-addons:
+	kubectl create ns ingress --dry-run=client -o yaml | kubectl apply -f -
+	helm upgrade ingress charts/ingress --namespace ingress --install --atomic
