@@ -4,6 +4,7 @@ traefik:
   ingressClass:
     enabled: yes
     isDefaultClass: yes
+    name: traefik
 
   service:
     enabled: yes
