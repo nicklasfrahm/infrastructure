@@ -36,6 +36,14 @@ docker:
 	  -f build/package/Dockerfile .
 
 .PHONY: cluster-addons
-cluster-addons:
+cluster-addons: ingress dashboard
+
+.PHONY: ingress
+ingress:
 	kubectl create ns ingress --dry-run=client -o yaml | kubectl apply -f -
 	helm upgrade ingress charts/ingress --namespace ingress --install --atomic
+
+.PHONY: dashboard
+dashboard:
+	kubectl create ns dashboard --dry-run=client -o yaml | kubectl apply -f -
+	helm upgrade dashboard charts/dashboard --namespace dashboard --install --atomic --values secret-dashboard.yaml
