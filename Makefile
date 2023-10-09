@@ -47,3 +47,8 @@ ingress:
 dashboard:
 	kubectl create ns dashboard --dry-run=client -o yaml | kubectl apply -f -
 	helm upgrade dashboard charts/dashboard --namespace dashboard --install --atomic --values secret-dashboard.yaml
+
+.PHONY: registry
+registry:
+	kubectl create ns registry --dry-run=client -o yaml | kubectl apply -f -
+	helm upgrade registry charts/registry --namespace registry --install --atomic --values secret-registry.yaml

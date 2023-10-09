@@ -1,0 +1,16 @@
+harbor:
+  enabled: true
+  expose:
+    tls:
+      certSource: secret
+      secret:
+        secretName: dev-nicklasfrahm-november-registry-tls
+    ingress:
+      hosts:
+        core: registry.november.nicklasfrahm.dev
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+  externalURL: https://registry.november.nicklasfrahm.dev
+  harborAdminPassword: "CHANGE_ME"
+  secretKey: "CHANGE_ME"
