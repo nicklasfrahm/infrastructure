@@ -1,27 +1,98 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
+	"regexp"
+	"strings"
 	"sync"
 
+	cloudflare "github.com/cloudflare/cloudflare-go"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/cobra"
 )
 
-// config defines the required configuration for this tool.
-type config struct {
-	// CloudflareAPIKey is the API key used to authenticate with Cloudflare.
-	CloudflareAPIKey string
+// Config defines the required configuration for this tool.
+type Config struct {
 	// Record is the name of the DNS record to update.
 	Record string
 	// EdgeServers is the list of edge servers to use.
 	EdgeServers []string
+	// CloudflareToken is the Cloudflare API token to use.
+	CloudflareToken string
 }
 
-var cfg = &config{}
+// ReconciliationState defines the state of a resource
+// before the reconciliation process.
+type ReconciliationState struct {
+	// Current is the current state of the resource.
+	Current map[string]bool
+	// Desired is the desired state of the resource.
+	Desired map[string]bool
+}
+
+// ReconciliationPlan defines the plan to reconcile a
+// resource.
+type ReconciliationPlan struct {
+	// Create is the list of records to create.
+	Create map[string]bool
+	// Delete is the list of records to delete.
+	Delete map[string]bool
+}
+
+// Reconciliation is stores the current and desired state
+// of a resource along with a plan to reconcile them.
+type Reconciliation struct {
+	sync.Mutex
+	// State is the state of the resource before the reconciliation.
+	State *ReconciliationState
+	// Plan is the plan to reconcile the resource.
+	Plan *ReconciliationPlan
+}
+
+// ShouldUpdate updates the plan to reconcile the resource.
+func (r *Reconciliation) ShouldUpdate() bool {
+	shouldUpdate := false
+
+	// Check if any new records should be created in the new set.
+	for key := range r.State.Desired {
+		if !r.State.Current[key] {
+			shouldUpdate = true
+			r.Plan.Create[key] = true
+		}
+	}
+
+	// Check if any old records should be removed in the new set.
+	for key := range r.State.Current {
+		if !r.State.Desired[key] {
+			shouldUpdate = true
+			r.Plan.Delete[key] = true
+		}
+	}
+
+	return shouldUpdate
+}
+
+// NewReconciliation creates a new reconciliation object.
+func NewReconciliation() *Reconciliation {
+	return &Reconciliation{
+		State: &ReconciliationState{
+			Current: map[string]bool{},
+			Desired: map[string]bool{},
+		},
+		Plan: &ReconciliationPlan{
+			Create: map[string]bool{},
+			Delete: map[string]bool{},
+		},
+	}
+}
+
+var cfg = &Config{}
 
 var version = "dev"
 var help bool
@@ -39,8 +110,8 @@ var rootCmd = &cobra.Command{
 nofip is a tool that allows you to expose a service
 using high-availability without using floating IPs.
 
-For this, it creates a DNS A records which points to
-the IP addresses of the provided edge servers.
+For this, it creates multiple DNS A records which
+point to the IP addresses of the provided edge servers.
 
 If you set the service edge to be europe.example.com
 and that your edge servers are alfa.example.com and
@@ -57,18 +128,31 @@ geo-DNS, as nofip will only use simple A records.`,
 		}
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Printf("Record name: %s\n", cfg.Record)
-		fmt.Printf("Edge servers: %v\n", cfg.EdgeServers)
+		// Verify that the Cloudflare API token is set.
+		cfg.CloudflareToken = os.Getenv("CLOUDFLARE_TOKEN")
+		if cfg.CloudflareToken == "" {
+			return errors.New("missing environment variable: CLOUDFLARE_TOKEN")
+		}
+
+		// Ensure that the record follows the storage format of records in Cloudflare.
+		if cfg.Record[len(cfg.Record)-1] == '.' {
+			cfg.Record = cfg.Record[:len(cfg.Record)-1]
+		}
+		cfg.Record = strings.ToLower(cfg.Record)
+
+		fmt.Printf("[>>] Record name: %s\n", cfg.Record)
+		fmt.Printf("[>>] Edge servers: %v\n", cfg.EdgeServers)
 
 		if len(cfg.EdgeServers) == 0 {
 			return errors.New("must specify at least one edge server")
 		}
 
+		v4Update := NewReconciliation()
+		v6Update := NewReconciliation()
+
 		// Use a waitgroup and a goroutine to resolve the IP addresses of
 		// the edge servers and the current state of the edge record in
 		// parallel.
-		newV4EdgeIPs := make(map[string]bool)
-		newV6EdgeIPs := make(map[string]bool)
 		wg := sync.WaitGroup{}
 		wg.Add(len(cfg.EdgeServers) + 1)
 
@@ -83,48 +167,122 @@ geo-DNS, as nofip will only use simple A records.`,
 
 				for _, ip := range ips {
 					if ip.To4() != nil {
-						newV4EdgeIPs[ip.String()] = true
+						v4Update.Lock()
+						v4Update.State.Desired[ip.String()] = true
+						v4Update.Unlock()
 					} else {
-						newV6EdgeIPs[ip.String()] = true
+						v6Update.Lock()
+						v6Update.State.Desired[ip.String()] = true
+						v6Update.Unlock()
 					}
 				}
 			}(server)
 		}
 
-		oldV4EdgeIPs := make(map[string]bool)
-		oldV6EdgeIPs := make(map[string]bool)
+		// TODO: Use cloudflare API instead of DNS resolver to
+		// avoid unnecessary reconciliation due to DNS caching.
 		go func() {
 			defer wg.Done()
 			ips, err := net.LookupIP(cfg.Record)
 			if err != nil {
-				log.Printf("Failed to resolve edge record: %s: %s", cfg.Record, err)
+				fmt.Printf("[] Failed to resolve edge record: %s: %s", cfg.Record, err)
 				return
 			}
 
 			for _, ip := range ips {
 				if ip.To4() != nil {
-					oldV4EdgeIPs[ip.String()] = true
+					v4Update.Lock()
+					v4Update.State.Current[ip.String()] = true
+					v4Update.Unlock()
 				} else {
-					oldV6EdgeIPs[ip.String()] = true
+					v6Update.Lock()
+					v6Update.State.Current[ip.String()] = true
+					v6Update.Unlock()
 				}
 			}
 		}()
 
 		wg.Wait()
 
-		fmt.Printf("[v4] old IPs: %+v\n", oldV4EdgeIPs)
-		fmt.Printf("[v4] new IPs: %+v\n", newV4EdgeIPs)
-		fmt.Printf("[v6] old IPs: %+v\n", oldV6EdgeIPs)
-		fmt.Printf("[v6] new IPs: %+v\n", newV6EdgeIPs)
-
-		if shouldUpdate(&oldV4EdgeIPs, &newV4EdgeIPs) {
-			fmt.Println("[v4] should update")
-			// TODO: Use the cloudflare SDK to create a DNS A record with the IPs.
+		api, err := cloudflare.NewWithAPIToken(cfg.CloudflareToken)
+		if err != nil {
+			return fmt.Errorf("failed to create Cloudflare API client: %s", err)
 		}
 
-		if shouldUpdate(&oldV6EdgeIPs, &newV6EdgeIPs) {
+		zoneRegex := regexp.MustCompile("[a-z]+.[a-z]+$")
+		zoneName := zoneRegex.FindString(cfg.Record)
+		zoneID, err := api.ZoneIDByName(zoneName)
+		if err != nil {
+			return fmt.Errorf("failed to list zones: %s", err)
+		}
+
+		if v4Update.ShouldUpdate() {
+			wgCreate := sync.WaitGroup{}
+			wgCreate.Add(len(v4Update.Plan.Create))
+
+			fmt.Printf("[v4] Creating %d records ...\n", len(v4Update.Plan.Create))
+			for ip := range v4Update.Plan.Create {
+				go func(ip string) {
+					defer wgCreate.Done()
+
+					fmt.Printf("[++] Creating: %s\n", ip)
+					_, err := api.CreateDNSRecord(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.CreateDNSRecordParams{
+						Name:    cfg.Record,
+						Type:    "A",
+						Content: ip,
+						Proxied: cloudflare.BoolPtr(false),
+						TTL:     60,
+					})
+					if err != nil {
+						if e, ok := err.(*cloudflare.RequestError); ok {
+							// Ignore conflicting record errors.
+							if !e.InternalErrorCodeIs(81057) {
+								fmt.Printf("[v4] Failed to create A record: %s", err)
+							}
+						}
+					}
+				}(ip)
+			}
+			wgCreate.Wait()
+
+			fmt.Printf("[v4] Deleting %d records ...\n", len(v4Update.Plan.Delete))
+			records, _, err := api.ListDNSRecords(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.ListDNSRecordsParams{
+				Type: "A",
+				Name: cfg.Record,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to list relevant records: %s", err)
+			}
+
+			wgDelete := sync.WaitGroup{}
+			for _, record := range records {
+				if v4Update.Plan.Delete[record.Content] {
+					wgDelete.Add(1)
+
+					go func(r *cloudflare.DNSRecord) {
+						defer wgDelete.Done()
+
+						fmt.Printf("[--] Deleting: %s\n", r.Content)
+						err := api.DeleteDNSRecord(context.TODO(), cloudflare.ResourceIdentifier(r.ZoneID), r.ID)
+						if err != nil {
+							fmt.Printf("[v4] Failed to delete A record: %s", err)
+						}
+					}(&record)
+				}
+			}
+
+			wgDelete.Wait()
+		}
+
+		if v6Update.ShouldUpdate() {
 			fmt.Println("[v6] should update")
 			// TODO: Use the cloudflare SDK to create a DNS AAAA record with the IPs.
+		}
+
+		fmt.Printf("[**] Purging resolver cache at 1.1.1.1 ...\n")
+		_, err = http.Post(fmt.Sprintf("https://1.1.1.1/api/v1/purge?type=A&domain=%s", cfg.Record), "application/json", nil)
+		if err != nil {
+			return fmt.Errorf("failed to purge resolve cache: %s", err)
 		}
 
 		return nil
@@ -139,28 +297,6 @@ func init() {
 	rootCmd.MarkPersistentFlagRequired("record")
 	rootCmd.PersistentFlags().StringSliceVarP(&cfg.EdgeServers, "edge-servers", "e", []string{}, "list of edge servers (comma-separated)")
 	rootCmd.MarkPersistentFlagRequired("edge-servers")
-}
-
-func shouldUpdate(old *map[string]bool, new *map[string]bool) bool {
-	if len(*old) != len(*new) {
-		return true
-	}
-
-	// Check if any new records should be created in the new set.
-	for k := range *new {
-		if !(*old)[k] {
-			return true
-		}
-	}
-
-	// Check if any old records should be removed in the new set.
-	for k := range *old {
-		if !(*new)[k] {
-			return true
-		}
-	}
-
-	return false
 }
 
 func main() {

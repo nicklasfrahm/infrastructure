@@ -23,7 +23,7 @@ spec:
         app: nginx
     spec:
       containers:
-      - image: nginx:1.23.4-alpine
+      - image: nginx:alpine
         name: nginx
         ports:
         - name: http
@@ -59,10 +59,10 @@ metadata:
   name: nginx
   namespace: nginx
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
+    cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
   rules:
-  - host: nginx.moos.nicklasfrahm.dev
+  - host: edge.nicklasfrahm.dev
     http:
       paths:
       - path: /
@@ -74,5 +74,5 @@ spec:
               name: http
   tls:
   - hosts:
-    - nginx.moos.nicklasfrahm.dev
+    - edge.nicklasfrahm.dev
     secretName: nginx-tls
