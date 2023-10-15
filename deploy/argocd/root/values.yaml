@@ -22,5 +22,5 @@ clusters:
     - moos
 
 versions:
-  traefik: 23.0.1
-  certManager: 1.11.1
+  traefik: 24.0.0
+  certManager: 1.13.1
