@@ -52,6 +52,8 @@ metadata:
   name: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-staging
+    # This is required if the "entrypoint" does not have TLS enabled.
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
   - host: edge.nicklasfrahm.dev
