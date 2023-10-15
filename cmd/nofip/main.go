@@ -217,61 +217,38 @@ geo-DNS, as nofip will only use simple A records.`,
 		}
 
 		if v4Update.ShouldUpdate() {
-			wgCreate := sync.WaitGroup{}
-			wgCreate.Add(len(v4Update.Plan.Create))
+			if len(v4Update.Plan.Create) > 0 {
+				fmt.Printf("[v4] Creating %d records ...\n", len(v4Update.Plan.Create))
 
-			fmt.Printf("[v4] Creating %d records ...\n", len(v4Update.Plan.Create))
-			for ip := range v4Update.Plan.Create {
-				go func(ip string) {
-					defer wgCreate.Done()
-
-					fmt.Printf("[++] Creating: %s\n", ip)
-					_, err := api.CreateDNSRecord(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.CreateDNSRecordParams{
-						Name:    cfg.Record,
-						Type:    "A",
-						Content: ip,
-						Proxied: cloudflare.BoolPtr(false),
-						TTL:     60,
-					})
-					if err != nil {
-						if e, ok := err.(*cloudflare.RequestError); ok {
-							// Ignore conflicting record errors.
-							if !e.InternalErrorCodeIs(81057) {
-								fmt.Printf("[v4] Failed to create A record: %s", err)
-							}
-						}
-					}
-				}(ip)
-			}
-			wgCreate.Wait()
-
-			fmt.Printf("[v4] Deleting %d records ...\n", len(v4Update.Plan.Delete))
-			records, _, err := api.ListDNSRecords(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.ListDNSRecordsParams{
-				Type: "A",
-				Name: cfg.Record,
-			})
-			if err != nil {
-				return fmt.Errorf("failed to list relevant records: %s", err)
-			}
-
-			wgDelete := sync.WaitGroup{}
-			for _, record := range records {
-				if v4Update.Plan.Delete[record.Content] {
-					wgDelete.Add(1)
-
-					go func(r *cloudflare.DNSRecord) {
-						defer wgDelete.Done()
-
-						fmt.Printf("[--] Deleting: %s\n", r.Content)
-						err := api.DeleteDNSRecord(context.TODO(), cloudflare.ResourceIdentifier(r.ZoneID), r.ID)
-						if err != nil {
-							fmt.Printf("[v4] Failed to delete A record: %s", err)
-						}
-					}(&record)
+				wgCreate := &sync.WaitGroup{}
+				for ip := range v4Update.Plan.Create {
+					wgCreate.Add(1)
+					go createRecord(api, zoneID, ip, wgCreate)
 				}
+				wgCreate.Wait()
 			}
 
-			wgDelete.Wait()
+			if len(v4Update.Plan.Delete) > 0 {
+				fmt.Printf("[v4] Deleting %d records ...\n", len(v4Update.Plan.Delete))
+
+				records, _, err := api.ListDNSRecords(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.ListDNSRecordsParams{
+					Type: "A",
+					Name: cfg.Record,
+				})
+				if err != nil {
+					return fmt.Errorf("failed to list relevant records: %s", err)
+				}
+
+				wgDelete := &sync.WaitGroup{}
+				for _, record := range records {
+					// Check if the record should be deleted.
+					if v4Update.Plan.Delete[record.Content] {
+						wgDelete.Add(1)
+						go deleteRecord(api, &record, wgDelete)
+					}
+				}
+				wgDelete.Wait()
+			}
 		}
 
 		if v6Update.ShouldUpdate() {
@@ -279,13 +256,7 @@ geo-DNS, as nofip will only use simple A records.`,
 			// TODO: Use the cloudflare SDK to create a DNS AAAA record with the IPs.
 		}
 
-		fmt.Printf("[**] Purging resolver cache at 1.1.1.1 ...\n")
-		_, err = http.Post(fmt.Sprintf("https://1.1.1.1/api/v1/purge?type=A&domain=%s", cfg.Record), "application/json", nil)
-		if err != nil {
-			return fmt.Errorf("failed to purge resolve cache: %s", err)
-		}
-
-		return nil
+		return purgeResolverCache()
 	},
 	Version:      version,
 	SilenceUsage: true,
@@ -303,4 +274,49 @@ func main() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+func createRecord(api *cloudflare.API, zoneID string, ip string, wg *sync.WaitGroup) {
+	if wg != nil {
+		defer wg.Done()
+	}
+
+	fmt.Printf("[++] Creating: %s\n", ip)
+	_, err := api.CreateDNSRecord(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.CreateDNSRecordParams{
+		Name:    cfg.Record,
+		Type:    "A",
+		Content: ip,
+		Proxied: cloudflare.BoolPtr(false),
+		TTL:     60,
+	})
+	if err != nil {
+		if e, ok := err.(*cloudflare.RequestError); ok {
+			// Ignore conflicting record errors.
+			if !e.InternalErrorCodeIs(81057) {
+				fmt.Printf("[v4] Failed to create A record: %s", err)
+			}
+		}
+	}
+}
+
+func deleteRecord(api *cloudflare.API, record *cloudflare.DNSRecord, wg *sync.WaitGroup) {
+	if wg != nil {
+		defer wg.Done()
+	}
+
+	fmt.Printf("[--] Deleting: %s\n", record.Content)
+	err := api.DeleteDNSRecord(context.TODO(), cloudflare.ResourceIdentifier(record.ZoneID), record.ID)
+	if err != nil {
+		fmt.Printf("[v4] Failed to delete A record: %s", err)
+	}
+}
+
+func purgeResolverCache() error {
+	fmt.Printf("[**] Purging resolver cache at 1.1.1.1 ...\n")
+	_, err := http.Post(fmt.Sprintf("https://1.1.1.1/api/v1/purge?type=A&domain=%s", cfg.Record), "application/json", nil)
+	if err != nil {
+		return fmt.Errorf("failed to purge resolve cache: %s", err)
+	}
+
+	return nil
 }
