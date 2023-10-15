@@ -82,8 +82,8 @@ geo-DNS, as nofip will only use simple A records.`,
 			return errors.New("must specify at least one edge server")
 		}
 
-		v4Update := NewReconciler()
-		v6Update := NewReconciler()
+		v4Reconciler := NewReconciler()
+		v6Reconciler := NewReconciler()
 
 		// Use a waitgroup and a goroutine to resolve the IP addresses of
 		// the edge servers and the current state of the edge record in
@@ -102,13 +102,9 @@ geo-DNS, as nofip will only use simple A records.`,
 
 				for _, ip := range ips {
 					if ip.To4() != nil {
-						v4Update.Lock()
-						v4Update.State.Desired[ip.String()] = true
-						v4Update.Unlock()
+						v4Reconciler.Desired(ip.String())
 					} else {
-						v6Update.Lock()
-						v6Update.State.Desired[ip.String()] = true
-						v6Update.Unlock()
+						v6Reconciler.Desired(ip.String())
 					}
 				}
 			}(server)
@@ -126,13 +122,9 @@ geo-DNS, as nofip will only use simple A records.`,
 
 			for _, ip := range ips {
 				if ip.To4() != nil {
-					v4Update.Lock()
-					v4Update.State.Current[ip.String()] = true
-					v4Update.Unlock()
+					v4Reconciler.Current(ip.String())
 				} else {
-					v6Update.Lock()
-					v6Update.State.Current[ip.String()] = true
-					v6Update.Unlock()
+					v6Reconciler.Current(ip.String())
 				}
 			}
 		}()
@@ -151,20 +143,20 @@ geo-DNS, as nofip will only use simple A records.`,
 			return fmt.Errorf("failed to list zones: %s", err)
 		}
 
-		if v4Update.ShouldUpdate() {
-			if len(v4Update.Plan.Create) > 0 {
-				fmt.Printf("[v4] Creating %d records ...\n", len(v4Update.Plan.Create))
+		if v4Reconciler.ShouldUpdate() {
+			if len(v4Reconciler.Plan.Create) > 0 {
+				fmt.Printf("[v4] Creating %d records ...\n", len(v4Reconciler.Plan.Create))
 
 				wgCreate := &sync.WaitGroup{}
-				for ip := range v4Update.Plan.Create {
+				for ip := range v4Reconciler.Plan.Create {
 					wgCreate.Add(1)
 					go createRecord(api, zoneID, ip, wgCreate)
 				}
 				wgCreate.Wait()
 			}
 
-			if len(v4Update.Plan.Delete) > 0 {
-				fmt.Printf("[v4] Deleting %d records ...\n", len(v4Update.Plan.Delete))
+			if len(v4Reconciler.Plan.Delete) > 0 {
+				fmt.Printf("[v4] Deleting %d records ...\n", len(v4Reconciler.Plan.Delete))
 
 				records, _, err := api.ListDNSRecords(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.ListDNSRecordsParams{
 					Type: "A",
@@ -177,7 +169,7 @@ geo-DNS, as nofip will only use simple A records.`,
 				wgDelete := &sync.WaitGroup{}
 				for _, record := range records {
 					// Check if the record should be deleted.
-					if v4Update.Plan.Delete[record.Content] {
+					if v4Reconciler.Plan.Delete[record.Content] {
 						wgDelete.Add(1)
 						go deleteRecord(api, &record, wgDelete)
 					}
@@ -186,7 +178,7 @@ geo-DNS, as nofip will only use simple A records.`,
 			}
 		}
 
-		if v6Update.ShouldUpdate() {
+		if v6Reconciler.ShouldUpdate() {
 			return errors.New("IPv6 is not supported yet")
 			// TODO: Use the cloudflare SDK to create a DNS AAAA record with the IPs.
 		}
