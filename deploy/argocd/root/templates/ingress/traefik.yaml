@@ -31,11 +31,11 @@ spec:
           releaseName: traefik
           values: |
             ingressClass:
-              enabled: yes
-              isDefaultClass: yes
+              enabled: true
+              isDefaultClass: true
 
             service:
-              enabled: yes
+              enabled: true
               type: LoadBalancer
               single: false
 
@@ -68,21 +68,21 @@ spec:
             ports:
               traefik:
                 port: 9000
-                expose: no
+                expose: false
                 exposedPort: 9000
                 protocol: TCP
               web:
                 port: 8080
-                expose: yes
+                expose: true
                 exposedPort: 80
                 protocol: TCP
               websecure:
                 port: 8443
-                expose: yes
+                expose: true
                 exposedPort: 443
                 protocol: TCP
                 tls:
-                  enabled: yes
+                  enabled: false
 
             providers:
               kubernetesIngress:
