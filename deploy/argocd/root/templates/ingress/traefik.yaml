@@ -89,3 +89,8 @@ spec:
               kubernetesIngress:
                 publishedService:
                   enabled: true
+                allowExternalNameServices: false
+                allowEmptyServices: false
+              kubernetesCRD:
+                allowExternalNameServices: false
+                allowEmptyServices: false
