@@ -31,7 +31,10 @@ server:
     enabled: true
     ingressClassName: traefik
     annotations:
+      # This automatically creates a TLS certificate for the ingress.
       cert-manager.io/cluster-issuer: letsencrypt-production
+      # This is required if the "entrypoint" does not have TLS enabled.
+      traefik.ingress.kubernetes.io/router.tls: "true"
     hosts:
       - "gitops.nicklasfrahm.dev"
     tls:
