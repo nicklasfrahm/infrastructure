@@ -34,6 +34,9 @@ func Hardware(useRemote bool) *fiber.App {
 				return errs[0]
 			}
 			if status != 200 {
+				if status == 404 {
+					return c.Next()
+				}
 				return fmt.Errorf("failed to fetch file: %s", path)
 			}
 			bytes = body
@@ -41,7 +44,6 @@ func Hardware(useRemote bool) *fiber.App {
 			// Use the local file system to fetch the file.
 			bytes, err = os.ReadFile(path)
 			if err != nil {
-				fmt.Printf("Failed to read file: %s", err)
 				return err
 			}
 		}
