@@ -55,6 +55,7 @@ metadata:
     # This is required if the "entrypoint" does not have TLS enabled.
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  ingressClassName: traefik
   rules:
   - host: edge.nicklasfrahm.dev
     http:

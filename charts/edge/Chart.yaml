@@ -1,0 +1,6 @@
+apiVersion: v2
+name: edge
+description: A Helm chart to expose services on a highly-available edge.
+type: application
+version: "0.1.0"
+appVersion: "0.1.0"

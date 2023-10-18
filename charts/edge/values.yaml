@@ -1,0 +1,14 @@
+nameOverride: ""
+fullnameOverride: ""
+
+services:
+  http:
+    - name: example
+      host: edge.nicklasfrahm.dev
+      backend:
+        host: 10.3.11.103.nip.io
+
+    - name: moos
+      host: moos.nicklasfrahm.dev
+      backend:
+        host: 10.3.11.103.nip.io
