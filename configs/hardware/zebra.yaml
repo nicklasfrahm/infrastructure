@@ -1,0 +1,84 @@
+apiVersion: experimental.nicklasfrahm.dev
+kind: Hardware
+metadata:
+  name: zebra
+  annotations:
+    experimental.nicklasfrahm.dev/description: |
+      A backup server with some storage.
+spec:
+  hostname: zebra
+  configuration:
+    cpus:
+      - manufacturer: intel
+        model: i3-7100
+        cores: 2
+        threads: 4
+        clockMHz: 3900
+    memory:
+      - manufacturer: corsair
+        model: vengeance
+        capacityGiB: 16
+        clockMHz: 2400
+    disks:
+      - name: sda
+        type: ssd
+        manufacturer: sandisk
+        model: SanDisk SDSSDA12
+        capacityGiB: 120
+        interface: sata
+        formFactorIn: 2.5
+      - name: sdb
+        type: ssd
+        manufacturer: sandisk
+        model: SanDisk SDSSDA12
+        capacityGiB: 120
+        interface: sata
+        formFactorIn: 2.5
+      - name: sdc
+        type: ssd
+        manufacturer: sandisk
+        model: SanDisk SDSSDH35
+        capacityGiB: 500
+        interface: sata
+        formFactorIn: 2.5
+      - name: sdd
+        type: ssd
+        manufacturer: sandisk
+        model: SanDisk SDSSDH35
+        capacityGiB: 500
+        interface: sata
+        formFactorIn: 2.5
+      - name: sde
+        type: hdd
+        manufacturer: seagate
+        model: ST1000NM0033-9ZM
+        capacityGiB: 1000
+        interface: sata
+        formFactorIn: 3.5
+      - name: sdf
+        type: hdd
+        manufacturer: seagate
+        model: ST1000NM0033-9ZM
+        capacityGiB: 1000
+        interface: sata
+        formFactorIn: 3.5
+      - name: sdg
+        type: hdd
+        manufacturer: seagate
+        model: ST1000DM003-1ER1
+        capacityGiB: 1000
+        interface: sata
+        formFactorIn: 3.5
+    interfaces:
+      - name: enp3s0
+        type: ethernet
+        speedMbps: 1000
+        mac: 10:7b:44:17:b4:78
+      - name: enp7s0f0
+        type: ethernet
+        speedMbps: 1000
+        mac: 00:26:55:d4:50:74
+      - name: enp7s0f0
+        type: ethernet
+        speedMbps: 1000
+        mac: 00:26:55:d4:50:75
