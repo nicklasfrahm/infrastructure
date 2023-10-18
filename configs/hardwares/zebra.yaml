@@ -1,0 +1,69 @@
+apiVersion: experimental.nicklasfrahm.dev
+kind: Hardware
+metadata:
+  name: zebra
+  annotations:
+    experimental.nicklasfrahm.dev/description: |
+      A backup server with some storage.
+spec:
+  hostname: zebra
+  cpus:
+    - cores: 2
+      clockMHz: 3900
+      manufacturer: intel
+      model: i3-7100
+      threads: 4
+  memory:
+    - capacityGiB: 16
+      clockMHz: 2400
+      manufacturer: corsair
+      model: vengeance
+  disks:
+    - capacityGiB: 120
+      formFactorIn: 2.5
+      interface: seagate
+      manufacturer: sandisk
+      model: SanDisk SDSSDA12
+      name: sda
+      type: SSD
+    - capacityGiB: 120
+      formFactorIn: 2.5
+      interface: SATA
+      manufacturer: sandisk
+      model: SanDisk SDSSDA12
+      name: sdb
+      type: SSD
+    - capacityGiB: 1000
+      formFactorIn: 3.5
+      interface: SATA
+      manufacturer: seagate
+      model: ST1000NM0033-9ZM
+      name: sde
+      type: HDD
+    - capacityGiB: 1000
+      formFactorIn: 3.5
+      interface: SATA
+      manufacturer: seagate
+      model: ST1000NM0033-9ZM
+      name: sdf
+      type: HDD
+    - capacityGiB: 1000
+      formFactorIn: 3.5
+      interface: SATA
+      manufacturer: seagate
+      model: ST1000DM003-1ER1
+      name: sdg
+      type: HDD
+  interfaces:
+    - mac: 10:7b:44:17:b4:78
+      name: enp3s0
+      speedMbps: 1000
+      type: Ethernet
+    - mac: 00:26:55:d4:50:74
+      name: enp7s0f0
+      speedMbps: 1000
+      type: Ethernet
+    - mac: 00:26:55:d4:50:75
+      name: enp7s0f0
+      speedMbps: 1000
+      type: Ethernet
