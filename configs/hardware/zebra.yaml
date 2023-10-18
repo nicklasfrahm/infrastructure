@@ -34,20 +34,6 @@ spec:
         capacityGiB: 120
         interface: sata
         formFactorIn: 2.5
-      - name: sdc
-        type: ssd
-        manufacturer: sandisk
-        model: SanDisk SDSSDH35
-        capacityGiB: 500
-        interface: sata
-        formFactorIn: 2.5
-      - name: sdd
-        type: ssd
-        manufacturer: sandisk
-        model: SanDisk SDSSDH35
-        capacityGiB: 500
-        interface: sata
-        formFactorIn: 2.5
       - name: sde
         type: hdd
         manufacturer: seagate
