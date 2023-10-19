@@ -1,0 +1,64 @@
+config:
+  core.https_address: 10.3.11.102:8443
+  core.bgp_address: 10.3.11.102:179
+  core.bgp_asn: 65100
+  core.bgp_routerid: 10.3.11.102
+  images.auto_update_interval: 6
+
+storage_pools:
+- name: data
+  driver: zfs
+  config:
+    source: incus/incus
+
+networks:
+- name: bgp
+  type: bridge
+  config:
+    ipv4.address: 10.100.0.254/24
+    ipv6.address: none
+    bgp.peers.delta.address: 172.31.255.3
+    bgp.peers.delta.asn: 65003
+
+profiles:
+- name: default
+  description: Default LXD profile
+  config:
+    limits.cpu: "4"
+    limits.memory: 8GiB
+    cloud-init.user-data: |
+      #cloud-config
+      timezone: UTC
+      package_update: true
+      package_upgrade: true
+      packages:
+        - git
+        - curl
+        - openssh-server
+      ssh_genkeytypes:
+        - ed25519
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklas.frahm@gmail.com
+      users:
+        - name: nicklasfrahm
+          gecos: Nicklas Frahm
+          sudo: ALL=(ALL) NOPASSWD:ALL
+          shell: /bin/bash
+          ssh_authorized_keys:
+            - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklas.frahm@gmail.com
+    cloud-init.network-config: |
+      version: 2
+      ethernets:
+        eth0:
+          dhcp4: true
+          dhcp6: false
+  devices:
+    root:
+      path: /
+      pool: data
+      type: disk
+    eth0:
+      name: eth0
+      nictype: bridged
+      parent: bgp
+      type: nic
