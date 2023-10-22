@@ -7,8 +7,17 @@ metadata:
       A backup server with some storage.
 spec:
   hostname: zebra
+  chassis:
+    manufacturer: bitfenix
+    model: shinobi
+    class: Tower
+    dimensions:
+      widthMm: 205
+      heightMm: 460
+      depthMm: 490
   cpus:
-    - cores: 2
+    - architecture: amd64
+      cores: 2
       clockMHz: 3900
       manufacturer: intel
       model: i3-7100

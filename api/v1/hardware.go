@@ -4,8 +4,24 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// HardwareChassisDimensions describes the dimensions of a chassis.
+type HardwareChassisDimensions struct {
+	DepthMm  int `json:"depthMm,omitempty" yaml:"depthMm"`
+	HeightMm int `json:"heightMm,omitempty" yaml:"heightMm"`
+	WidthMm  int `json:"widthMm,omitempty" yaml:"widthMm"`
+}
+
+// HardwareChassis describes a chassis.
+type HardwareChassis struct {
+	Dimensions   HardwareChassisDimensions `json:"dimensions,omitempty" yaml:"dimensions"`
+	Manufacturer string                    `json:"manufacturer,omitempty" yaml:"manufacturer"`
+	Model        string                    `json:"model,omitempty" yaml:"model"`
+	Type         string                    `json:"type,omitempty" yaml:"type"`
+}
+
 // HardwareCPU describes a CPU.
 type HardwareCPU struct {
+	Architecture string `json:"architecture,omitempty" yaml:"architecture"`
 	Cores        int    `json:"cores,omitempty" yaml:"cores"`
 	ClockMHz     int    `json:"clockMHz,omitempty" yaml:"clockMHz"`
 	Manufacturer string `json:"manufacturer,omitempty" yaml:"manufacturer"`
@@ -43,6 +59,7 @@ type HardwareInterface struct {
 // HardwareSpec defines the configuration of a physical server.
 type HardwareSpec struct {
 	Hostname   string              `json:"hostname,omitempty" yaml:"hostname"`
+	Chassis    HardwareChassis     `json:"chassis,omitempty" yaml:"chassis"`
 	CPUs       []HardwareCPU       `json:"cpus,omitempty" yaml:"cpus"`
 	Memory     []HardwareMemory    `json:"memory,omitempty" yaml:"memory"`
 	Disks      []HardwareDisk      `json:"disks,omitempty" yaml:"disks"`
