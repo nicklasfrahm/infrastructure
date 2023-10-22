@@ -34,3 +34,7 @@ docker:
 	  --build-arg TARGET=$(TARGET) \
 	  --build-arg VERSION=$(VERSION) \
 	  -f build/package/Dockerfile .
+
+.PHONY: docker-push
+docker-push: docker
+	docker push $(REGISTRY)/$(REPO)-$(TARGET):latest
