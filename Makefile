@@ -40,7 +40,7 @@ docker-push: docker
 	docker push $(REGISTRY)/$(REPO)-$(TARGET):latest
 
 .PHONY: deploy
-deploy:
+deploy: docker-push
 	sed -i "s|image: .*|image: $(REGISTRY)/$(REPO)-$(TARGET):$(VERSION)|" deploy/kubectl/api/$(TARGET).yaml
 	kubectl apply -f deploy/kubectl/api/$(TARGET).yaml
 	git reset --hard
