@@ -1,6 +1,6 @@
 REGISTRY	:= ghcr.io
-REPO		:= nicklasfrahm/infrastructure
-TARGET		?= cloudapi
+REPO			:= nicklasfrahm/infrastructure
+TARGET		?= metal
 SOURCES		:= $(shell find . -name "*.go")
 PLATFORM	?= $(shell go version | cut -d " " -f 4)
 GOOS		:= $(shell echo $(PLATFORM) | cut -d "/" -f 1)
