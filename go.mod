@@ -8,6 +8,7 @@ require (
 	github.com/cloudflare/cloudflare-go v0.79.0
 	github.com/go-playground/validator/v10 v10.15.5
 	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/google/go-github/v56 v56.0.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pulumi/pulumi-cloudflare/sdk/v5 v5.13.0
 	github.com/pulumi/pulumi/sdk/v3 v3.89.0
