@@ -37,6 +37,7 @@ docker:
 
 .PHONY: docker-push
 docker-push: docker
+	docker push $(REGISTRY)/$(REPO)-$(TARGET):$(VERSION)
 	docker push $(REGISTRY)/$(REPO)-$(TARGET):latest
 
 .PHONY: deploy
