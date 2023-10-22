@@ -34,3 +34,11 @@ docker:
 	  --build-arg TARGET=$(TARGET) \
 	  --build-arg VERSION=$(VERSION) \
 	  -f build/package/Dockerfile .
+
+# Make sure you have `inotify-tools` installed.
+watch:
+	while true; do \
+		$(MAKE) build; \
+		# TODO: Run server and restart it on changes.
+		inotifywait -qre close_write .; \
+	done
