@@ -1,6 +1,6 @@
 REGISTRY	:= ghcr.io
-REPO		:= nicklasfrahm/infrastructure
-TARGET		?= cloudapi
+REPO			:= nicklasfrahm/infrastructure
+TARGET		?= metal
 SOURCES		:= $(shell find . -name "*.go")
 PLATFORM	?= $(shell go version | cut -d " " -f 4)
 GOOS		:= $(shell echo $(PLATFORM) | cut -d "/" -f 1)
@@ -37,4 +37,11 @@ docker:
 
 .PHONY: docker-push
 docker-push: docker
+	docker push $(REGISTRY)/$(REPO)-$(TARGET):$(VERSION)
 	docker push $(REGISTRY)/$(REPO)-$(TARGET):latest
+
+.PHONY: deploy
+deploy: docker-push
+	sed -i "s|image: .*|image: $(REGISTRY)/$(REPO)-$(TARGET):$(VERSION)|" deploy/kubectl/api/$(TARGET).yaml
+	kubectl apply -f deploy/kubectl/api/$(TARGET).yaml
+	git reset --hard
