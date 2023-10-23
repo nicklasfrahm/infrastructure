@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: kuard
+  name: kuard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kuard
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kuard
+    spec:
+      containers:
+      - image: gcr.io/kuar-demo/kuard-amd64:blue
+        name: kuard
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: kuard
+  name: kuard
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+    name: http
+  selector:
+    app.kubernetes.io/name: kuard
+  type: ClusterIP
+---
+# This ingress only handles HTTP traffic.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kuard-http
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: edge.nicklasfrahm.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kuard
+            port:
+              name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kuard-https
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    # This is required if the "entrypoint" does not have TLS enabled.
+    # The problem with this is that will only serve HTTPS, which is
+    # why we need a second ingress that handles plain HTTP.
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: edge.nicklasfrahm.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kuard
+            port:
+              name: http
+  tls:
+  - hosts:
+    - edge.nicklasfrahm.dev
+    secretName: dev-nicklasfrahm-edge-tls
