@@ -22,10 +22,11 @@ zones:
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
+      # TODO: Add "kubeapi" listener to edge before routing traffic to "alfa".
       - name: november
         type: SITE
         site:
-          router: alfa.nicklasfrahm.dev
+          router: delta.nicklasfrahm.dev
       - name: moos
         type: SITE
         site:
