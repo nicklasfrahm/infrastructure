@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metal-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: metal-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: metal-api
+    spec:
+      containers:
+        - name: metal-api
+          image: ghcr.io/nicklasfrahm/infrastructure-metal:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              cpu: 50m
+              memory: 50Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metal-api
+spec:
+  selector:
+    app.kubernetes.io/name: metal-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: metal-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    traefik.ingress.kubernetes.io/router.middlewares: api-metal-api@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+    - host: api.nicklasfrahm.dev
+      http:
+        paths:
+          - path: /metal
+            pathType: Prefix
+            backend:
+              service:
+                name: metal-api
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - api.nicklasfrahm.dev
+      secretName: api.nicklasfrahm.dev
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: metal-api
+spec:
+  stripPrefix:
+    prefixes:
+      - /metal

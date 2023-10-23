@@ -6,14 +6,14 @@ zones:
         type: CNAME
         values:
           - alfa.nicklasfrahm.dev
+      - name: api
+        type: CNAME
+        values:
+          - alfa.nicklasfrahm.dev
       - name: mc-survival
         type: CNAME
         values:
           - delta.nicklasfrahm.dev
-      - name: cloud
-        type: CNAME
-        values:
-          - ghs.googlehosted.com
       - name: "@"
         type: GITHUB_PAGES
         githubPages:
