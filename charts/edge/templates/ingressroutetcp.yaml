@@ -10,7 +10,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: HostSNIRegexp(`{{ $service.host }}`)
+    - match: HostSNI(`{{ $service.host }}`)
       services:
         - name: {{ include "edge.fullname" $ }}-http-{{ $service.name }}
           port: 443

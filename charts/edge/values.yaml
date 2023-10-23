@@ -8,7 +8,12 @@ services:
       backend:
         host: 10.3.11.103.nip.io
 
-    - name: moos
-      host: moos.nicklasfrahm.dev
+    - name: registry-november
+      host: registry.november.nicklasfrahm.dev
+      backend:
+        host: 10.3.11.103.nip.io
+
+    - name: dashboard-november
+      host: dashboard.november.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io

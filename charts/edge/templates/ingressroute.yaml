@@ -11,7 +11,8 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: "HostRegexp(`{{ $service.host }}`)"
+      match: Host(`{{ $service.host }}`)
+      priority: 1
       services:
         - name: {{ include "edge.fullname" $ }}-http-{{ $service.name }}
           port: 80
