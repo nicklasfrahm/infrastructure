@@ -25,7 +25,7 @@ zones:
       - name: november
         type: SITE
         site:
-          router: delta.nicklasfrahm.dev
+          router: alfa.nicklasfrahm.dev
       - name: moos
         type: SITE
         site:
