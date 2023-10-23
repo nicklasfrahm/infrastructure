@@ -43,5 +43,19 @@ docker-push: docker
 .PHONY: deploy
 deploy: docker-push
 	sed -i "s|image: .*|image: $(REGISTRY)/$(REPO)-$(TARGET):$(VERSION)|" deploy/kubectl/api/$(TARGET).yaml
-	kubectl apply -f deploy/kubectl/api/$(TARGET).yaml
+	kubectl apply -n api -f deploy/kubectl/api/$(TARGET).yaml
 	git reset --hard
+
+.PHONY: edge
+edge: bin/nofip-$(SUFFIX)
+	@for SITE in alfa bravo charlie ; do \
+		echo "\033[0;31m>> $$SITE\033[0m" ; \
+    kubectl --context $$SITE create namespace edge --dry-run=client -o yaml | kubectl apply --server-side -f - ; \
+		helm --kube-context $$SITE -n edge upgrade --install --atomic edge charts/edge ; \
+	done
+	@./bin/nofip-$(SUFFIX) -r edge.nicklasfrahm.dev -e alfa.nicklasfrahm.dev,bravo.nicklasfrahm.dev,charlie.nicklasfrahm.dev
+
+.PHONY: kuard
+kuard:
+	kubectl --context moos create namespace kuard --dry-run=client -o yaml | kubectl apply --server-side -f -
+	kubectl --context moos -n kuard apply -f deploy/kubectl/kuard

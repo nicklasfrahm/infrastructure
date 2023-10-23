@@ -1,0 +1,18 @@
+{{- range $service := .Values.services.http }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "edge.fullname" $ }}-http-{{ $service.name }}
+  labels:
+    {{- include "edge.labels" $ | nindent 4 }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`{{ $service.host }}`)
+      services:
+        - name: {{ include "edge.fullname" $ }}-http-{{ $service.name }}
+          port: 80
+{{- end }}

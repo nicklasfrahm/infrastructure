@@ -1,0 +1,19 @@
+nameOverride: ""
+fullnameOverride: ""
+
+services:
+  http:
+    - name: example
+      host: edge.nicklasfrahm.dev
+      backend:
+        host: 10.3.11.103.nip.io
+
+    - name: registry-november
+      host: registry.november.nicklasfrahm.dev
+      backend:
+        host: 10.3.11.103.nip.io
+
+    - name: dashboard-november
+      host: dashboard.november.nicklasfrahm.dev
+      backend:
+        host: 10.3.11.103.nip.io
