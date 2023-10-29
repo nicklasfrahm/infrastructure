@@ -15,11 +15,13 @@ spec:
     helm:
       values: |
         wordpressUsername: olaaap
-        existingSecret: wordpress-admin
         wordpressEmail: o.poziomkowska@gmail.com
         wordpressFirstName: Ola
         wordpressLastName: Poziomkowska
         wordpressBlogName: "Ola's website"
+
+        existingSecret: wordpress-admin
+
         allowEmptyPassword: false
 
         resources:
@@ -37,7 +39,9 @@ spec:
           enabled: true
           ingressClassName: traefik
           annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-production
+            cert-manager.io/cluster-issuer: letsencrypt-productio
+            traefik.ingress.kubernetes.io/router.tls: "true"
+            traefik.ingress.kubernetes.io/router.entrypoints: websecure
           hostname: odance.dk
           tls: true
   syncPolicy:

@@ -1,0 +1,30 @@
+wordpressUsername: olaaap
+wordpressEmail: o.poziomkowska@gmail.com
+wordpressFirstName: Ola
+wordpressLastName: Poziomkowska
+wordpressBlogName: "Ola's website"
+
+existingSecret: wordpress-admin
+
+allowEmptyPassword: false
+
+resources:
+limits:
+  cpu: 2000m
+  memory: 2048Mi
+requests:
+  memory: 512Mi
+  cpu: 500m
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-productio
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  hostname: odance.nl
+  tls: true

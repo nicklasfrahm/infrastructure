@@ -59,3 +59,11 @@ edge: bin/nofip-$(SUFFIX)
 kuard:
 	kubectl --context moos create namespace kuard --dry-run=client -o yaml | kubectl apply --server-side -f -
 	kubectl --context moos -n kuard apply -f deploy/kubectl/kuard
+
+.PHONY: odance
+odance:
+	kubectl --context moos create namespace odance-prd --dry-run=client -o yaml | kubectl --context moos apply --server-side -f -
+	kubectl --context moos -n odance-prd apply -f secret-odance-prd.yaml
+	helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm repo update bitnami
+	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml

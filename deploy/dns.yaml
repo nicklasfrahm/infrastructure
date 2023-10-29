@@ -34,4 +34,8 @@ zones:
 
   - provider: cloudflare
     name: odance.nl
-    records: []
+    records:
+      - name: "@"
+        type: CNAME
+        values:
+          - delta.nicklasfrahm.dev
