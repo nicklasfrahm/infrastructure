@@ -64,6 +64,7 @@ kuard:
 odance:
 	kubectl --context moos create namespace odance-prd --dry-run=client -o yaml | kubectl --context moos apply --server-side -f -
 	kubectl --context moos -n odance-prd apply -f secret-odance-prd.yaml
+	kubectl --context moos -n odance-prd apply -f deploy/kubectl/odance/prd.yaml
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update bitnami
 	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml
