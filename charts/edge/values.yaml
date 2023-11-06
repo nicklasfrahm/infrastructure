@@ -3,39 +3,39 @@ fullnameOverride: ""
 
 services:
   http:
-    - name: example
+    - name: edge
       host: edge.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io
 
-    - name: registry-november
+    - name: november-registry
       host: registry.november.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io
 
-    - name: dashboard-november
+    - name: november-dashboard
       host: dashboard.november.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io
 
   https:
-    - name: example
+    - name: edge
       host: edge.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io
 
-    - name: registry-november
+    - name: november-registry
       host: registry.november.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io
 
-    - name: dashboard-november
+    - name: november-dashboard
       host: dashboard.november.nicklasfrahm.dev
       backend:
         host: 10.3.11.103.nip.io
 
-    - name: zebra
-      host: zebra.nicklasfrahm.dev
+    - name: zebra-k8s
+      host: k8s.zebra.nicklasfrahm.dev
       backend:
         host: zebra.srv.nicklasfrahm.dev
         port: 6443

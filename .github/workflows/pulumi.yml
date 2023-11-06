@@ -41,7 +41,6 @@ jobs:
 
       - name: Preview infrastructure
         uses: pulumi/actions@v4
-
         with:
           comment-on-pr: true
           command: preview

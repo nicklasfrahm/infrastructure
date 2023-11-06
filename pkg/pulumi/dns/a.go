@@ -20,12 +20,12 @@ type A struct {
 // NewA configures A DNS records for the given hostname.
 func NewA(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordSpec, opts ...pulumi.ResourceOption) (*A, error) {
 	component := &A{}
-	if err := ctx.RegisterComponentResource(CNAMEComponentType, name, component, opts...); err != nil {
+	if err := ctx.RegisterComponentResource(AComponentType, name, component, opts...); err != nil {
 		return nil, err
 	}
 
 	if len(args.Values) == 0 {
-		return nil, fmt.Errorf("%s: failed to find required argument: values", CNAMEComponentType)
+		return nil, fmt.Errorf("%s: failed to find required argument: values", AComponentType)
 	}
 
 	for _, value := range args.Values {
