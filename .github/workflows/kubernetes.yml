@@ -28,6 +28,8 @@ jobs:
           - delta
           # Project clusters.
           - moos
+          # Infrastructure clusters.
+          - zebra
     environment:
       name: ${{ matrix.environment }}
     steps:

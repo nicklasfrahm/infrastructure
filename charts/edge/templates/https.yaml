@@ -1,0 +1,34 @@
+{{- range $service := .Values.services.https }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "edge.fullname" $ }}-https-{{ $service.name }}
+  labels:
+    {{- include "edge.labels" $ | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ $service.backend.host }}
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: {{ default 443 $service.backend.port }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ include "edge.fullname" $ }}-https-{{ $service.name }}
+  labels:
+    {{- include "edge.labels" $ | nindent 4 }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostSNI(`{{ $service.host }}`)
+      services:
+        - name: {{ include "edge.fullname" $ }}-https-{{ $service.name }}
+          port: 443
+  tls:
+    passthrough: true
+{{- end }}
