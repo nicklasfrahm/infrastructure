@@ -35,7 +35,7 @@ services:
         host: 10.3.11.103.nip.io
 
     - name: zebra
-      host: zebra.nicklasfrahm.dev
+      host: k8s.zebra.nicklasfrahm.dev
       backend:
         host: zebra.srv.nicklasfrahm.dev
         port: 6443
