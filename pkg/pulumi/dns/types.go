@@ -7,6 +7,8 @@ const (
 	RecordTypeSite = "SITE"
 	// RecordTypeCNAME is the type of a CNAME DNS record.
 	RecordTypeCNAME = "CNAME"
+	// RecordTypeA is the type of an A DNS record.
+	RecordTypeA = "A"
 )
 
 // GitHubPagesRecordSpec is a data structure that describes a GitHub Pages DNS record.

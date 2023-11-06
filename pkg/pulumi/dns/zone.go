@@ -67,6 +67,8 @@ func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.Re
 				_, err = NewSite(ctx, fmt.Sprintf("%s-c.site-%s", name, record.Name), zone, record, pulumi.Parent(component))
 			case RecordTypeCNAME:
 				_, err = NewCNAME(ctx, fmt.Sprintf("%s-c.cname-%s", name, record.Name), zone, record, pulumi.Parent(component))
+			case RecordTypeA:
+				_, err = NewA(ctx, fmt.Sprintf("%s-c.a-%s", name, record.Name), zone, record, pulumi.Parent(component))
 			}
 			if err != nil {
 				return nil, err
