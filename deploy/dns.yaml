@@ -6,14 +6,14 @@ zones:
         type: CNAME
         values:
           - alfa.nicklasfrahm.dev
+      - name: api
+        type: CNAME
+        values:
+          - alfa.nicklasfrahm.dev
       - name: mc-survival
         type: CNAME
         values:
           - delta.nicklasfrahm.dev
-      - name: cloud
-        type: CNAME
-        values:
-          - ghs.googlehosted.com
       - name: "@"
         type: GITHUB_PAGES
         githubPages:
@@ -22,15 +22,30 @@ zones:
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
+      # TODO: Add "kubeapi" listener to edge before routing traffic to "alfa".
       - name: november
         type: SITE
         site:
-          router: delta.nicklasfrahm.dev
+          router: alfa.nicklasfrahm.dev
       - name: moos
         type: SITE
         site:
           router: delta.nicklasfrahm.dev
+      # A single node cluster with some storage to host MinIO for backups.
+      - name: zebra
+        type: SITE
+        site:
+          router: alfa.nicklasfrahm.dev
+      # TODO: Remove this once I have an internal DNS server.
+      - name: zebra.srv
+        type: A
+        values:
+          - 10.0.11.102
 
   - provider: cloudflare
     name: odance.nl
-    records: []
+    records:
+      - name: "@"
+        type: CNAME
+        values:
+          - delta.nicklasfrahm.dev

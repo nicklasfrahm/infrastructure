@@ -41,8 +41,8 @@ jobs:
 
       - name: Preview infrastructure
         uses: pulumi/actions@v4
-
         with:
+          refresh: true
           comment-on-pr: true
           command: preview
           stack-name: ${{ matrix.stack }}
@@ -77,10 +77,10 @@ jobs:
       - name: Update infrastructure
         uses: pulumi/actions@v4
         with:
+          refresh: true
           command: update
           stack-name: ${{ matrix.stack }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-

@@ -13,3 +13,10 @@ secret*.yaml
 
 # Built binary files.
 bin/
+
+# Ignore cosign keys.
+*.key
+*.pub
+
+# Ignore .env files.
+.env*
