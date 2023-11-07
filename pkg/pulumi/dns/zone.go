@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// ZoneComponentType is the ID of the component type.
-	ZoneComponentType = "nicklasfrahm:dns:Zone"
+	// ComponentTypeZone is the ID of the component type.
+	ComponentTypeZone = "nicklasfrahm:dns:Zone"
 	// ZoneProviderCloudflare is the name of the Cloudflare provider.
 	ZoneProviderCloudflare = "cloudflare"
 
@@ -31,7 +31,7 @@ type Zone struct {
 // It also takes care of the provider configuration.
 func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.ResourceOption) (*Zone, error) {
 	component := &Zone{}
-	if err := ctx.RegisterComponentResource(ZoneComponentType, name, component, opts...); err != nil {
+	if err := ctx.RegisterComponentResource(ComponentTypeZone, name, component, opts...); err != nil {
 		return nil, err
 	}
 

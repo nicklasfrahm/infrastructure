@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// AComponentType is the ID of the component type.
-	AComponentType = "nicklasfrahm:dns:A"
+	// ComponentTypeA is the ID of the component type.
+	ComponentTypeA = "nicklasfrahm:dns:A"
 )
 
 // A creates A DNS records for the given hostname.
@@ -20,12 +20,12 @@ type A struct {
 // NewA configures A DNS records for the given hostname.
 func NewA(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordSpec, opts ...pulumi.ResourceOption) (*A, error) {
 	component := &A{}
-	if err := ctx.RegisterComponentResource(AComponentType, name, component, opts...); err != nil {
+	if err := ctx.RegisterComponentResource(ComponentTypeA, name, component, opts...); err != nil {
 		return nil, err
 	}
 
 	if len(args.Values) == 0 {
-		return nil, fmt.Errorf("%s: failed to find required argument: values", AComponentType)
+		return nil, fmt.Errorf("%s: failed to find required argument: values", ComponentTypeA)
 	}
 
 	for _, value := range args.Values {
