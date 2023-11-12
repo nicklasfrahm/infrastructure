@@ -1,0 +1,4 @@
+config:
+  pulumi:disable-default-providers:
+    # TODO: Disable all default providers once we have properly injected the cloudflare provider.
+    - 'kubernetes'

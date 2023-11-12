@@ -43,7 +43,16 @@ func NewZone(ctx *pulumi.Context, name string, args *ZoneSpec, opts ...pulumi.Re
 			return nil, err
 		}
 
-		zoneOptions := []pulumi.ResourceOption{pulumi.Parent(provider), pulumi.Provider(provider)}
+		zoneOptions := []pulumi.ResourceOption{
+			pulumi.Parent(provider),
+			pulumi.Provider(provider),
+			// TODO: Investigate why this doesn't work.
+			// pulumi.Aliases([]pulumi.Alias{
+			// 	{
+			// 		URN: pulumi.URN("urn:pulumi:foundation::infrastructure::pulumi:providers:cloudflare::default"),
+			// 	},
+			// }),
+		}
 		if args.ID != "" {
 			zoneOptions = append(zoneOptions, pulumi.Import(pulumi.ID(args.ID)))
 		}

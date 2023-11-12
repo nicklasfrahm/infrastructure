@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
+	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"gopkg.in/yaml.v3"
 
@@ -88,12 +90,24 @@ func configureClusters(ctx *pulumi.Context, opts ...pulumi.ResourceOption) error
 			return err
 		}
 
+		if clusterName == "charlie" {
+			_, err := corev1.NewNamespace(ctx, fmt.Sprintf("%s-%s-r.namespace-test", StackFoundation, clusterName), &corev1.NamespaceArgs{
+				Metadata: &metav1.ObjectMetaArgs{
+					Name: pulumi.String("pulumi-test"),
+				},
+			}, pulumi.Parent(cluster), pulumi.Provider(cluster.Provider))
+			if err != nil {
+				return err
+			}
+		}
+
 		// TODO: Remove this.
-		cluster.Server.ApplyT(func(server string) error {
+		cluster.Server.ApplyT(func(server string) string {
 			if server != "" {
 				pulumi.Printf("%s: %s\n", clusterName, server)
 			}
-			return nil
+
+			return server
 		})
 	}
 
