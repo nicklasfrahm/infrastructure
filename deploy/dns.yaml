@@ -5,11 +5,11 @@ zones:
       - name: gitops
         type: CNAME
         values:
-          - alfa.nicklasfrahm.dev
+          - delta.nicklasfrahm.dev
       - name: api
         type: CNAME
         values:
-          - alfa.nicklasfrahm.dev
+          - delta.nicklasfrahm.dev
       - name: mc-survival
         type: CNAME
         values:
@@ -26,7 +26,7 @@ zones:
       - name: november
         type: SITE
         site:
-          router: alfa.nicklasfrahm.dev
+          router: delta.nicklasfrahm.dev
       - name: moos
         type: SITE
         site:
@@ -35,7 +35,7 @@ zones:
       - name: zebra
         type: SITE
         site:
-          router: alfa.nicklasfrahm.dev
+          router: delta.nicklasfrahm.dev
       # TODO: Remove this once I have an internal DNS server.
       - name: zebra.srv
         type: A
