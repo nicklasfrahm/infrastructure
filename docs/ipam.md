@@ -13,6 +13,19 @@ This section covers the autonomous system (AS) numbers and IP addresses of the r
 | `charlie` | `172.31.255.2/32` | `65002`   | Edge router for site `deflf02`. |
 | `delta`   | `172.31.255.3/32` | `65003`   | Edge router for site `dksjb01`. |
 
+## Gateway subnets
+
+This section contains the IP addresses of gateway subnets.
+
+| Hostname  | Network          | Description                       |
+| --------- | ---------------- | --------------------------------- |
+| `alfa`    | `172.17.0.0/27`  | Gateway subnet for site `dkaar1`. |
+| `bravo`   | `172.17.0.32/27` | Gateway subnet for site `deflb1`. |
+| `charlie` | `172.17.0.64/27` | Gateway subnet for site `deflb2`. |
+| `delta`   | `172.17.0.96/27` | Gateway subnet for site `dkaar2`. |
+
+Within the gateway subnets, there are some reserved IPs. following IP addresses are reserved:
+
 ## Transit networks
 
 This section contains the IP addresses of transit networks.

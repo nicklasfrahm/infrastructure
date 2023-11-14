@@ -49,3 +49,6 @@ zones:
         type: CNAME
         values:
           - delta.nicklasfrahm.dev
+
+searchDomains:
+  - srv.nicklasfrahm.dev
