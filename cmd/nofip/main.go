@@ -31,6 +31,7 @@ var cfg = &Config{}
 
 var version = "dev"
 var help bool
+var noWait bool
 
 var rootCmd = &cobra.Command{
 	Use:   "nofip",
@@ -62,129 +63,7 @@ geo-DNS, as nofip will only use simple A records.`,
 			os.Exit(0)
 		}
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// Verify that the Cloudflare API token is set.
-		cfg.CloudflareToken = os.Getenv("CLOUDFLARE_TOKEN")
-		if cfg.CloudflareToken == "" {
-			return errors.New("missing environment variable: CLOUDFLARE_TOKEN")
-		}
-
-		// Ensure that the record follows the storage format of records in Cloudflare.
-		if cfg.Record[len(cfg.Record)-1] == '.' {
-			cfg.Record = cfg.Record[:len(cfg.Record)-1]
-		}
-		cfg.Record = strings.ToLower(cfg.Record)
-
-		fmt.Printf("[>>] Record name: %s\n", cfg.Record)
-		fmt.Printf("[>>] Edge servers: %v\n", cfg.EdgeServers)
-
-		if len(cfg.EdgeServers) == 0 {
-			return errors.New("must specify at least one edge server")
-		}
-
-		v4Reconciler := NewReconciler()
-		v6Reconciler := NewReconciler()
-
-		// Use a waitgroup and a goroutine to resolve the IP addresses of
-		// the edge servers and the current state of the edge record in
-		// parallel.
-		wg := sync.WaitGroup{}
-		wg.Add(len(cfg.EdgeServers) + 1)
-
-		for _, server := range cfg.EdgeServers {
-			go func(server string) {
-				defer wg.Done()
-				ips, err := net.LookupIP(server)
-				if err != nil {
-					log.Printf("Failed to resolve edge server: %s: %s", server, err)
-					return
-				}
-
-				for _, ip := range ips {
-					if ip.To4() != nil {
-						v4Reconciler.Desired(ip.String())
-					} else {
-						v6Reconciler.Desired(ip.String())
-					}
-				}
-			}(server)
-		}
-
-		// TODO: Use cloudflare API instead of DNS resolver to
-		// avoid unnecessary reconciliation due to DNS caching.
-		go func() {
-			defer wg.Done()
-			ips, err := net.LookupIP(cfg.Record)
-			if err != nil {
-				fmt.Printf("[] Failed to resolve edge record: %s: %s", cfg.Record, err)
-				return
-			}
-
-			for _, ip := range ips {
-				if ip.To4() != nil {
-					v4Reconciler.Current(ip.String())
-				} else {
-					v6Reconciler.Current(ip.String())
-				}
-			}
-		}()
-
-		wg.Wait()
-
-		api, err := cloudflare.NewWithAPIToken(cfg.CloudflareToken)
-		if err != nil {
-			return fmt.Errorf("failed to create Cloudflare API client: %s", err)
-		}
-
-		zoneRegex := regexp.MustCompile("[a-z]+.[a-z]+$")
-		zoneName := zoneRegex.FindString(cfg.Record)
-		zoneID, err := api.ZoneIDByName(zoneName)
-		if err != nil {
-			return fmt.Errorf("failed to list zones: %s", err)
-		}
-
-		if v4Reconciler.ShouldUpdate() {
-			if len(v4Reconciler.Plan.Create) > 0 {
-				fmt.Printf("[v4] Creating %d records ...\n", len(v4Reconciler.Plan.Create))
-
-				wgCreate := &sync.WaitGroup{}
-				for ip := range v4Reconciler.Plan.Create {
-					wgCreate.Add(1)
-					go createRecord(api, zoneID, ip, wgCreate)
-				}
-				wgCreate.Wait()
-			}
-
-			if len(v4Reconciler.Plan.Delete) > 0 {
-				fmt.Printf("[v4] Deleting %d records ...\n", len(v4Reconciler.Plan.Delete))
-
-				records, _, err := api.ListDNSRecords(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.ListDNSRecordsParams{
-					Type: "A",
-					Name: cfg.Record,
-				})
-				if err != nil {
-					return fmt.Errorf("failed to list relevant records: %s", err)
-				}
-
-				wgDelete := &sync.WaitGroup{}
-				for _, record := range records {
-					// Check if the record should be deleted.
-					if v4Reconciler.Plan.Delete[record.Content] {
-						wgDelete.Add(1)
-						go deleteRecord(api, &record, wgDelete)
-					}
-				}
-				wgDelete.Wait()
-			}
-		}
-
-		if v6Reconciler.ShouldUpdate() {
-			return errors.New("IPv6 is not supported yet")
-			// TODO: Use the cloudflare SDK to create a DNS AAAA record with the IPs.
-		}
-
-		return purgeResolverCache()
-	},
+	RunE:         reconcileEdgeRecord,
 	Version:      version,
 	SilenceUsage: true,
 }
@@ -195,6 +74,7 @@ func init() {
 	rootCmd.MarkPersistentFlagRequired("record")
 	rootCmd.PersistentFlags().StringSliceVarP(&cfg.EdgeServers, "edge-servers", "e", []string{}, "list of edge servers (comma-separated)")
 	rootCmd.MarkPersistentFlagRequired("edge-servers")
+	rootCmd.PersistentFlags().BoolVarP(&noWait, "no-wait", "n", false, "don't wait for DNS propagation")
 }
 
 func main() {
@@ -244,6 +124,136 @@ func purgeResolverCache() error {
 	if err != nil {
 		return fmt.Errorf("failed to purge resolve cache: %s", err)
 	}
+
+	return nil
+}
+
+func reconcileEdgeRecord(cmd *cobra.Command, args []string) error {
+	// Verify that the Cloudflare API token is set.
+	cfg.CloudflareToken = os.Getenv("CLOUDFLARE_TOKEN")
+	if cfg.CloudflareToken == "" {
+		return errors.New("missing environment variable: CLOUDFLARE_TOKEN")
+	}
+
+	// Ensure that the record follows the storage format of records in Cloudflare.
+	if cfg.Record[len(cfg.Record)-1] == '.' {
+		cfg.Record = cfg.Record[:len(cfg.Record)-1]
+	}
+	cfg.Record = strings.ToLower(cfg.Record)
+
+	fmt.Printf("[>>] Record name: %s\n", cfg.Record)
+	fmt.Printf("[>>] Edge servers: %v\n", cfg.EdgeServers)
+
+	if len(cfg.EdgeServers) == 0 {
+		return errors.New("must specify at least one edge server")
+	}
+
+	v4Reconciler := NewReconciler()
+	v6Reconciler := NewReconciler()
+
+	// Use a waitgroup and a goroutine to resolve the IP addresses of
+	// the edge servers and the current state of the edge record in
+	// parallel.
+	wg := sync.WaitGroup{}
+	wg.Add(len(cfg.EdgeServers) + 1)
+
+	for _, server := range cfg.EdgeServers {
+		go func(server string) {
+			defer wg.Done()
+			ips, err := net.LookupIP(server)
+			if err != nil {
+				log.Printf("Failed to resolve edge server: %s: %s", server, err)
+				return
+			}
+
+			for _, ip := range ips {
+				if ip.To4() != nil {
+					v4Reconciler.Desired(ip.String())
+				} else {
+					v6Reconciler.Desired(ip.String())
+				}
+			}
+		}(server)
+	}
+
+	// TODO: Use cloudflare API instead of DNS resolver to
+	// avoid unnecessary reconciliation due to DNS caching.
+	go func() {
+		defer wg.Done()
+		ips, err := net.LookupIP(cfg.Record)
+		if err != nil {
+			fmt.Printf("[XX] Failed to resolve edge record: %s: %s", cfg.Record, err)
+			return
+		}
+
+		for _, ip := range ips {
+			if ip.To4() != nil {
+				v4Reconciler.Current(ip.String())
+			} else {
+				v6Reconciler.Current(ip.String())
+			}
+		}
+	}()
+
+	wg.Wait()
+
+	api, err := cloudflare.NewWithAPIToken(cfg.CloudflareToken)
+	if err != nil {
+		return fmt.Errorf("failed to create Cloudflare API client: %s", err)
+	}
+
+	zoneRegex := regexp.MustCompile("[a-z]+.[a-z]+$")
+	zoneName := zoneRegex.FindString(cfg.Record)
+	zoneID, err := api.ZoneIDByName(zoneName)
+	if err != nil {
+		return fmt.Errorf("failed to list zones: %s", err)
+	}
+
+	if v4Reconciler.ShouldUpdate() {
+		if len(v4Reconciler.Plan.Create) > 0 {
+			fmt.Printf("[v4] Creating %d records ...\n", len(v4Reconciler.Plan.Create))
+
+			wgCreate := &sync.WaitGroup{}
+			for ip := range v4Reconciler.Plan.Create {
+				wgCreate.Add(1)
+				go createRecord(api, zoneID, ip, wgCreate)
+			}
+			wgCreate.Wait()
+		}
+
+		if len(v4Reconciler.Plan.Delete) > 0 {
+			fmt.Printf("[v4] Deleting %d records ...\n", len(v4Reconciler.Plan.Delete))
+
+			records, _, err := api.ListDNSRecords(context.TODO(), cloudflare.ResourceIdentifier(zoneID), cloudflare.ListDNSRecordsParams{
+				Type: "A",
+				Name: cfg.Record,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to list relevant records: %s", err)
+			}
+
+			wgDelete := &sync.WaitGroup{}
+			for _, record := range records {
+				// Check if the record should be deleted.
+				if v4Reconciler.Plan.Delete[record.Content] {
+					wgDelete.Add(1)
+					go deleteRecord(api, &record, wgDelete)
+				}
+			}
+			wgDelete.Wait()
+		}
+	}
+
+	if v6Reconciler.ShouldUpdate() {
+		return errors.New("IPv6 is not supported yet")
+		// TODO: Use the cloudflare SDK to create a DNS AAAA record with the IPs.
+	}
+
+	if err := purgeResolverCache(); err != nil {
+		return err
+	}
+
+	// TODO: Implement wait for DNS propagation.
 
 	return nil
 }
