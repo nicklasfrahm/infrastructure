@@ -15,14 +15,16 @@ This section covers the autonomous system (AS) numbers and IP addresses of the r
 
 ## Gateway subnets
 
-This section contains the IP addresses of gateway subnets.
+This section contains the IP addresses of gateway subnets. In the gateway subnets, only the **last 4 IPs** before the broadcast IP are dynamically allocated via DHCP for disaster recovery purposes. All other IPs are reserved for **tunnel link IPs**, e.g. `wireguard` or similar.
 
-| Hostname  | Network          | Description                       |
-| --------- | ---------------- | --------------------------------- |
-| `alfa`    | `172.17.0.0/27`  | Gateway subnet for site `dkaar1`. |
-| `bravo`   | `172.17.0.32/27` | Gateway subnet for site `deflb1`. |
-| `charlie` | `172.17.0.64/27` | Gateway subnet for site `deflb2`. |
-| `delta`   | `172.17.0.96/27` | Gateway subnet for site `dkaar2`. |
+> **STATUS: Pending implementation. Create PoC and then roll out to entire network.**
+
+| Hostname  | Network          | `br0`         | `lo`          | Description                       |
+| --------- | ---------------- | ------------- | ------------- | --------------------------------- |
+| `alfa`    | `172.17.0.0/27`  | `172.17.0.1`  | `172.17.0.2`  | Gateway subnet for site `dkaar1`. |
+| `bravo`   | `172.17.0.32/27` | `172.17.0.33` | `172.17.0.34` | Gateway subnet for site `deflf1`. |
+| `charlie` | `172.17.0.64/27` | `172.17.0.65` | `172.17.0.66` | Gateway subnet for site `deflf2`. |
+| `delta`   | `172.17.0.96/27` | `172.17.0.97` | `172.17.0.98` | Gateway subnet for site `dkaar2`. |
 
 Within the gateway subnets, there are some reserved IPs. following IP addresses are reserved:
 
