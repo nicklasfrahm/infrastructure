@@ -71,5 +71,4 @@ odance:
 
 .PHONY: router-firmware
 router-firmware:
-	cd third_party/armbian-build && \
-	./compile.sh
+	./scripts/build-router-firmware.sh
