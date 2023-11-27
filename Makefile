@@ -68,3 +68,8 @@ odance:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update bitnami
 	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml
+
+.PHONY: router-firmware
+router-firmware:
+	cd third_party/armbian-build && \
+	./compile.sh
