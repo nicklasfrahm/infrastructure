@@ -28,21 +28,28 @@ func NewSite(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *Reco
 		return nil, fmt.Errorf("%s: failed to find required argument: router", SiteComponentType)
 	}
 
-	_, err := cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-base", name), &cloudflare.RecordArgs{
-		ZoneId: zone.ID(),
-		Name:   pulumi.String(args.Name),
-		Type:   pulumi.String("CNAME"),
-		Value:  pulumi.String(args.Site.Router),
+	metadata, err := newMetadataString()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-base", name), &cloudflare.RecordArgs{
+		ZoneId:  zone.ID(),
+		Name:    pulumi.String(args.Name),
+		Type:    pulumi.String("CNAME"),
+		Value:   pulumi.String(args.Site.Router),
+		Comment: pulumi.String(metadata),
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, err
 	}
 
 	_, err = cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-wildcard", name), &cloudflare.RecordArgs{
-		ZoneId: zone.ID(),
-		Name:   pulumi.Sprintf("*.%s", args.Name),
-		Type:   pulumi.String("CNAME"),
-		Value:  pulumi.String(args.Site.Router),
+		ZoneId:  zone.ID(),
+		Name:    pulumi.Sprintf("*.%s", args.Name),
+		Type:    pulumi.String("CNAME"),
+		Value:   pulumi.String(args.Site.Router),
+		Comment: pulumi.String(metadata),
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, err

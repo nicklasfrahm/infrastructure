@@ -40,16 +40,22 @@ func NewGithubPages(ctx *pulumi.Context, name string, zone *cloudflare.Zone, arg
 	githubPagesSite := fmt.Sprintf("%s.github.io", args.GithubPages.Org)
 	isApex := args.Name == "@"
 
+	metadata, err := newMetadataString()
+	if err != nil {
+		return nil, err
+	}
+
 	// Create www record.
 	wwwName := fmt.Sprintf("www.%s", args.Name)
 	if isApex {
 		wwwName = "www"
 	}
-	_, err := cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-www", name), &cloudflare.RecordArgs{
-		ZoneId: zone.ID(),
-		Name:   pulumi.String(wwwName),
-		Type:   pulumi.String("CNAME"),
-		Value:  pulumi.String(githubPagesSite),
+	_, err = cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-www", name), &cloudflare.RecordArgs{
+		ZoneId:  zone.ID(),
+		Name:    pulumi.String(wwwName),
+		Type:    pulumi.String("CNAME"),
+		Value:   pulumi.String(githubPagesSite),
+		Comment: pulumi.String(metadata),
 	}, pulumi.Parent(component))
 	if err != nil {
 		return nil, err
@@ -59,10 +65,11 @@ func NewGithubPages(ctx *pulumi.Context, name string, zone *cloudflare.Zone, arg
 	if isApex {
 		for _, ip := range githubPagesIPs {
 			_, err := cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-%s", name, ip), &cloudflare.RecordArgs{
-				ZoneId: zone.ID(),
-				Name:   pulumi.String(args.Name),
-				Type:   pulumi.String("A"),
-				Value:  pulumi.String(ip),
+				ZoneId:  zone.ID(),
+				Name:    pulumi.String(args.Name),
+				Type:    pulumi.String("A"),
+				Value:   pulumi.String(ip),
+				Comment: pulumi.String(metadata),
 			}, pulumi.Parent(component))
 			if err != nil {
 				return nil, err
@@ -70,10 +77,11 @@ func NewGithubPages(ctx *pulumi.Context, name string, zone *cloudflare.Zone, arg
 		}
 	} else {
 		_, err := cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-cname", name), &cloudflare.RecordArgs{
-			ZoneId: zone.ID(),
-			Name:   pulumi.String(args.Name),
-			Type:   pulumi.String("CNAME"),
-			Value:  pulumi.String(githubPagesSite),
+			ZoneId:  zone.ID(),
+			Name:    pulumi.String(args.Name),
+			Type:    pulumi.String("CNAME"),
+			Value:   pulumi.String(githubPagesSite),
+			Comment: pulumi.String(metadata),
 		}, pulumi.Parent(component))
 		if err != nil {
 			return nil, err
