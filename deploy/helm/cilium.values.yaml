@@ -23,12 +23,13 @@ gatewayAPI:
   # This requires the Gateway APIs to be installed prior to installing cilium.
   enabled: true
 
+# TODO: Fix this.
 # https://github.com/cilium/cilium/blob/103077d3ecf826b9329a02f7c0c0db8190452fe7/install/kubernetes/cilium/templates/cilium-configmap.yaml#L704
 # nodePort:
 #   # Prevent cilium from getting confused which interface is the WAN and which is the LAN.
 #   directRoutingDevice: lo
-
-# # Prevent the cilium-agent from being confused between the WAN and the LAN interface.
-devices:
-  - lo
-  - enp2s0
+# Prevent the cilium-agent from being confused between the WAN and the LAN interface.
+# devices:
+#   - lo
+#   - enp2s0
+# enableRuntimeDeviceDetection: true
