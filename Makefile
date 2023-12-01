@@ -74,7 +74,7 @@ odance:
 router-up:
 	k3se up deploy/k3se/$(ROUTER).cilium.yaml
 	kubectl apply --server-side --force-conflicts -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/experimental-install.yaml
-	ROUTER=$(ROUTER) envsubst < deploy/helm/cilium.values.yaml | helm upgrade --install cilium cilium/cilium --namespace kube-system -f -
+	ROUTER=$(ROUTER) envsubst < deploy/helm/cilium.values.yaml | helm upgrade --install cilium cilium/cilium --namespace kube-system --version 1.15.0-pre.2 -f -
 	LOADBALANCER_IP=$(shell dig +short $(ROUTER).nicklasfrahm.dev) envsubst < deploy/kubectl/cilium/ciliumloadbalancerippool.yaml | kubectl apply -f -
 	kubectl apply -f deploy/kubectl/cilium/gateway.yaml
 	kubectl apply -f deploy/kubectl/api/metal.yaml
