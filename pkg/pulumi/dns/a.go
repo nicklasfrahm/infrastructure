@@ -28,12 +28,19 @@ func NewA(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordS
 		return nil, fmt.Errorf("%s: failed to find required argument: values", AComponentType)
 	}
 
+	metadata, err := newMetadataString()
+	if err != nil {
+		return nil, err
+	}
+
 	for _, value := range args.Values {
+
 		_, err := cloudflare.NewRecord(ctx, fmt.Sprintf("%s-r.record-%s", name, value), &cloudflare.RecordArgs{
-			ZoneId: zone.ID(),
-			Name:   pulumi.String(args.Name),
-			Type:   pulumi.String("A"),
-			Value:  pulumi.String(value),
+			ZoneId:  zone.ID(),
+			Name:    pulumi.String(args.Name),
+			Type:    pulumi.String("A"),
+			Value:   pulumi.String(value),
+			Comment: pulumi.String(metadata),
 		}, pulumi.Parent(component))
 		if err != nil {
 			return nil, err
