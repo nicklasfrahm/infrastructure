@@ -1,0 +1,44 @@
+# Version may either be a specific k3s version or a release channel
+# as listed here: https://update.k3s.io/v1-release/channels
+version: stable
+
+# Cluster provides cluster-wide settings that should be applied
+# to all nodes in the cluster. All options are equivalent to the
+# commmand line options of the `k3s` command.
+cluster:
+  server:
+    # It is highly recommended to always specify this option as it
+    # is used to determine the server URL of the cluster.
+    tls-san:
+      - alfa.nicklasfrahm.dev
+    https-listen-port: 7443
+    disable:
+      - traefik
+      - servicelb
+    node-ip:
+      - 172.31.255.0
+    disable-kube-proxy: true
+    disable-network-policy: true
+    flannel-backend: none
+    cluster-cidr:
+      - 172.28.0.0/16
+    service-cidr:
+      - 172.29.0.0/16
+    cluster-dns:
+      - 172.29.0.10
+
+# A list of all nodes in the cluster and their connection information.
+nodes:
+  - role: server
+    ssh:
+      host: 172.31.255.0
+      fingerprint: SHA256:GxNvyufD71QuCnH04eNp3LzCGuTV+ookFzVGUtlWvCI
+      user: nicklasfrahm
+      key-file: ~/.ssh/id_ed25519
+
+# An SSH proxy, also known as jumpbox or a bastion host
+# can be used to access nodes in a private network.
+ssh-proxy:
+  host: alfa.nicklasfrahm.dev
+  user: nicklasfrahm
+  key-file: ~/.ssh/id_ed25519

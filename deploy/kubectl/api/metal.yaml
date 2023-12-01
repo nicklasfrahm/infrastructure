@@ -53,37 +53,17 @@ spec:
       targetPort: 8080
       protocol: TCP
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
 metadata:
   name: metal-api
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
-    traefik.ingress.kubernetes.io/router.middlewares: api-metal-api@kubernetescrd
-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  parentRefs:
+    - name: default
+      namespace: default
+  hostnames:
+    - "alfa.nicklasfrahm.dev"
   rules:
-    - host: api.nicklasfrahm.dev
-      http:
-        paths:
-          - path: /metal
-            pathType: Prefix
-            backend:
-              service:
-                name: metal-api
-                port:
-                  number: 80
-  tls:
-    - hosts:
-        - api.nicklasfrahm.dev
-      secretName: api.nicklasfrahm.dev
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: metal-api
-spec:
-  stripPrefix:
-    prefixes:
-      - /metal
+    - backendRefs:
+        - name: metal-api
+          port: 80

@@ -8,6 +8,7 @@ GOARCH		:= $(shell echo $(PLATFORM) | cut -d "/" -f 2)
 SUFFIX		:= $(GOOS)-$(GOARCH)
 VERSION		?= $(shell git describe --always --tags --dirty)
 BUILD_FLAGS	:= -ldflags="-s -w -X main.version=$(VERSION)"
+ROUTER		?= alfa
 
 ifeq ($(GOOS),windows)
 SUFFIX	= $(GOOS)-$(GOARCH).exe
@@ -68,3 +69,19 @@ odance:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update bitnami
 	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml
+
+.PHONY: router-up
+router-up:
+	k3se up deploy/k3se/$(ROUTER).cilium.yaml
+	kubectl apply --server-side --force-conflicts -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/experimental-install.yaml
+	ROUTER=$(ROUTER) envsubst < deploy/helm/cilium.values.yaml | helm upgrade --install cilium cilium/cilium --namespace kube-system -f -
+	LOADBALANCER_IP=$(shell dig +short $(ROUTER).nicklasfrahm.dev) envsubst < deploy/kubectl/cilium/ciliumloadbalancerippool.yaml | kubectl apply -f -
+	kubectl apply -f deploy/kubectl/cilium/gateway.yaml
+	kubectl apply -f deploy/kubectl/api/metal.yaml
+
+.PHONY: router-down
+router-down:
+	k3se down deploy/k3se/$(ROUTER).cilium.yaml
+	kubectl config delete-cluster $(ROUTER).nicklasfrahm.dev:7443
+	kubectl config delete-user admin@$(ROUTER).nicklasfrahm.dev:7443
+	kubectl config delete-context admin@$(ROUTER).nicklasfrahm.dev:7443

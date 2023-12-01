@@ -33,3 +33,12 @@ This section contains the IP addresses of VPN networks.
 | Network         | Gateway        | Description                                   |
 | --------------- | -------------- | --------------------------------------------- |
 | `172.30.0.0/24` | `172.30.0.254` | Wireguard peer-to-site VPN network on `alfa`. |
+
+## Kubernetes networks
+
+The following networks are used by Kubernetes. They are NATed using the configured CNI and thus not routable.
+
+| Network         | Description                 |
+| --------------- | --------------------------- |
+| `172.28.0.0/16` | Kubernetes pod network.     |
+| `172.29.0.0/16` | Kubernetes service network. |

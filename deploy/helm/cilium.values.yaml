@@ -1,0 +1,28 @@
+cluster:
+  name: "${ROUTER}"
+
+operator:
+  # This is only needed when running on a single node.
+  replicas: 1
+
+kubeProxyReplacement: "true"
+
+# This is needed to allow cilium to reliably connect
+# to the Kubernetes API without hardcoding IPs.
+k8sServiceHost: "${ROUTER}.nicklasfrahm.dev"
+k8sServicePort: 7443
+
+ipam:
+  operator:
+    # This is needed to prevent cilium from picking "10.0.0.0/8"
+    # as the pod CIDR (which is an insane default).
+    clusterPoolIPv4PodCIDRList:
+      - "172.28.0.0/16"
+
+gatewayAPI:
+  # This requires the Gateway APIs to be installed prior to installing cilium.
+  enabled: true
+
+loadBalancer:
+  # This enables the L4 load balancer for anything but the Kubernetes API.
+  standalone: true
