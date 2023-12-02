@@ -26,21 +26,10 @@ configure_users() {
 configure_kboot() {
   apt-get install -y kexec-tools
 
-  # TODO: Create "/usr/local/bin/kboot" script.
-  # #!/bin/bash
-
-  # [[ "$1" != '-' ]] && kernel="$1"
-  # shift
-  # if [[ "$1" == '-' ]]; then
-  #     reuse=--reuse-cmdline
-  #     shift
-  # fi
-  # [[ $# == 0 ]] && reuse=--reuse-cmdline
-  # kernel="${kernel:-$(uname -r)}"
-  # kargs="/boot/vmlinuz-$kernel --initrd=/boot/initrd.img-$kernel"
-
-  # kexec -l -t bzImage $kargs $reuse --append="$*" && systemctl kexec
-  true
+  # Install kboot for faster kernel updates.
+  cp /tmp/overlay/kboot /usr/local/bin/kboot
+  chown root:root /usr/local/bin/kboot
+  chmod +x /usr/local/bin/kboot
 }
 
 # Set up cloud-init.
