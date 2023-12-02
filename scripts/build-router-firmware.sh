@@ -11,7 +11,7 @@ KERNEL_CONFIG_FILE="config/kernel/linux-rk3568-odroid-edge.config"
 # Prepare build system.
 setup_toolchain() {
   # Ensure that the build system is up to date.
-  git submodule update third_party/armbian-build
+  git submodule update --remote third_party/armbian-build
 
   # Copy the patch files into the build system.
   cp -r "$PATCH_DIR" third_party/armbian-build/userpatches
@@ -20,7 +20,7 @@ setup_toolchain() {
 # Compare the kernel config and install the patched config that enables wireguard.
 update_kernel_config() {
   # Display diff of the kernel config. We expect a diff, so we ignore the exit code.
-  diff --color=always -u "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" "$BUILD_DIR/$KERNEL_CONFIG_FILE" || true
+  diff --color=always -u "$BUILD_DIR/$KERNEL_CONFIG_FILE" "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" || true
   cp "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" "$BUILD_DIR/$KERNEL_CONFIG_FILE"
 }
 
@@ -35,6 +35,7 @@ restore_kernel_config() {
 
 # Build the firmware image.
 build_firmware() {
+  ./compile.sh build
   # ./compile.sh build \
   #   BOARD=nanopi-r5s \
   #   BRANCH=edge \
