@@ -22,13 +22,6 @@ configure_users() {
   rm /root/.not_logged_in_yet
 }
 
-# Set up cryptroot and dropbear-initramfs.
-configure_cryptroot() {
-  # TODO: Install cryptsetup.
-  # Reference: https://github.com/armbian/build/commit/681e58b6689acda6a957e325f12e7b748faa8330
-  true
-}
-
 # Set up kboot for faster kernel updates.
 configure_kboot() {
   apt-get install -y kexec-tools
