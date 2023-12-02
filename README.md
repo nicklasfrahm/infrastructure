@@ -115,6 +115,10 @@ Below you may find a list of limitations with my current infrastructure setup.
   - [Information disclosure vulnerability in TP-Link Easy Smart switches](https://www.chrisdcmoore.co.uk/post/tplink-easy-smart-switch-vulnerabilities/)
   - [Ansible Collection - rgl.tp_link_easy_smart_switch](https://github.com/rgl/ansible-collection-tp-link-easy-smart-switch)
 
+## Hidden gems 💎
+
+- [`kboot`: A utility script to kexec into a new Kernel without rebooting](./configs/armbian-build/userpatches/overlay/kboot)
+
 ## License 📄
 
 This project is licensed under the terms of the [MIT license][file-license].
