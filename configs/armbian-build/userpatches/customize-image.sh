@@ -13,6 +13,32 @@
 # is bind-mounted to /tmp/overlay in chroot. The SD card's
 # root path is accessible via $SDCARD variable.
 
+# Check if a file exists and create it if not.
+ensure_file_exists() {
+  if [ ! -f "$1" ]; then
+    touch "$1"
+  fi
+}
+
+# Add kernel command line arguments via armbianEnv.txt.
+append_armbian_extraargs() {
+  armbian_env_file="/boot/armbianEnv.txt"
+  new_kargs="$1"
+
+  ensure_file_exists "$armbian_env_file"
+
+  if grep -q "^extraargs=" "$armbian_env_file"; then
+    # Check if value is quoted.
+    if grep -q "^extraargs=\".*\"" "$armbian_env_file"; then
+      sed -i "s/^extraargs=\"\(.*\)\"/extraargs=\"\1 $new_kargs\"/" "$armbian_env_file"
+    else
+      sed -i "s/^extraargs=\(.*\)/extraargs=\"\1 $new_kargs\"/" "$armbian_env_file"
+    fi
+  else
+    echo "extraargs=\"$new_kargs\"" >>"$armbian_env_file"
+  fi
+}
+
 # Set up users and initial passwords that will
 # be rotated once the image was flashed.
 configure_users() {
@@ -33,25 +59,19 @@ configure_kboot() {
 }
 
 # Set up cloud-init.
+# Reference: https://forum.armbian.com/topic/14616-cloud-init/
 configure_cloud_init() {
-  # Install cloud-init.
   apt-get install -y cloud-init
 
-  # TODO: Configure cloud-init data source.
-  # Reference: https://forum.armbian.com/topic/14616-cloud-init/
+  cp -r /tmp/overlay/cloud-init /boot/cloud-init
 
-  # TODO: Add cloud-init configuration.
-  # TODO: Set up user account
-  # TODO: Set up ssh keys
-  # TODO: Set up hostname
-  true
+  # Configure cloud-init data source via kernel command line.
+  append_armbian_extraargs "ds=nocloud;s=/boot/cloud-init/"
 }
 
 # Configure CPU and memory sets.
 configure_cpu_memory_sets() {
-  # TODO: Add "cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"
-  # to command line. Use "armbianEnv.txt" for this.
-  true
+  append_armbian_extraargs "cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"
 }
 
 # Set up OpenSSH server.
@@ -65,7 +85,7 @@ configure_openssh_server() {
   # - UseDns no
   # - PrintMotd no
   # - UsePAM no
-  # - Banner [ no || none ]
+  # - Banner [ no ]
   # - X11Forwarding no
   # - KbdInteractiveAuthentication no
   true

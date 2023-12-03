@@ -1,0 +1,6 @@
+version: 2
+ethernets:
+  # TODO: What are the interfaces called by default?
+  eth0:
+    dhcp4: true
+    dhcp6: false

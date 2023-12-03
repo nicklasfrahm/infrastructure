@@ -1,0 +1,17 @@
+#cloud-config
+timezone: UTC
+package_update: true
+package_upgrade: true
+packages:
+  - nftables
+  # TODO: Replace this with kea or k8s-native dhcp server.
+  - isc-dhcp-server
+ssh_genkeytypes:
+  - ed25519
+users:
+  - name: nicklasfrahm
+    gecos: Nicklas Frahm
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklasfrahm@gl552vw
