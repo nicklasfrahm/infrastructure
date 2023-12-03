@@ -2,10 +2,6 @@
 timezone: UTC
 package_update: true
 package_upgrade: true
-packages:
-  - nftables
-  # TODO: Replace this with kea or k8s-native dhcp server.
-  - isc-dhcp-server
 ssh_genkeytypes:
   - ed25519
 users:

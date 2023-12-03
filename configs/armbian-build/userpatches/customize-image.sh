@@ -13,6 +13,23 @@
 # is bind-mounted to /tmp/overlay in chroot. The SD card's
 # root path is accessible via $SDCARD variable.
 
+# Configure the corresponding option in the openssh-server.
+set_openssh_server_option() {
+  option="$1"
+  value="$2"
+
+  # Check if a comment with the option exists and uncomment it.
+  if grep -q "^#.*$option" /etc/ssh/sshd_config; then
+    sed -i "s/^#.*$option/$option/" /etc/ssh/sshd_config
+  fi
+
+  if grep -q "^$option" /etc/ssh/sshd_config; then
+    sed -i "s/^$option.*/$option $value/" /etc/ssh/sshd_config
+  else
+    echo "$option $value" >>/etc/ssh/sshd_config
+  fi
+}
+
 # Check if a file exists and create it if not.
 ensure_file_exists() {
   if [ ! -f "$1" ]; then
@@ -74,21 +91,19 @@ configure_cpu_memory_sets() {
   append_armbian_extraargs "cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"
 }
 
-# Set up OpenSSH server.
+# Harden OpenSSH server.
 configure_openssh_server() {
-  # TODO: Harden OpenSSH server.
-  # - HostKey /etc/ssh/ssh_host_ed25519_key
-  # - PasswordAuthentication no
-  # - PermitRootLogin no
-  # - PubkeyAuthentication yes
-  # - PermitEmptyPasswords no
-  # - UseDns no
-  # - PrintMotd no
-  # - UsePAM no
-  # - Banner [ no ]
-  # - X11Forwarding no
-  # - KbdInteractiveAuthentication no
-  true
+  set_openssh_server_option "HostKey" "/etc/ssh/ssh_host_ed25519_key"
+  set_openssh_server_option PasswordAuthentication no
+  set_openssh_server_option PermitRootLogin no
+  set_openssh_server_option PubkeyAuthentication yes
+  set_openssh_server_option PermitEmptyPasswords no
+  set_openssh_server_option UseDns no
+  set_openssh_server_option PrintMotd no
+  set_openssh_server_option UsePAM no
+  set_openssh_server_option Banner no
+  set_openssh_server_option X11Forwarding no
+  set_openssh_server_option KbdInteractiveAuthentication no
 }
 
 main() {
