@@ -33,7 +33,7 @@ setup_toolchain() {
   git submodule update --remote third_party/armbian-build
 
   # Copy the patch files into the build system.
-  cp -r "$PATCH_DIR" third_party/armbian-build/userpatches
+  cp -r "$PATCH_DIR" third_party/armbian-build
 }
 
 # Compare the kernel config and install the patched config that enables wireguard.
