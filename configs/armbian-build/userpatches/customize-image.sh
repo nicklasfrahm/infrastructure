@@ -20,11 +20,11 @@ set_openssh_server_option() {
 
   # Check if a comment with the option exists and uncomment it.
   if grep -q "^#.*$option" /etc/ssh/sshd_config; then
-    sed -i "s/^#.*$option/$option/" /etc/ssh/sshd_config
+    sed -i "s|^#.*$option|$option|" /etc/ssh/sshd_config
   fi
 
   if grep -q "^$option" /etc/ssh/sshd_config; then
-    sed -i "s/^$option.*/$option $value/" /etc/ssh/sshd_config
+    sed -i "s|^$option.*|$option $value|" /etc/ssh/sshd_config
   else
     echo "$option $value" >>/etc/ssh/sshd_config
   fi
@@ -47,9 +47,9 @@ append_armbian_extraargs() {
   if grep -q "^extraargs=" "$armbian_env_file"; then
     # Check if value is quoted.
     if grep -q "^extraargs=\".*\"" "$armbian_env_file"; then
-      sed -i "s/^extraargs=\"\(.*\)\"/extraargs=\"\1 $new_kargs\"/" "$armbian_env_file"
+      sed -i "s|^extraargs=\"\(.*\)\"|extraargs=\"\1 $new_kargs\"|" "$armbian_env_file"
     else
-      sed -i "s/^extraargs=\(.*\)/extraargs=\"\1 $new_kargs\"/" "$armbian_env_file"
+      sed -i "s|^extraargs=\(.*\)|extraargs=\"\1 $new_kargs\"|" "$armbian_env_file"
     fi
   else
     echo "extraargs=\"$new_kargs\"" >>"$armbian_env_file"
