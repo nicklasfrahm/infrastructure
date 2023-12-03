@@ -65,6 +65,16 @@ configure_users() {
   rm /root/.not_logged_in_yet
 }
 
+# Ensure that I can logon to dropbear with my SSH key.
+configure_cryptroot() {
+  dropbear_initramfs="/etc/dropbear/initramfs"
+
+  mkdir -p "$dropbear_initramfs"
+  cp /tmp/overlay/authorized_keys "$dropbear_initramfs/authorized_keys"
+  chmod 700 "$dropbear_initramfs"
+  chmod 600 "$dropbear_initramfs/authorized_keys"
+}
+
 # Set up kboot for faster kernel updates.
 configure_kboot() {
   apt-get install -y kexec-tools
