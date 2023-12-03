@@ -117,7 +117,7 @@ configure_openssh_server() {
 }
 
 main() {
-  if [ $# -ne 4 ]; then
+  if [ $# -lt 1 ]; then
     echo "error: this script is meant to be called by the armbian build system"
     exit 1
   fi
