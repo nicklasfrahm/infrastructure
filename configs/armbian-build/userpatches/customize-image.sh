@@ -76,6 +76,25 @@ configure_users() {
   usermod -p '*' "$USERNAME" || true
 }
 
+# Disable RAM logging, because we have an NVMe SSD mounted at "/var".
+configure_ramlog() {
+  # Disable RAM logging.
+  systemctl stop armbian-ramlog
+  systemctl disable armbian-ramlog
+  systemctl mask armbian-ramlog
+
+  systemctl stop armbian-ramlog
+  systemctl disable armbian-zram-config
+  systemctl mask armbian-zram-config
+
+  armbian-zram-config.service
+
+  systemctl disable armbian-ramlog
+  systemctl stop armbian-ramlog
+  systemctl mask armbian-ramlog
+  systemctl daemon-reload
+}
+
 # Uninstall NetworkManager and install netplan.
 configure_netplan() {
   apt-get purge -y network-manager
@@ -140,6 +159,7 @@ main() {
     apt-get update
 
     configure_users
+    configure_ramlog
     configure_netplan
     configure_cryptroot
     configure_kboot
