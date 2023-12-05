@@ -13,14 +13,17 @@
 # is bind-mounted to /tmp/overlay in chroot. The SD card's
 # root path is accessible via $SDCARD variable.
 
+export DEBIAN_FRONTEND=noninteractive
+export APT_LISTCHANGES_FRONTEND=none
+
 # Configure the corresponding option in the openssh-server.
 set_openssh_server_option() {
   option="$1"
   value="$2"
 
   # Check if a comment with the option exists and uncomment it.
-  if grep -q "^#.*$option" /etc/ssh/sshd_config; then
-    sed -i "s|^#.*$option|$option|" /etc/ssh/sshd_config
+  if grep -q "^#$option" /etc/ssh/sshd_config; then
+    sed -i "s|^#$option|$option|" /etc/ssh/sshd_config
   fi
 
   if grep -q "^$option" /etc/ssh/sshd_config; then
@@ -45,12 +48,7 @@ append_armbian_extraargs() {
   ensure_file_exists "$armbian_env_file"
 
   if grep -q "^extraargs=" "$armbian_env_file"; then
-    # Check if value is quoted.
-    if grep -q "^extraargs=\".*\"" "$armbian_env_file"; then
-      sed -i "s|^extraargs=\"\(.*\)\"|extraargs=\"\1 $new_kargs\"|" "$armbian_env_file"
-    else
-      sed -i "s|^extraargs=\(.*\)|extraargs=\"\1 $new_kargs\"|" "$armbian_env_file"
-    fi
+    sed -i "s|^extraargs=\(.*\)|extraargs=\"\1 $new_kargs\"|" "$armbian_env_file"
   else
     echo "extraargs=\"$new_kargs\"" >>"$armbian_env_file"
   fi
@@ -63,6 +61,12 @@ configure_users() {
   ROOT_PASSWORD=$(openssl rand -hex 32)
   echo "root:${ROOT_PASSWORD}" | chpasswd
   rm /root/.not_logged_in_yet
+}
+
+# Uninstall NetworkManager and install netplan.
+configure_netplan() {
+  apt-get purge -y network-manager
+  apt-get install -y netplan.io
 }
 
 # Ensure that I can logon to dropbear with my SSH key.
@@ -96,19 +100,12 @@ configure_cloud_init() {
   append_armbian_extraargs "ds=nocloud;s=/boot/cloud-init/"
 }
 
-# Configure CPU and memory sets.
-configure_cpu_memory_sets() {
-  append_armbian_extraargs "cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"
-}
-
 # Harden OpenSSH server.
 configure_openssh_server() {
-  set_openssh_server_option "HostKey" "/etc/ssh/ssh_host_ed25519_key"
   set_openssh_server_option PasswordAuthentication no
   set_openssh_server_option PermitRootLogin no
   set_openssh_server_option PubkeyAuthentication yes
-  set_openssh_server_option PermitEmptyPasswords no
-  set_openssh_server_option UseDns no
+  set_openssh_server_option UseDNS no
   set_openssh_server_option PrintMotd no
   set_openssh_server_option UsePAM no
   set_openssh_server_option Banner no
@@ -130,10 +127,10 @@ main() {
     apt-get update
 
     configure_users
+    configure_netplan
     configure_cryptroot
     configure_kboot
     configure_cloud_init
-    configure_cpu_memory_sets
     configure_openssh_server
     ;;
   *)

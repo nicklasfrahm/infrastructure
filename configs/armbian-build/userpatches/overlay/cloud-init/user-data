@@ -1,9 +1,11 @@
 #cloud-config
 timezone: UTC
-package_update: true
-package_upgrade: true
 ssh_genkeytypes:
   - ed25519
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklasfrahm@gl552vw
+ssh:
+  emit_keys_to_console: false
 users:
   - name: nicklasfrahm
     gecos: Nicklas Frahm
