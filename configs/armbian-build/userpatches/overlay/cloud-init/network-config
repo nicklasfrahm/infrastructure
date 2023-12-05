@@ -1,6 +1,13 @@
 version: 2
 ethernets:
-  # TODO: What are the interfaces called by default?
-  eth0:
+  wan:
     dhcp4: true
     dhcp6: false
+  lan1:
+    dhcp4: false
+    dhcp6: false
+    optional: true
+  lan2:
+    dhcp4: false
+    dhcp6: false
+    optional: true
