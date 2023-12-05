@@ -1,5 +1,7 @@
 #!/bin/bash
 
+USERNAME="nicklasfrahm"
+
 # This script will be invoked by the armbian build system
 # with the following arguments:
 # ./userpatches/customize_image.sh $RELEASE $LINUXFAMILY $BOARD $BUILD_DESKTOP
@@ -58,9 +60,20 @@ append_armbian_extraargs() {
 # be rotated once the image was flashed.
 configure_users() {
   # Avoid user config on first boot.
+  rm /root/.not_logged_in_yet
+
+  # Set random root password.
   ROOT_PASSWORD=$(openssl rand -hex 32)
   echo "root:${ROOT_PASSWORD}" | chpasswd
-  rm /root/.not_logged_in_yet
+
+  # TODO: Disable autologin.
+  # rm -f /etc/systemd/system/getty@.service.d/override.conf
+  # rm -f /etc/systemd/system/serial-getty@.service.d/override.conf
+  # systemctl daemon-reload
+
+  # Allow SSH login to locked user accounts.
+  usermod -p '*' ubuntu || true
+  usermod -p '*' "$USERNAME" || true
 }
 
 # Uninstall NetworkManager and install netplan.
