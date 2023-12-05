@@ -35,27 +35,6 @@ set_openssh_server_option() {
   fi
 }
 
-# Check if a file exists and create it if not.
-ensure_file_exists() {
-  if [ ! -f "$1" ]; then
-    touch "$1"
-  fi
-}
-
-# Add kernel command line arguments via armbianEnv.txt.
-append_armbian_extraargs() {
-  armbian_env_file="/boot/armbianEnv.txt"
-  new_kargs="$1"
-
-  ensure_file_exists "$armbian_env_file"
-
-  if grep -q "^extraargs=" "$armbian_env_file"; then
-    sed -i "s|^extraargs=\(.*\)|extraargs=\"\1 $new_kargs\"|" "$armbian_env_file"
-  else
-    echo "extraargs=\"$new_kargs\"" >>"$armbian_env_file"
-  fi
-}
-
 # Set up users and initial passwords that will
 # be rotated once the image was flashed.
 configure_users() {
@@ -99,6 +78,11 @@ configure_ramlog() {
 configure_netplan() {
   apt-get purge -y network-manager
   apt-get install -y netplan.io
+
+  rm /etc/netplan/armbian-default.yaml
+
+  systemctl unmask systemd-resolved
+  systemctl enable systemd-networkd
 }
 
 # Ensure that I can logon to dropbear with my SSH key.
@@ -127,9 +111,10 @@ configure_cloud_init() {
   apt-get install -y cloud-init
 
   cp -r /tmp/overlay/cloud-init /boot/cloud-init
+  INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/meta-data >/boot/cloud-init/meta-data
 
   # Configure cloud-init data source via kernel command line.
-  append_armbian_extraargs "ds=nocloud;s=/boot/cloud-init/"
+  echo "extraargs=ds=nocloud;s=file://boot/cloud-init/" >>/boot/armbianEnv.txt
 }
 
 # Harden OpenSSH server.

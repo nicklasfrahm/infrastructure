@@ -1,4 +1,5 @@
 version: 2
+renderer: networkd
 ethernets:
   wan:
     dhcp4: true

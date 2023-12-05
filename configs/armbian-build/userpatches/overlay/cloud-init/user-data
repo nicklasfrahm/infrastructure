@@ -1,5 +1,10 @@
 #cloud-config
 timezone: UTC
+package_update: true
+package_upgrade: true
+packages:
+  - btrfs-progs
+  - vim
 ssh_genkeytypes:
   - ed25519
 ssh_authorized_keys:
@@ -13,3 +18,17 @@ users:
     shell: /bin/bash
     ssh_authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklasfrahm@gl552vw
+
+# TODO: Validate this. This may not work.
+disk_setup:
+  /dev/nvme0n1:
+    table_type: gpt
+    layout:
+      - [100, 83]
+    overwrite: true
+
+fs_setup:
+  - device: /dev/nvme0n1p1
+    filesystem: btrfs
+    label: var
+    overwrite: true
