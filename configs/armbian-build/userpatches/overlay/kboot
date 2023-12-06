@@ -4,7 +4,7 @@ is_root() {
   [[ "$EUID" -eq 0 ]]
 }
 
-if is_root; then
+if ! is_root; then
   echo "error: permission denied: use sudo or run as root"
   exit 1
 fi
