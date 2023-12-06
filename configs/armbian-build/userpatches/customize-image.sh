@@ -66,11 +66,6 @@ configure_ramlog() {
   systemctl disable armbian-zram-config
   systemctl mask armbian-zram-config
 
-  armbian-zram-config.service
-
-  systemctl disable armbian-ramlog
-  systemctl stop armbian-ramlog
-  systemctl mask armbian-ramlog
   systemctl daemon-reload
 }
 
@@ -80,9 +75,12 @@ configure_netplan() {
   apt-get install -y netplan.io
 
   rm /etc/netplan/armbian-default.yaml
+  chmod 600 /etc/netplan/*.yaml
 
   systemctl unmask systemd-resolved
   systemctl enable systemd-networkd
+
+  systemctl daemon-reload
 }
 
 # Ensure that I can logon to dropbear with my SSH key.
