@@ -84,7 +84,7 @@ configure_netplan() {
   rm /etc/netplan/armbian-default.yaml
   chmod 600 /etc/netplan/*.yaml
 
-  systemctl unmask systemd-resolved
+  systemctl unmask systemd-networkd
   systemctl enable systemd-networkd
 
   systemctl daemon-reload
