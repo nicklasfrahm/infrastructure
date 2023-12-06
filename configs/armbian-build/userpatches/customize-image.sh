@@ -57,14 +57,21 @@ configure_users() {
 
 # Disable RAM logging, because we have an NVMe SSD mounted at "/var".
 configure_ramlog() {
-  # Disable RAM logging.
+  sed -i "s|^ENABLED=.*|ENABLED=false|" /etc/default/armbian-ramlog
+
   systemctl stop armbian-ramlog
   systemctl disable armbian-ramlog
   systemctl mask armbian-ramlog
 
+  sed -i "s|^ENABLED=.*|ENABLED=false|" /etc/default/armbian-zram-config
+  sed -i "s|^# SWAP=.*|SWAP=false|" /etc/default/armbian-zram-config
+
   systemctl stop armbian-ramlog
   systemctl disable armbian-zram-config
   systemctl mask armbian-zram-config
+
+  rm /etc/cron.d/armbian-truncate-logs
+  rm /etc/cron.daily/armbian-ram-logging
 
   systemctl daemon-reload
 }
