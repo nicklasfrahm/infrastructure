@@ -94,7 +94,7 @@ configure_cryptroot() {
   dropbear_initramfs="/etc/dropbear/initramfs"
 
   mkdir -p "$dropbear_initramfs"
-  cp /tmp/overlay/authorized_keys "$dropbear_initramfs/authorized_keys"
+  grep -oE "ssh-ed25519(.[^\"])*" /tmp/overlay/cloud-init/user-data | head -n 1 >"$dropbear_initramfs/authorized_keys"
   chmod 700 "$dropbear_initramfs"
   chmod 600 "$dropbear_initramfs/authorized_keys"
 }
