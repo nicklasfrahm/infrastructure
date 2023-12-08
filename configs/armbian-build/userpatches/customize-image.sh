@@ -51,7 +51,6 @@ configure_users() {
   # systemctl daemon-reload
 
   # Allow SSH login to locked user accounts.
-  usermod -p '*' ubuntu || true
   usermod -p '*' "$USERNAME" || true
 }
 
