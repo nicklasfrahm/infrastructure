@@ -21,6 +21,7 @@ restore_kernel_config() {
   # "git submodule foreach" and "git reset --hard".
   pushd "$BUILD_DIR" >/dev/null
   git checkout HEAD -- "$KERNEL_CONFIG_FILE"
+  git clean -fd
   popd >/dev/null
 }
 
@@ -29,8 +30,10 @@ trap cleanup SIGINT EXIT
 
 # Prepare build system.
 setup_toolchain() {
+  # TODO: Enable this again once the following PR is merged:
+  # https://github.com/armbian/build/pull/6021
   # Ensure that the build system is up to date.
-  git submodule update --remote third_party/armbian-build
+  # git submodule update --remote third_party/armbian-build
 
   # Copy the patch files into the build system.
   cp -r "$PATCH_DIR" third_party/armbian-build
