@@ -1,7 +1,5 @@
 #!/bin/bash
 
-USERNAME="nicklasfrahm"
-
 # This script will be invoked by the armbian build system
 # with the following arguments:
 # ./userpatches/customize_image.sh $RELEASE $LINUXFAMILY $BOARD $BUILD_DESKTOP
@@ -49,9 +47,6 @@ configure_users() {
   # rm -f /etc/systemd/system/getty@.service.d/override.conf
   # rm -f /etc/systemd/system/serial-getty@.service.d/override.conf
   # systemctl daemon-reload
-
-  # Allow SSH login to locked user accounts.
-  usermod -p '*' "$USERNAME" || true
 }
 
 configure_extra_packages() {
