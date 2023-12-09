@@ -43,37 +43,44 @@ configure_users() {
   ROOT_PASSWORD=$(openssl rand -hex 32)
   echo "root:${ROOT_PASSWORD}" | chpasswd
 
-  # TODO: Disable autologin.
-  # rm -f /etc/systemd/system/getty@.service.d/override.conf
-  # rm -f /etc/systemd/system/serial-getty@.service.d/override.conf
-  # systemctl daemon-reload
+  # Disable autologin.
+  rm -f /etc/systemd/system/getty@.service.d/override.conf
+  rm -f /etc/systemd/system/serial-getty@.service.d/override.conf
+  systemctl daemon-reload
 }
 
 configure_extra_packages() {
-  apt-get install -y \
-    vim \
-    dig \
-    nmap \
-    curl
+  apt-get install -y vim bind9-dnsutils curl
 }
 
-# Disable RAM logging, because we have an NVMe SSD mounted at "/var".
-configure_ramlog() {
+# Disable Armbian services that may cause additional resource
+# consumption, such as ramlog and avoid services that conflict
+# with cloud-init.
+configure_armbian_services() {
   sed -i "s|^ENABLED=.*|ENABLED=false|" /etc/default/armbian-ramlog
 
+  # Disable RAM logging to free up memory
+  # for compute workloads.
   systemctl stop armbian-ramlog
   systemctl disable armbian-ramlog
   systemctl mask armbian-ramlog
 
-  sed -i "s|^ENABLED=.*|ENABLED=false|" /etc/default/armbian-zram-config
-  sed -i "s|^# SWAP=.*|SWAP=false|" /etc/default/armbian-zram-config
-
-  systemctl stop armbian-ramlog
+  systemctl stop armbian-zram-config
   systemctl disable armbian-zram-config
   systemctl mask armbian-zram-config
 
+  sed -i "s|^ENABLED=.*|ENABLED=false|" /etc/default/armbian-zram-config
+  sed -i "s|^# SWAP=.*|SWAP=false|" /etc/default/armbian-zram-config
+
   rm /etc/cron.d/armbian-truncate-logs
   rm /etc/cron.daily/armbian-ram-logging
+
+  # Disable armbian firstrun script because
+  # it does not play well with the hardened
+  # OpenSSH server configuration.
+  systemctl stop armbian-firstrun
+  systemctl disable armbian-firstrun
+  systemctl mask armbian-firstrun
 
   systemctl daemon-reload
 }
@@ -117,11 +124,17 @@ configure_kboot() {
 configure_cloud_init() {
   apt-get install -y cloud-init
 
-  cp -r /tmp/overlay/cloud-init /boot/cloud-init
+  mkdir -p /boot/cloud-init
+  cp /tmp/overlay/cloud-init/user-data /boot/cloud-init/user-data
+  cp /tmp/overlay/cloud-init/meta-data /boot/cloud-init/meta-data
   INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/meta-data >/boot/cloud-init/meta-data
 
   # Configure cloud-init data source via kernel command line.
+  # TODO: Investigate if hosting a metadata service makes sense.
   echo "extraargs=ds=nocloud;s=file://boot/cloud-init/" >>/boot/armbianEnv.txt
+
+  # Configure cloud-init to use the network configuration from netplan.
+  cp /tmp/overlay/cloud-init/network-config /etc/cloud/cloud.cfg.d/90-custom-config.yaml
 }
 
 # Harden OpenSSH server.
@@ -152,7 +165,7 @@ main() {
 
     configure_users
     configure_extra_packages
-    configure_ramlog
+    configure_armbian_services
     configure_netplan
     configure_cryptroot
     configure_kboot
