@@ -54,6 +54,19 @@ configure_users() {
   usermod -p '*' "$USERNAME" || true
 }
 
+configure_locale() {
+  # Set locale.
+  localectl set-x11-keymap de pc105 nodeadkeys
+}
+
+configure_extra_packages() {
+  apt-get install -y \
+    vim \
+    dig \
+    nmap \
+    curl
+}
+
 # Disable RAM logging, because we have an NVMe SSD mounted at "/var".
 configure_ramlog() {
   sed -i "s|^ENABLED=.*|ENABLED=false|" /etc/default/armbian-ramlog
@@ -148,6 +161,8 @@ main() {
     apt-get update
 
     configure_users
+    configure_locale
+    configure_extra_packages
     configure_ramlog
     configure_netplan
     configure_cryptroot

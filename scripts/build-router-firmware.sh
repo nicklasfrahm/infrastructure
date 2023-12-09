@@ -54,6 +54,7 @@ build_firmware() {
     BUILD_DESKTOP=no \
     BUILD_MINIMAL=no \
     KERNEL_CONFIGURE=no \
+    ROOTFS_TYPE=btrfs \
     CRYPTROOT_ENABLE=yes \
     CRYPTROOT_PARAMETERS="--type luks2 --use-random --cipher aes-xts-plain64 --key-size 512 --hash sha512" \
     CRYPTROOT_PASSPHRASE="nicklasfrahm" \
