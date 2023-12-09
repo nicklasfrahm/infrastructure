@@ -54,11 +54,6 @@ configure_users() {
   usermod -p '*' "$USERNAME" || true
 }
 
-configure_locale() {
-  # Set locale.
-  localectl set-x11-keymap de pc105 nodeadkeys
-}
-
 configure_extra_packages() {
   apt-get install -y \
     vim \
@@ -161,7 +156,6 @@ main() {
     apt-get update
 
     configure_users
-    configure_locale
     configure_extra_packages
     configure_ramlog
     configure_netplan
