@@ -26,5 +26,6 @@ users:
     gecos: Nicklas Frahm
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
+    plain_text_passwd: nicklasfrahm
     ssh_authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklasfrahm@gl552vw

@@ -9,6 +9,10 @@ BUILD_CUSTOMIZATION_DIR="configs/armbian-build"
 PATCH_DIR="$BUILD_CUSTOMIZATION_DIR/userpatches"
 BUILD_DIR="third_party/armbian-build"
 KERNEL_CONFIG_FILE="config/kernel/linux-rk3568-odroid-edge.config"
+BOARD_NANOPI_R5S="nanopi-r5s"
+
+# Global variables.
+board=""
 
 cleanup() {
   # Restore the kernel config.
@@ -17,19 +21,42 @@ cleanup() {
 
 # Restore the kernel config.
 restore_kernel_config() {
-  # Do surgical reset rather than a coarse reset using
-  # "git submodule foreach" and "git reset --hard".
-  pushd "$BUILD_DIR" >/dev/null
-  git checkout HEAD -- "$KERNEL_CONFIG_FILE"
-  git clean -fd
-  popd >/dev/null
+  if [[ "$board" == "$BOARD_NANOPI_R5S" ]]; then
+    # Do surgical reset rather than a coarse reset using
+    # "git submodule foreach" and "git reset --hard".
+    pushd "$BUILD_DIR" >/dev/null
+    git checkout HEAD -- "$KERNEL_CONFIG_FILE"
+    git clean -fd
+    popd >/dev/null
+  fi
 }
 
 # Ensure that the clean up function is called on SIGINT.
 trap cleanup SIGINT EXIT
 
-# Prepare build system.
-setup_toolchain() {
+parse_args() {
+  if [[ $# -ne 1 ]]; then
+    echo "usage: $0 <board>"
+    exit 1
+  fi
+  board="$1"
+
+  supported_boards=("$BOARD_NANOPI_R5S")
+  is_supported_board=false
+  for supported_board in "${supported_boards[@]}"; do
+    if [[ "$supported_board" == "$board" ]]; then
+      is_supported_board=true
+    fi
+  done
+
+  if [[ $is_supported_board == false ]]; then
+    echo "error: unsupported board: $board"
+    exit 1
+  fi
+}
+
+# Add customizations to the armbian build system.
+apply_customizations() {
   # TODO: Enable this again once the following PR is merged:
   # https://github.com/armbian/build/pull/6021
   # Ensure that the build system is up to date.
@@ -40,16 +67,18 @@ setup_toolchain() {
 }
 
 # Compare the kernel config and install the patched config that enables wireguard.
-update_kernel_config() {
-  # Display diff of the kernel config. We expect a diff, so we ignore the exit code.
-  diff --color=always -u "$BUILD_DIR/$KERNEL_CONFIG_FILE" "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" || true
-  cp "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" "$BUILD_DIR/$KERNEL_CONFIG_FILE"
+patch_kernel_config() {
+  if [[ "$board" == "$BOARD_NANOPI_R5S" ]]; then
+    # Display diff of the kernel config. We expect a diff, so we ignore the exit code.
+    diff --color=always -u "$BUILD_DIR/$KERNEL_CONFIG_FILE" "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" || true
+    cp "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" "$BUILD_DIR/$KERNEL_CONFIG_FILE"
+  fi
 }
 
 # Build the firmware image.
 build_firmware() {
   "./$BUILD_DIR/compile.sh" build \
-    BOARD=nanopi-r5s \
+    BOARD="$board" \
     BRANCH=edge \
     BUILD_DESKTOP=no \
     BUILD_MINIMAL=no \
@@ -61,7 +90,16 @@ build_firmware() {
     CRYPTROOT_SSH_UNLOCK=yes \
     CRYPTROOT_SSH_UNLOCK_PORT=2222 \
     RELEASE=jammy
+}
 
+# Move the firmware image to the output directory in the root repo.
+move_firmware() {
+  mkdir -p output
+  image_file=$(find "$BUILD_DIR/output/images/" -iname "*$board*.img" | sort -rV | head -n1)
+  mv "$image_file" "output/$board.img"
+}
+
+show_notes() {
   # Cryptroot parameters are configured via build parameters above. For more information, see:
   # Reference: https://github.com/armbian/build/commit/681e58b6689acda6a957e325f12e7b748faa8330
   echo
@@ -71,11 +109,15 @@ build_firmware() {
 }
 
 main() {
-  setup_toolchain
+  parse_args "$@"
 
-  update_kernel_config
+  apply_customizations
+  patch_kernel_config
 
   build_firmware
+  move_firmware
+
+  show_notes
 }
 
 main "$@"
