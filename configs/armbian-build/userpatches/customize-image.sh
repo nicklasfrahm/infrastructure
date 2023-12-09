@@ -107,6 +107,9 @@ configure_cryptroot() {
   grep -oE "ssh-ed25519(.[^\"])*" /tmp/overlay/cloud-init/user-data | head -n 1 >"$dropbear_initramfs/authorized_keys"
   chmod 700 "$dropbear_initramfs"
   chmod 600 "$dropbear_initramfs/authorized_keys"
+
+  # Ensure partition is resized on first boot.
+  systemctl enable armbian-resize-filesystem
 }
 
 # Set up kboot for faster kernel updates.
