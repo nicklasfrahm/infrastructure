@@ -134,7 +134,7 @@ configure_cloud_init() {
   echo "extraargs=ds=nocloud;s=file://boot/cloud-init/" >>/boot/armbianEnv.txt
 
   # Configure cloud-init to use the network configuration from netplan.
-  cp /tmp/overlay/cloud-init/network-config /etc/cloud/cloud.cfg.d/90-custom-config.yaml
+  cp /tmp/overlay/cloud-init/network-config /etc/cloud/cloud.cfg.d/90-network-config.cfg
 }
 
 # Harden OpenSSH server.
