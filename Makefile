@@ -19,7 +19,7 @@ build: bin/$(TARGET)-$(SUFFIX)
 
 bin/$(TARGET)-$(SUFFIX): $(SOURCES)
 	@mkdir -p $(@D)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(BUILD_FLAGS) -o $(BINARY) cmd/$(TARGET)/*
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(BUILD_FLAGS) -o $(BINARY) cmd/$(TARGET)/*.go
 
 
 .PHONY: docker
