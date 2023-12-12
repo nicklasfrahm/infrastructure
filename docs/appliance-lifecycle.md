@@ -15,5 +15,21 @@ For different hardware the appliance provisioning process is different. Please s
    ```
 
 2. Use [Etcher][etcher] to flash the image to an SD card.
+3. Log in to the appliance using the default credentials:
+
+   - Username: `nicklasfrahm`
+   - Password: `nicklasfrahm`
+
+4. Fetch the IP address of the appliance:
+
+   ```bash
+   ip addr show wan | grep 'inet ' | awk '{print $2}'
+   ```
+
+5. On a different machine, run the bootstrap command:
+
+   ```bash
+   ic metal bootstrap <ip>
+   ```
 
 [etcher]: https://etcher.balena.io/
