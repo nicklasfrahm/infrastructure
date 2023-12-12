@@ -10,6 +10,7 @@ PATCH_DIR="$BUILD_CUSTOMIZATION_DIR/userpatches"
 BUILD_DIR="third_party/armbian-build"
 KERNEL_CONFIG_FILE="config/kernel/linux-rk3568-odroid-edge.config"
 BOARD_NANOPI_R5S="nanopi-r5s"
+USERNAME="nicklasfrahm"
 
 # Global variables.
 board=""
@@ -77,18 +78,32 @@ patch_kernel_config() {
 
 # Build the firmware image.
 build_firmware() {
+  cryptroot_enabled=${CRYPTROOT_ENABLE:-false}
+  if [[ "$cryptroot_enabled" == true ]]; then
+    "./$BUILD_DIR/compile.sh" build \
+      BOARD="$board" \
+      BRANCH=edge \
+      BUILD_DESKTOP=no \
+      BUILD_MINIMAL=yes \
+      KERNEL_CONFIGURE=no \
+      ROOTFS_TYPE=btrfs \
+      CRYPTROOT_ENABLE=yes \
+      CRYPTROOT_PARAMETERS="--type luks2 --use-random --cipher aes-xts-plain64 --key-size 512 --hash sha512" \
+      CRYPTROOT_PASSPHRASE="$USERNAME" \
+      CRYPTROOT_SSH_UNLOCK=yes \
+      CRYPTROOT_SSH_UNLOCK_PORT=2222 \
+      RELEASE=jammy
+
+    show_notes
+  fi
+
   "./$BUILD_DIR/compile.sh" build \
     BOARD="$board" \
     BRANCH=edge \
     BUILD_DESKTOP=no \
-    BUILD_MINIMAL=no \
+    BUILD_MINIMAL=yes \
     KERNEL_CONFIGURE=no \
     ROOTFS_TYPE=btrfs \
-    CRYPTROOT_ENABLE=yes \
-    CRYPTROOT_PARAMETERS="--type luks2 --use-random --cipher aes-xts-plain64 --key-size 512 --hash sha512" \
-    CRYPTROOT_PASSPHRASE="nicklasfrahm" \
-    CRYPTROOT_SSH_UNLOCK=yes \
-    CRYPTROOT_SSH_UNLOCK_PORT=2222 \
     RELEASE=jammy
 }
 
@@ -116,8 +131,6 @@ main() {
 
   build_firmware
   move_firmware
-
-  show_notes
 }
 
 main "$@"
