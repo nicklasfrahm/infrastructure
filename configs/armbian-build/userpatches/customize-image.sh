@@ -49,8 +49,12 @@ configure_users() {
   systemctl daemon-reload
 }
 
-configure_extra_packages() {
-  apt-get install -y vim bind9-dnsutils curl
+configure_packages() {
+  # Install useful packages for building a software router.
+  apt-get install -y vim bind9-dnsutils curl nftables wireguard-tools
+
+  # I would like to orchestrate updates myself to have better control.
+  apt-get purge --auto-remove -y unattended-upgrades
 }
 
 # Disable Armbian services that may cause additional resource
@@ -126,15 +130,15 @@ configure_kboot() {
 # Reference: https://forum.armbian.com/topic/14616-cloud-init/
 configure_cloud_init() {
   apt-get install -y cloud-init
-
   mkdir -p /boot/cloud-init
+  # Configure cloud-init data source via kernel command line.
+  echo "extraargs=ds=nocloud;s=file://boot/cloud-init/" >>/boot/armbianEnv.txt
+
+  # TODO: Investigate how we can inject cloud-init configuration
+  # after image build to reduce build time and improve flexibility.
   cp /tmp/overlay/cloud-init/user-data /boot/cloud-init/user-data
   cp /tmp/overlay/cloud-init/meta-data /boot/cloud-init/meta-data
   INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/meta-data >/boot/cloud-init/meta-data
-
-  # Configure cloud-init data source via kernel command line.
-  # TODO: Investigate if hosting a metadata service makes sense.
-  echo "extraargs=ds=nocloud;s=file://boot/cloud-init/" >>/boot/armbianEnv.txt
 
   # Configure cloud-init to use the network configuration from netplan.
   cp /tmp/overlay/cloud-init/network-config /etc/cloud/cloud.cfg.d/90-network-config.cfg
@@ -167,7 +171,7 @@ main() {
     apt-get update
 
     configure_users
-    configure_extra_packages
+    configure_packages
     configure_armbian_services
     configure_netplan
     configure_cryptroot
