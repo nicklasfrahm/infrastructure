@@ -7,8 +7,20 @@
 flush ruleset
 
 # Declare variables.
+{{- if not (.Values.interfaces.wan) }}
+{{- fail "failed to find WAN interface: .interfaces.wan" }}
+{{- end }}
 define iface_wan = "{{ .Values.interfaces.wan }}"
+{{- if not (.Values.interfaces.lan) }}
+{{- fail "failed to find LAN interface: .interfaces.lan" }}
+{{- end }}
 define iface_lan = "{{ .Values.interfaces.lan }}"
+{{- if not (.Values.subnets.kubernetes.pods) }}
+{{- fail "failed to find Kubernetes pod subnet: .subnets.kubernetes.pods" }}
+{{- end }}
+{{- if not (.Values.subnets.kubernetes.services) }}
+{{- fail "failed to find Kubernetes service subnet: .subnets.kubernetes.services" }}
+{{- end }}
 define cidr_kubernetes = "{ {{ .Values.subnets.kubernetes.pods }}, {{ .Values.subnets.kubernetes.services }} }"
 
 # Create a table for firewalling.

@@ -7,6 +7,6 @@ metadata:
     app.kubernetes.io/component: firewall
 data:
   nftables.conf: |-
-    {{- tpl (.Files.Get "config/nftables.conf") . | printf "\n%s" | indent 4 }}
+    {{- tpl (.Files.Get "config/nftables.conf.tpl") . | printf "\n%s" | indent 4 }}
   nftables-reconcile.sh: |-
     {{- tpl (.Files.Get "config/nftables-reconcile.sh") . | printf "\n%s" | indent 4 }}
