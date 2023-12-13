@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "networkc.fullname" . }}-nftables
+  labels:
+    {{- include "networkc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: firewall
+data:
+  nftables.conf: |-
+    {{- tpl (.Files.Get "config/nftables.conf") . | printf "\n%s" | indent 4 }}
+  nftables-reconcile.sh: |-
+    {{- tpl (.Files.Get "config/nftables-reconcile.sh") . | printf "\n%s" | indent 4 }}

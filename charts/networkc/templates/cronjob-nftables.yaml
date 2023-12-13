@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "networkc.fullname" . }}-nftables
+  labels:
+    {{- include "networkc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: firewall
+spec:
+  schedule: "*/1 * * * *"
+  historyLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          # The container should run as root and on the root filesystem.
+          # It should use a bash container with the diff command installed via apk.
+          - name: nftables
+            image: bash
+            command: ["/bin/bash", "/app/nftables-reconcile.sh", "/etc/nftables.conf", "/app/nftables.conf"]
+            volumeMounts:
+            - name: etc
+              mountPath: /etc
+            - name: nftables
+              mountPath: /app
+          volumes:
+          - name: nftables
+            configMap:
+              name: {{ include "networkc.fullname" . }}-nftables
+          - name: etc
+            hostPath:
+              path: /etc
+          restartPolicy: Always
+          # The container should run as root and on the root filesystem.
+          privileged: true

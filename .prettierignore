@@ -1,0 +1,2 @@
+# Ignore helm chart templates.
+charts/**/*.yaml
