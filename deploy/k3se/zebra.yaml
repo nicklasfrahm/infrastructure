@@ -11,8 +11,6 @@ cluster:
     # is used to determine the server URL of the cluster.
     tls-san:
       - k8s.zebra.nicklasfrahm.dev
-    advertise-port: 443
-    https-listen-port: 6443
     disable:
       - traefik
     flannel-iface: enp3s0

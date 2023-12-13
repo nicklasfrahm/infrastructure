@@ -34,8 +34,8 @@ services:
       backend:
         host: 10.3.11.103.nip.io
 
+  kubeapi:
     - name: zebra-k8s
       host: k8s.zebra.nicklasfrahm.dev
       backend:
         host: zebra.srv.nicklasfrahm.dev
-        port: 6443

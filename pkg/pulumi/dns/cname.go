@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// CNAMEComponentType is the ID of the component type.
-	CNAMEComponentType = "nicklasfrahm:dns:CNAME"
+	// ComponentTypeCNAME is the ID of the component type.
+	ComponentTypeCNAME = "nicklasfrahm:dns:CNAME"
 )
 
 // CNAME creates CNAME DNS records for the given hostname.
@@ -20,12 +20,12 @@ type CNAME struct {
 // NewCNAME configures CNAME DNS records for the given hostname.
 func NewCNAME(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordSpec, opts ...pulumi.ResourceOption) (*CNAME, error) {
 	component := &CNAME{}
-	if err := ctx.RegisterComponentResource(CNAMEComponentType, name, component, opts...); err != nil {
+	if err := ctx.RegisterComponentResource(ComponentTypeCNAME, name, component, opts...); err != nil {
 		return nil, err
 	}
 
 	if len(args.Values) == 0 {
-		return nil, fmt.Errorf("%s: failed to find required argument: values", CNAMEComponentType)
+		return nil, fmt.Errorf("%s: failed to find required argument: values", ComponentTypeCNAME)
 	}
 
 	if len(args.Values) != 1 {

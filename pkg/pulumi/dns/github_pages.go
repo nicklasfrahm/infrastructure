@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// GithubPagesComponentType is the ID of the component type.
-	GithubPagesComponentType = "nicklasfrahm:dns:GithubPages"
+	// ComponentTypeGithubPages is the ID of the component type.
+	ComponentTypeGithubPages = "nicklasfrahm:dns:GithubPages"
 )
 
 var (
@@ -30,12 +30,12 @@ type GithubPages struct {
 // NewGithubPages configures DNS for a Github pages site.
 func NewGithubPages(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordSpec, opts ...pulumi.ResourceOption) (*GithubPages, error) {
 	component := &GithubPages{}
-	if err := ctx.RegisterComponentResource(GithubPagesComponentType, name, component, opts...); err != nil {
+	if err := ctx.RegisterComponentResource(ComponentTypeGithubPages, name, component, opts...); err != nil {
 		return nil, err
 	}
 
 	if args.GithubPages.Org == "" {
-		return nil, fmt.Errorf("%s: failed to find required argument: org", GithubPagesComponentType)
+		return nil, fmt.Errorf("%s: failed to find required argument: org", ComponentTypeGithubPages)
 	}
 	githubPagesSite := fmt.Sprintf("%s.github.io", args.GithubPages.Org)
 	isApex := args.Name == "@"

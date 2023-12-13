@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// SiteComponentType is the ID of the component type.
-	SiteComponentType = "nicklasfrahm:dns:Site"
+	// ComponentTypeSite is the ID of the component type.
+	ComponentTypeSite = "nicklasfrahm:dns:Site"
 )
 
 // Site is a set of DNS records for a physical site.
@@ -20,12 +20,12 @@ type Site struct {
 // NewSite configures DNS for a physical site.
 func NewSite(ctx *pulumi.Context, name string, zone *cloudflare.Zone, args *RecordSpec, opts ...pulumi.ResourceOption) (*Site, error) {
 	component := &Site{}
-	if err := ctx.RegisterComponentResource(SiteComponentType, name, component, opts...); err != nil {
+	if err := ctx.RegisterComponentResource(ComponentTypeSite, name, component, opts...); err != nil {
 		return nil, err
 	}
 
 	if args.Site.Router == "" {
-		return nil, fmt.Errorf("%s: failed to find required argument: router", SiteComponentType)
+		return nil, fmt.Errorf("%s: failed to find required argument: router", ComponentTypeSite)
 	}
 
 	metadata, err := newMetadataString()
