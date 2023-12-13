@@ -15,3 +15,4 @@ For now the implementation is naive and simple. It consists of the following com
 - `CronJob` for updating the firewall configuration via `nftables`
   <!-- - `CronJob` to update the `isc-dhcp-server` configuration -->
   <!-- - `CronJob` to update the `netplan` configuration -->
+  <!-- - `CronJob` to run `ddclient` -->
