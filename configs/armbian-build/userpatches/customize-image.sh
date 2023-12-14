@@ -51,7 +51,13 @@ configure_users() {
 
 configure_packages() {
   # Install useful packages for building a software router.
-  apt-get install -y vim bind9-dnsutils curl nftables wireguard-tools
+  apt-get install -y \
+    btrfs-progs \
+    wireguard-tools \
+    nftables \
+    bind9-dnsutils \
+    curl \
+    vim
 
   # I would like to orchestrate updates myself to have better control.
   apt-get purge --auto-remove -y unattended-upgrades
