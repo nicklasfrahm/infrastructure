@@ -118,8 +118,9 @@ configure_cryptroot() {
   chmod 700 "$dropbear_initramfs"
   chmod 600 "$dropbear_initramfs/authorized_keys"
 
+  # TODO: Remove this once we have verified that `cloud-init` can take care of this.
   # Ensure partition is resized on first boot.
-  systemctl enable armbian-resize-filesystem
+  # systemctl enable armbian-resize-filesystem
 }
 
 # Set up kboot for faster kernel updates.
