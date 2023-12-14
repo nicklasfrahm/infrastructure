@@ -8,7 +8,7 @@ CLEAR='\033[0m'
 BUILD_CUSTOMIZATION_DIR="configs/armbian-build"
 PATCH_DIR="$BUILD_CUSTOMIZATION_DIR/userpatches"
 BUILD_DIR="third_party/armbian-build"
-KERNEL_CONFIG_FILE="config/kernel/linux-rk3568-odroid-edge.config"
+BOARD_NANOPI_R5S_KERNEL_CONFIG_FILE="config/kernel/linux-rockchip64-edge.config"
 BOARD_NANOPI_R5S="nanopi-r5s"
 USERNAME="nicklasfrahm"
 
@@ -26,7 +26,7 @@ restore_kernel_config() {
     # Do surgical reset rather than a coarse reset using
     # "git submodule foreach" and "git reset --hard".
     pushd "$BUILD_DIR" >/dev/null
-    git checkout HEAD -- "$KERNEL_CONFIG_FILE"
+    git checkout HEAD -- "$BOARD_NANOPI_R5S_KERNEL_CONFIG_FILE"
     git clean -fd
     popd >/dev/null
   fi
@@ -71,8 +71,9 @@ apply_customizations() {
 patch_kernel_config() {
   if [[ "$board" == "$BOARD_NANOPI_R5S" ]]; then
     # Display diff of the kernel config. We expect a diff, so we ignore the exit code.
-    diff --color=always -u "$BUILD_DIR/$KERNEL_CONFIG_FILE" "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" || true
-    cp "$BUILD_CUSTOMIZATION_DIR/$KERNEL_CONFIG_FILE" "$BUILD_DIR/$KERNEL_CONFIG_FILE"
+    kernel_config_file="$BOARD_NANOPI_R5S_KERNEL_CONFIG_FILE"
+    diff --color=always -u "$BUILD_DIR/$kernel_config_file" "$BUILD_CUSTOMIZATION_DIR/$kernel_config_file" || true
+    cp -f "$BUILD_CUSTOMIZATION_DIR/$kernel_config_file" "$BUILD_DIR/$kernel_config_file"
   fi
 }
 
