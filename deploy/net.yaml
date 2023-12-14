@@ -1,0 +1,23 @@
+routers:
+  - name: alfa
+    gateway4: 172.17.0.0/27
+    gateway6: fdff:ffff:ffff:ffff::0:0/128
+    subnets:
+      - vlan: 10
+        address4: 10.0.10.254/24
+      - vlan: 11
+        address4: 10.0.11.254/24
+      - vlan: 12
+        address4: 10.0.12.254/24
+  - name: bravo
+    gateway:
+      ipv4:
+        subnet: 172.17.0.32/27
+  - name: charlie
+    gateway:
+      ipv4:
+        subnet: 172.17.0.64/27
+  - name: delta
+    gateway:
+      ipv4:
+        subnet: 172.17.0.96/27
