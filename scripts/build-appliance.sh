@@ -109,9 +109,11 @@ build_firmware() {
 
 # Move the firmware image to the output directory in the root repo.
 move_firmware() {
+  version=$(git describe --always --tags --dirty)
+
   mkdir -p output
   image_file=$(find "$BUILD_DIR/output/images/" -iname "*$board*.img" | sort -rV | head -n1)
-  mv "$image_file" "output/$board.img"
+  mv "$image_file" "output/${board}-${version}.img"
 }
 
 show_notes() {
