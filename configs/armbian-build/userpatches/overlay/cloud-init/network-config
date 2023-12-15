@@ -1,0 +1,15 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    wan:
+      dhcp4: true
+      dhcp6: false
+    lan1:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    lan2:
+      dhcp4: false
+      dhcp6: false
+      optional: true

@@ -20,3 +20,6 @@ bin/
 
 # Ignore .env files.
 .env*
+
+# Ignore built firmware.
+output/

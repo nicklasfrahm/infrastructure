@@ -1,0 +1,28 @@
+#cloud-config
+
+# Configure localization.
+timezone: UTC
+locale: en_US.UTF-8
+keyboard:
+  layout: de
+  model: pc105
+  variant: nodeadkeys
+
+# Configure SSH.
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklasfrahm@gl552vw
+
+# Configure the users.
+users:
+  - name: nicklasfrahm
+    gecos: Nicklas Frahm
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    plain_text_passwd: nicklasfrahm
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcduwlQxHMsgzxiG+0pDOs5OHW2imshd3aasz6CgHF9 nicklasfrahm@gl552vw
+
+# Ensure that we have a unique machine ID despite disabling "armbian-firstrun".
+runcmd:
+  - sed '1s/^/IMAGE_UUID=/' /proc/sys/kernel/random/uuid >> /etc/armbian-image-release

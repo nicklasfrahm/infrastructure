@@ -19,7 +19,7 @@ build: bin/$(TARGET)-$(SUFFIX)
 
 bin/$(TARGET)-$(SUFFIX): $(SOURCES)
 	@mkdir -p $(@D)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(BUILD_FLAGS) -o $(BINARY) cmd/$(TARGET)/*
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(BUILD_FLAGS) -o $(BINARY) cmd/$(TARGET)/*.go
 
 
 .PHONY: docker
@@ -68,3 +68,13 @@ odance:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update bitnami
 	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml
+
+######################
+# Appliance firmware #
+######################
+BOARD	?= nanopi-r5s
+
+build-appliance: output/appliance-$(BOARD).img
+
+output/appliance-$(BOARD).img:
+	./scripts/build-appliance.sh $(BOARD)

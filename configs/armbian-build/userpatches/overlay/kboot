@@ -1,0 +1,51 @@
+#!/bin/bash
+
+is_root() {
+  [[ "$EUID" -eq 0 ]]
+}
+
+if ! is_root; then
+  echo "error: permission denied: use sudo or run as root"
+  exit 1
+fi
+
+help_wanted() {
+  [ "$#" -ge "1" ] && { [ "$1" = '-h' ] || [ "$1" = '--help' ]; }
+}
+
+usage() {
+  echo "usage: kboot [-h|--help] [kernel] [-] [args]"
+  echo
+  echo "  -h, --help:  show this help message"
+  echo "  kernel:      kernel version to kexec into (default: current kernel)"
+  echo "               use 'latest' to perform a kernel upgrade"
+  echo "  -:           reuse the current kernel command line"
+  echo "  args:        additional kernel arguments"
+}
+
+if help_wanted "$@"; then
+  usage
+  exit 0
+fi
+
+kernel=$(uname -r)
+if [[ "$#" -gt 0 ]] && [[ "$1" != '-' ]]; then
+  kernel="$1"
+  shift
+
+  if [[ "$kernel" == "latest" ]]; then
+    kernel=$(find /boot/ -iname "vmlinuz-*" | sed 's|/boot/vmlinuz-||g' | sort -V | tail -n 1)
+  fi
+fi
+
+reuse=""
+if [[ "$#" -gt 0 ]] && [[ "$1" == '-' ]]; then
+  reuse=--reuse-cmdline
+  shift
+fi
+
+if [[ "$#" == 0 ]]; then
+  reuse=--reuse-cmdline
+fi
+
+kexec -l -t bzImage "/boot/vmlinuz-$kernel" "--initrd=/boot/initrd.img-$kernel" "$reuse" --append="$*" && systemctl kexec
