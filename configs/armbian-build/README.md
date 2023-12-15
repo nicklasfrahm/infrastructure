@@ -5,5 +5,5 @@ This directory contains configuration and templates that will be used by the Arm
 To build an image, run the following command from the root of the repository:
 
 ```bash
-make router-firmware
+BOARD=nanopi-r5s make build-appliance
 ```
