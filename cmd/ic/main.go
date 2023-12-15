@@ -11,7 +11,7 @@ var version = "dev"
 var help bool
 
 var rootCmd = &cobra.Command{
-	Use:   "ic <host>",
+	Use:   "ic [command] [flags]",
 	Short: "A CLI to manage infrastructure",
 	Long: `   _
   (_) ___
