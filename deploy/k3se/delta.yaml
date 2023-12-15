@@ -20,7 +20,7 @@ cluster:
     service-cidr:
       - 172.29.0.0/16
     cluster-dns:
-      - 172.29.0.10/16
+      - 172.29.0.10
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
