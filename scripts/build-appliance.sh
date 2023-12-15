@@ -58,11 +58,6 @@ parse_args() {
 
 # Add customizations to the armbian build system.
 apply_customizations() {
-  # TODO: Enable this again once the following PR is merged:
-  # https://github.com/armbian/build/pull/6021
-  # Ensure that the build system is up to date.
-  # git submodule update --remote third_party/armbian-build
-
   # Copy the patch files into the build system.
   cp -r "$PATCH_DIR" third_party/armbian-build
 }
