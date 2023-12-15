@@ -1,4 +1,0 @@
-Your interfaces are configured and ready to use.
-
-  - wan: {{ .Values.interfaces.wan }}
-  - lan: {{ .Values.interfaces.lan }}
