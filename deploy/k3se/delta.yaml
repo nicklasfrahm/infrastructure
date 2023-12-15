@@ -16,11 +16,11 @@ cluster:
       - traefik
     flannel-iface: eth0
     cluster-cidr:
-      - 10.254.0.0/16
+      - 172.28.0.0/16
     service-cidr:
-      - 10.255.0.0/16
+      - 172.29.0.0/16
     cluster-dns:
-      - 10.255.0.10
+      - 172.29.0.10/16
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
