@@ -23,11 +23,13 @@ spec:
       model: i3-7100
       threads: 4
   memory:
+    # TODO: Verify if this is GiB or GB.
     - capacityGiB: 16
       clockMHz: 2400
       manufacturer: corsair
       model: vengeance
   disks:
+    # TODO: Verify if this is GiB or GB.
     - capacityGiB: 120
       formFactorIn: 2.5
       interface: seagate

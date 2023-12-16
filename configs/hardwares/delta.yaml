@@ -1,0 +1,45 @@
+apiVersion: experimental.nicklasfrahm.dev
+kind: Hardware
+metadata:
+  name: delta
+  annotations:
+    experimental.nicklasfrahm.dev/description: |
+      A software router for the network edge at one of my locations.
+spec:
+  hostname: delta
+  chassis:
+    manufacturer: friendlyelec
+    model: nanopi-r5s
+    class: SBC
+    dimensions:
+      widthMm: 94.5
+      heightMm: 30
+      depthMm: 68
+  cpus:
+    - architecture: arm64
+      cores: 4
+      clockMHz: 2000
+      manufacturer: rockchip
+      model: RK3568B2
+      threads: 4
+  memory:
+    - capacityGiB: 2
+      clockMHz: 3200
+      manufacturer: unknown
+      model: unknown
+  disks:
+    # This does not have a form factor,
+    # because it is soldered to the board.
+    - capacityGiB: 8
+      interface: Unknown
+      manufacturer: unknown
+      model: unknown
+      name: mmcblk1
+      type: eMMC
+    - capacityGiB: 250
+      formFactorM2: 2280
+      interface: NVMe
+      manufacturer: kingston
+      model: unknown
+      name: nvme0n1
+      type: SSD

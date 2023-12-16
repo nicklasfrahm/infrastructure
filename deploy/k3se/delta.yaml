@@ -14,20 +14,20 @@ cluster:
     https-listen-port: 7443
     disable:
       - traefik
-    flannel-iface: eth0
+    flannel-iface: wan
     cluster-cidr:
-      - 10.254.0.0/16
+      - 172.28.0.0/16
     service-cidr:
-      - 10.255.0.0/16
+      - 172.29.0.0/16
     cluster-dns:
-      - 10.255.0.10
+      - 172.29.0.10
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
   - role: server
     ssh:
       host: 172.31.255.3
-      fingerprint: SHA256:g6n75j5ZwvNGVaaQlPVotH0PRoKnIx/Iaz3DGpj6ETQ
+      fingerprint: SHA256:lYxnP54ekc+5FBcms7KVr29KiqeSX5yfFdYMc59G81M
       user: nicklasfrahm
       key-file: ~/.ssh/id_ed25519
 
