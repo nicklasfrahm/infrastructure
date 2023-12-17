@@ -20,5 +20,5 @@ ones.`,
 }
 
 func init() {
-	Command.AddCommand(bootstrapCmd)
+	Command.AddCommand(upCmd)
 }

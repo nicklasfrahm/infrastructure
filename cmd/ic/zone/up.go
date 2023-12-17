@@ -9,8 +9,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var bootstrapCmd = &cobra.Command{
-	Use:   "bootstrap <host>",
+var upCmd = &cobra.Command{
+	Use:   "up <host>",
 	Short: "Bootstrap a new availability zone",
 	Long: `This command will bootstrap a new zone by connecting
 to the specified IP and setting up a k3s cluster on
@@ -21,17 +21,19 @@ for managing the lifecycle of the zone.`,
 	ValidArgs:  []string{"host"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// TODO: Validate args:
-		//       - IP (e.g. 212.112.144.171) [ephemeral]
-		//       - appliance (e.g. alfa) [config]
-		//       - site name (e.g. aar1) [config]
-		//       - router ID (e.g. 172.31.255.0) [config]
-		//       - ASN (e.g. 65000) [config]
+		//       - IP (e.g. 212.112.144.171) [ephemeral, required]
+		//       - hostname (e.g. alfa.nicklasfrahm.dev) [config, required]
+		//       - zone name (e.g. aar1) [config, required]
+		//       - router ID (e.g. 172.31.255.0) [config, required]
+		//       - ASN (e.g. 65000) [config, required]
+		//       - DNS provider credential [env only, required]
+		//       - user account password for local recovery [env only, optional]
 		// TODO: Run preflight checks:
 		//       - Open ports: TCP:22,80,443,6443,7443
 		//       - Open ports: UDP:5800-5810
 		// TODO: Perform minimal system configuration:
 		//       - Set hostname
-		//       - Reset user password
+		//       - Reset user password (if provided)
 		// TODO: Ensure minimal interface configuration:
 		//       - IPv4 on loopback
 		//       - Identify WAN interface and name it WAN
