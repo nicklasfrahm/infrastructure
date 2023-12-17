@@ -3,15 +3,16 @@ package main
 import (
 	"os"
 
-	"github.com/nicklasfrahm/infrastructure/cmd/ic/metal"
 	"github.com/spf13/cobra"
+
+	"github.com/nicklasfrahm/infrastructure/cmd/ic/zone"
 )
 
 var version = "dev"
 var help bool
 
 var rootCmd = &cobra.Command{
-	Use:   "ic [command] [flags]",
+	Use:   "ic",
 	Short: "A CLI to manage infrastructure",
 	Long: `   _
   (_) ___
@@ -31,7 +32,6 @@ of the infrastructure lifecycle.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cmd.Help()
 		os.Exit(1)
-
 		return nil
 	},
 	Version:      version,
@@ -40,7 +40,7 @@ of the infrastructure lifecycle.`,
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&help, "help", "h", false, "Print this help")
-	rootCmd.AddCommand(metal.Command)
+	rootCmd.AddCommand(zone.Command)
 }
 
 func main() {
