@@ -68,13 +68,3 @@ odance:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update bitnami
 	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml
-
-######################
-# Appliance firmware #
-######################
-BOARD	?= nanopi-r5s
-
-build-appliance: output/appliance-$(BOARD).img
-
-output/appliance-$(BOARD).img:
-	./scripts/build-appliance.sh $(BOARD)
