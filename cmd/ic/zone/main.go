@@ -9,9 +9,8 @@ import (
 var Command = &cobra.Command{
 	Use:   "zone",
 	Short: `Manage availability zones`,
-	Long: `Bootstrap new availability zones
-and manage the lifecycle of existing
-ones.`,
+	Long: `Bootstrap new availability zones and manage the
+lifecycle of existing ones.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cmd.Help()
 		os.Exit(1)

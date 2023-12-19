@@ -15,7 +15,14 @@ var upCmd = &cobra.Command{
 	Long: `This command will bootstrap a new zone by connecting
 to the specified IP and setting up a k3s cluster on
 the host that will then set up the required services
-for managing the lifecycle of the zone.`,
+for managing the lifecycle of the zone.
+
+To manage a zone, the CLI needs credentials for the
+DNS provider that is used to manage the DNS records
+for the zone. These credentials can only be provided
+via the environment variable DNS_PROVIDER_CREDENTIAL
+and DNS_PROVIDER or via a ".env" file in the current
+working directory.`,
 	Args:       cobra.ExactArgs(1),
 	ArgAliases: []string{"host"},
 	ValidArgs:  []string{"host"},
@@ -51,6 +58,19 @@ for managing the lifecycle of the zone.`,
 
 		return nil
 	},
+}
+
+func init() {
+	upCmd.Flags().String("name", "", "name of the zone")
+	upCmd.MarkFlagRequired("name")
+	upCmd.Flags().String("hostname", "", "hostname of the router serving the zone")
+	upCmd.MarkFlagRequired("hostname")
+	upCmd.Flags().IP("router-id", nil, "IPv4 address of the router serving the zone")
+	upCmd.MarkFlagRequired("router-id")
+	upCmd.Flags().Int("asn", 0, "autonomous system number of the zone")
+	upCmd.MarkFlagRequired("asn")
+	upCmd.Flags().String("domain", "", "domain that will contain the DNS records for the zone")
+	upCmd.MarkFlagRequired("domain")
 }
 
 func GetSSHHostPublicKeyFingerprint(host string) (string, error) {
