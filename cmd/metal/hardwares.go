@@ -25,7 +25,7 @@ func Hardware(useRemote bool) *fiber.App {
 		var bytes []byte
 		var err error
 
-		path := fmt.Sprintf("configs/hardwares/%s.yaml", name)
+		path := fmt.Sprintf("config/hardwares/%s.yaml", name)
 		if useRemote {
 			// Use the GitHub API to fetch the file.
 			path = fmt.Sprintf(fileURLTemplate, repository, path)

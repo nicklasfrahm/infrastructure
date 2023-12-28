@@ -20,7 +20,7 @@ type ZoneRouter struct {
 	// ID is the IPv4 address of the router.
 	ID net.IP `json:"routerID"`
 	// ASN is the autonomous system number of the router.
-	ASN int `json:"asn"`
+	ASN uint32 `json:"asn"`
 }
 
 // Zone represents an availability zone.
