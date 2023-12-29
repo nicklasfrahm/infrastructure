@@ -20,6 +20,10 @@ func Up(host string, zone *Zone) error {
 		return err
 	}
 
+	if netutil.ProbeTCP(host, netutil.PortSSH) != netutil.ProbeStatusOpen {
+		return fmt.Errorf("failed to perform preflight check: port 22/tcp is closed")
+	}
+
 	// TODO: Run preflight checks:
 	//       - Open ports: TCP:22,80,443,6443,7443
 	//       - Open ports: UDP:5800-5810
@@ -27,11 +31,7 @@ func Up(host string, zone *Zone) error {
 	// 			 How do we differentiate between closed and filtered ports?
 	tcpPorts := []int{22, 80, 443, 6443, 7443}
 	for _, port := range tcpPorts {
-		status := "closed"
-		if netutil.ProbeTCP(host, port) {
-			status = "open"
-		}
-		fmt.Printf("preflight check: port %4d: %s\n", port, status)
+		fmt.Printf("preflight check: port %4d: %s\n", port, netutil.ProbeTCP(host, port))
 	}
 
 	// TODO: Perform minimal system configuration:
