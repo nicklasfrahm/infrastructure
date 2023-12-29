@@ -2,7 +2,6 @@ package zone
 
 import (
 	"fmt"
-	"os"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/cobra"
@@ -41,10 +40,6 @@ working directory.`,
 			return fmt.Errorf("accepts 1 arg(s), received %d", len(args))
 		}
 		host := args[0]
-
-		fmt.Printf("zone: %+v\n", zoneConfig)
-		fmt.Printf("rout: %+v\n", zoneConfig.Router)
-		fmt.Printf("prov: %+v\n", os.Getenv("DNS_PROVIDER"))
 
 		if err := zone.Up(host, &zoneConfig); err != nil {
 			return err

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nicklasfrahm/infrastructure/pkg/netutil"
+	"github.com/nicklasfrahm/infrastructure/pkg/sshx"
 )
 
 // Up creates or updates an availability zone.
@@ -22,6 +23,27 @@ func Up(host string, zone *Zone) error {
 
 	if netutil.ProbeTCP(host, netutil.PortSSH) != netutil.ProbeStatusOpen {
 		return fmt.Errorf("failed to perform preflight check: port 22/tcp is closed")
+	}
+
+	{
+		// TODO: Continue here.
+		client, err := sshx.NewClient(host)
+		if err != nil {
+			return err
+		}
+		defer client.Close()
+
+		session, err := client.NewSession()
+		if err != nil {
+			return err
+		}
+		defer session.Close()
+
+		hostnameBytes, err := session.Output("hostname")
+		if err != nil {
+			return err
+		}
+		fmt.Printf("hostname detected: %s\n", string(hostnameBytes))
 	}
 
 	// TODO: Run preflight checks:
@@ -44,7 +66,7 @@ func Up(host string, zone *Zone) error {
 	// TODO: Install or upgrade k3s
 	// TODO: Install or upgrade kraut
 
-	fingerprint, err := netutil.GetSSHHostPublicKeyFingerprint(host)
+	fingerprint, err := sshx.GetSSHHostPublicKeyFingerprint(host)
 	if err != nil {
 		return err
 	}
