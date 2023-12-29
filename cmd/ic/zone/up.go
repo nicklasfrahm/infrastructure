@@ -9,6 +9,12 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+var (
+	zone = Zone{
+		Router: &ZoneRouter{},
+	}
+)
+
 var upCmd = &cobra.Command{
 	Use:   "up <host>",
 	Short: "Bootstrap a new availability zone",
@@ -61,16 +67,16 @@ working directory.`,
 }
 
 func init() {
-	upCmd.Flags().String("name", "", "name of the zone")
+	upCmd.Flags().StringVarP(&zone.Name, "name", "n", "", "name of the zone")
 	upCmd.MarkFlagRequired("name")
-	upCmd.Flags().String("hostname", "", "hostname of the router serving the zone")
-	upCmd.MarkFlagRequired("hostname")
-	upCmd.Flags().IP("router-id", nil, "IPv4 address of the router serving the zone")
-	upCmd.MarkFlagRequired("router-id")
-	upCmd.Flags().Int("asn", 0, "autonomous system number of the zone")
-	upCmd.MarkFlagRequired("asn")
-	upCmd.Flags().String("domain", "", "domain that will contain the DNS records for the zone")
+	upCmd.Flags().StringVarP(&zone.Domain, "domain", "d", "", "domain that will contain the DNS records for the zone")
 	upCmd.MarkFlagRequired("domain")
+	upCmd.Flags().StringVarP(&zone.Router.Hostname, "hostname", "H", "", "hostname of the router serving the zone")
+	upCmd.MarkFlagRequired("hostname")
+	upCmd.Flags().IPVarP(&zone.Router.ID, "router-id", "r", nil, "IPv4 address of the router serving the zone")
+	upCmd.MarkFlagRequired("router-id")
+	upCmd.Flags().Uint32VarP(&zone.Router.ASN, "asn", "a", 0, "autonomous system number of the zone")
+	upCmd.MarkFlagRequired("asn")
 }
 
 func GetSSHHostPublicKeyFingerprint(host string) (string, error) {
