@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-// TODO: Move this to the `pkg` directory.
-
 var (
 	// ErrInvalidHostname is returned when a hostname is invalid.
 	ErrInvalidHostname = fmt.Errorf("hostname must be lowercase, alphanumeric, and cannot start or end with a hyphen")

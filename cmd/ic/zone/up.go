@@ -2,17 +2,19 @@ package zone
 
 import (
 	"fmt"
-	"net"
 	"os"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/ssh"
+
+	"github.com/nicklasfrahm/infrastructure/pkg/kraut/zone"
 )
 
 var (
-	zone = Zone{
-		Router: &ZoneRouter{},
+	zoneConfig = zone.Zone{
+		Router: &zone.ZoneRouter{},
 	}
+	configFile string
 )
 
 var upCmd = &cobra.Command{
@@ -33,6 +35,16 @@ working directory.`,
 	ArgAliases: []string{"host"},
 	ValidArgs:  []string{"host"},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// This should be safe because of the ExactArgs(1) constraint,
+		// but we still need to check it to avoid panics.
+		if len(args) != 1 {
+			return fmt.Errorf("accepts 1 arg(s), received %d", len(args))
+		}
+		host := args[0]
+
+		fmt.Printf("zone: %+v\n", zoneConfig)
+		fmt.Printf("rout: %+v\n", zoneConfig.Router)
+		fmt.Printf("prov: %+v\n", os.Getenv("DNS_PROVIDER"))
 		// TODO: Validate args:
 		//       - IP (e.g. 212.112.144.171) [ephemeral, required]
 		//       - hostname (e.g. alfa.nicklasfrahm.dev) [config, required]
@@ -54,65 +66,19 @@ working directory.`,
 		// TODO: Install or upgrade k3s
 		// TODO: Install or upgrade kraut
 
-		host := args[0]
-		fingerprint, err := GetSSHHostPublicKeyFingerprint(host)
-		if err != nil {
+		if err := zone.Up(host, &zoneConfig); err != nil {
 			return err
 		}
-
-		fmt.Printf("fingerprint detected: %s: %s\n", host, fingerprint)
 
 		return nil
 	},
 }
 
 func init() {
-	upCmd.Flags().StringVarP(&zone.Name, "name", "n", "", "name of the zone")
-	upCmd.MarkFlagRequired("name")
-	upCmd.Flags().StringVarP(&zone.Domain, "domain", "d", "", "domain that will contain the DNS records for the zone")
-	upCmd.MarkFlagRequired("domain")
-	upCmd.Flags().StringVarP(&zone.Router.Hostname, "hostname", "H", "", "hostname of the router serving the zone")
-	upCmd.MarkFlagRequired("hostname")
-	upCmd.Flags().IPVarP(&zone.Router.ID, "router-id", "r", nil, "IPv4 address of the router serving the zone")
-	upCmd.MarkFlagRequired("router-id")
-	upCmd.Flags().Uint32VarP(&zone.Router.ASN, "asn", "a", 0, "autonomous system number of the zone")
-	upCmd.MarkFlagRequired("asn")
-}
-
-func GetSSHHostPublicKeyFingerprint(host string) (string, error) {
-	// Read the private key file.
-	// TODO: Avoid hardcoding this.
-	key, err := os.ReadFile(os.Getenv("HOME") + "/.ssh/id_ed25519")
-	if err != nil {
-		return "", fmt.Errorf("failed to read private key file: %v", err)
-	}
-
-	signer, err := ssh.ParsePrivateKey(key)
-	if err != nil {
-		return "", fmt.Errorf("failed to parse private key: %v", err)
-	}
-
-	// This will be written by the host key callback.
-	var fingerprint string
-
-	config := &ssh.ClientConfig{
-		User: os.Getenv("USER"),
-		Auth: []ssh.AuthMethod{
-			ssh.PublicKeys(signer),
-		},
-		HostKeyCallback: ssh.HostKeyCallback(func(hostname string, remote net.Addr, key ssh.PublicKey) error {
-			// Create a SHA256 fingerprint of the host public key.
-			fingerprint = ssh.FingerprintSHA256(key)
-
-			return nil
-		}),
-	}
-
-	client, err := ssh.Dial("tcp", net.JoinHostPort(host, "22"), config)
-	if err != nil {
-		return "", fmt.Errorf("failed to establish SSH connection: %v", err)
-	}
-	defer client.Close()
-
-	return fingerprint, nil
+	upCmd.Flags().StringVarP(&zoneConfig.Name, "name", "n", "", "name of the zone")
+	upCmd.Flags().StringVarP(&zoneConfig.Domain, "domain", "d", "", "domain that will contain the DNS records for the zone")
+	upCmd.Flags().StringVarP(&zoneConfig.Router.Hostname, "hostname", "H", "", "hostname of the router serving the zone")
+	upCmd.Flags().IPVarP(&zoneConfig.Router.ID, "router-id", "r", nil, "IPv4 address of the router serving the zone")
+	upCmd.Flags().Uint32VarP(&zoneConfig.Router.ASN, "asn", "a", 0, "autonomous system number of the zone")
+	upCmd.Flags().StringVarP(&configFile, "config", "c", "", "path to the configuration file")
 }

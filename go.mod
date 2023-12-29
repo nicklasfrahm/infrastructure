@@ -13,6 +13,7 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.89.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
+	golang.org/x/crypto v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.28.3
 )
@@ -104,7 +105,6 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/zclconf/go-cty v1.14.1 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/mod v0.13.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
