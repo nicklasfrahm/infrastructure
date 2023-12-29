@@ -1,0 +1,7 @@
+# TODO: Create a manifest with a structure similar to ones Kubernetes.
+domain: nicklasfrahm.dev
+name: aar1
+router:
+  hostname: alfa
+  id: 172.31.255.0
+  asn: 65000
