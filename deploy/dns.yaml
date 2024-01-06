@@ -18,7 +18,7 @@ zones:
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
-      - name: kubestack
+      - name: kraut
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
