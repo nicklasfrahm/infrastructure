@@ -1,0 +1,6 @@
+You have now enabled unauthenticated access to the OIDC discovery endpoint,
+which can be used to federate credentials to a service running inside the
+Kubernetes cluster.
+
+You may review the OIDC discovery endpoint at the following URL:
+  <api-server-url>/.well-known/openid-configuration
