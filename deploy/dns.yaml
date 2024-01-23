@@ -18,7 +18,7 @@ zones:
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
-      - name: kubestack
+      - name: kraut
         type: GITHUB_PAGES
         githubPages:
           org: nicklasfrahm
@@ -36,27 +36,6 @@ zones:
         type: SITE
         site:
           router: delta.nicklasfrahm.dev
-      # TODO: Remove these once I have an internal DNS server.
-      - name: zebra.srv
-        type: A
-        values:
-          - 10.0.11.102
-      - name: alfa.srv
-        type: A
-        values:
-          - 172.31.255.0
-      - name: bravo.srv
-        type: A
-        values:
-          - 172.31.255.1
-      - name: charlie.srv
-        type: A
-        values:
-          - 172.31.255.2
-      - name: delta.srv
-        type: A
-        values:
-          - 172.31.255.3
 
   - provider: cloudflare
     name: odance.nl
