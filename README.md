@@ -14,6 +14,17 @@ Since 2018 I started to make significant changes by automating the configuration
 
 Now, I am in the process of upgrading my infrastructure to become cloud-native and fully automated. The goal is to provide a RESTful API to provision baremetal machines from scratch, configure networking, and bootstrap and autoscale Kubernetes clusters.
 
+## Identity 🔑
+
+**Status:** 🚧 Implementation
+
+The primary method of authentication will be Open ID Connect (OIDC) and OIDC federation. In this setup [accounts.google.com][google-accounts] will serve as the root of trust to support the following scenarios:
+
+- **Single-sign-on (SSO) as a user**  
+  In a browser and using CLIs, I can use my Google account, which is protected via two physical security keys, to authenticate myself to my services.
+- **A service running in Kubernetes**  
+  Each service running in Kubernetes will have a corresponding service account in Google Cloud. The service account will then use OIDC federation to authenticate itself to any other services and across clusters.
+
 ## Networking 🔌
 
 Below, I describe the network setup of my Homelab. Some parts of it are already implemented, while others are still being conceptualized.
@@ -157,3 +168,4 @@ This project is licensed under the terms of the [MIT license][file-license].
 [docs-netplan-examples]: https://netplan.io/examples/
 [docs-netplan]: https://netplan.io
 [website-argo-installation]: https://www.arthurkoziel.com/setting-up-argocd-with-helm/
+[google-accounts]: https://accounts.google.com

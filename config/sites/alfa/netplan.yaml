@@ -18,7 +18,8 @@ network:
           - 1.1.1.1
           - 1.0.0.1
         search:
-          - nicklasfrahm.xyz
+          - srv.nicklasfrahm.dev
+          - nicklasfrahm.dev
     enp3s0:
       dhcp4: false
       dhcp6: false

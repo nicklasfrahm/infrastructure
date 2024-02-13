@@ -1,26 +1,34 @@
-REGISTRY	:= ghcr.io
-REPO			:= nicklasfrahm/infrastructure
-TARGET		?= metal
-SOURCES		:= $(shell find . -name "*.go")
-PLATFORM	?= $(shell go version | cut -d " " -f 4)
-GOOS		:= $(shell echo $(PLATFORM) | cut -d "/" -f 1)
-GOARCH		:= $(shell echo $(PLATFORM) | cut -d "/" -f 2)
-SUFFIX		:= $(GOOS)-$(GOARCH)
-VERSION		?= $(shell git describe --always --tags --dirty)
+TARGET			?= ic
+PLATFORM		?= $(shell go version | cut -d " " -f 4)
+VERSION			?= $(shell git describe --always --tags --dirty)
+REPO				:= $(shell git remote get-url origin | sed 's|https://github.com||g' |  grep -oE '[a-z-]+/[a-z-]+')
+SOURCES			:= $(shell find . -name "*.go")
+GOOS				:= $(shell echo $(PLATFORM) | cut -d "/" -f 1)
+GOARCH			:= $(shell echo $(PLATFORM) | cut -d "/" -f 2)
+SUFFIX			:= $(GOOS)-$(GOARCH)
 BUILD_FLAGS	:= -ldflags="-s -w -X main.version=$(VERSION)"
+BIN_DIR			:= /usr/local/bin
+REGISTRY		:= ghcr.io
 
 ifeq ($(GOOS),windows)
 SUFFIX	= $(GOOS)-$(GOARCH).exe
 endif
 
-BINARY	?= bin/$(TARGET)-$(SUFFIX)
+BINARY			?= bin/$(TARGET)-$(SUFFIX)
 
-build: bin/$(TARGET)-$(SUFFIX)
+build: $(BINARY)
 
-bin/$(TARGET)-$(SUFFIX): $(SOURCES)
+$(BINARY): $(SOURCES)
 	@mkdir -p $(@D)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(BUILD_FLAGS) -o $(BINARY) cmd/$(TARGET)/*.go
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(BUILD_FLAGS) -o $@ cmd/$(TARGET)/*.go
 
+install: $(BIN_DIR)/$(TARGET)
+
+$(BIN_DIR)/$(TARGET): $(BINARY)
+	sudo install -m 0755 $^ $@
+
+uninstall:
+	sudo rm -f $(BIN_DIR)/$(TARGET)
 
 .PHONY: docker
 docker:
