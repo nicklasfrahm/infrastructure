@@ -1,0 +1,11 @@
+apiVersion: v2
+name: o11y-server
+description: The server-side component of an observability platform.
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+dependencies:
+  - name: victoria-metrics-single
+    version: 0.9.16
+    repository: https://victoriametrics.github.io/helm-charts/
+    condition: victoria-metrics-single.enabled
