@@ -1,0 +1,31 @@
+# TODO: How to deal with CRD updates?
+
+victoria-metrics-k8s-stack:
+  enabled: true
+
+  victoria-metrics-operator:
+    enabled: true
+  operator:
+    enable_converter_ownership: true
+
+  vmsingle:
+    enabled: false
+
+  vmagent:
+    enabled: true
+    additionalRemoteWrites:
+      - url: "http://victoria-metrics.10.0.11.33.nip.io/api/v1/write"
+    spec:
+      externalLabels:
+        cluster: "yak"
+
+  # TODO: Configure alerting.
+  alertmanager:
+    enabled: false
+
+  vmalert:
+    enabled: false
+
+  # This is part of the `o11y-ui` chart.
+  grafana:
+    enabled: false
