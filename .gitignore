@@ -10,6 +10,8 @@ credentials*.json
 charts/**/charts
 deploy/**/charts
 secret*.yaml
+**/Chart.lock
+**/values.*.all.yaml
 
 # Built binary files.
 bin/

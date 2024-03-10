@@ -1,0 +1,24 @@
+grafana:
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.10.0.11.33.nip.io
+  persistence:
+    enabled: true
+  resources:
+    requests:
+      cpu: 200m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Victoria Metrics
+          type: prometheus
+          url: http://victoria-metrics.10.0.11.33.nip.io
+          access: proxy
+          isDefault: true
