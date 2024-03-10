@@ -9,3 +9,10 @@ victoria-metrics-single:
         - name: "victoria-metrics.10.0.11.33.nip.io"
           path: "/"
           port: http
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
