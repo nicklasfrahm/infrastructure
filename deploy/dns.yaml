@@ -35,7 +35,7 @@ zones:
       - name: zebra
         type: SITE
         site:
-          router: delta.nicklasfrahm.dev
+          router: alfa.nicklasfrahm.dev
 
   - provider: cloudflare
     name: odance.nl
