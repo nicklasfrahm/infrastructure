@@ -1,0 +1,57 @@
+network:
+  version: 2
+  ethernets:
+    lo:
+      match:
+        name: lo
+      addresses:
+        - 172.31.255.1/32
+    wan:
+      macaddress: ae:99:7d:fb:4f:11
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      dhcp6: true
+      dhcp6-overrides:
+        use-dns: false
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 1.0.0.1
+        search:
+          - srv.nicklasfrahm.dev
+          - nicklasfrahm.dev
+    lan1:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    lan2:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+  bridges:
+    br0:
+      interfaces:
+        - lan1
+        - lan2
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 172.16.1.254/24
+  vlans:
+    # Home network.
+    vlan0010:
+      id: 10
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.1.10.254/24
+      link: br0
+    # Lab network.
+    vlan0011:
+      id: 11
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - 10.1.11.254/24
+      link: br0

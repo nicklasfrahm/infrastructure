@@ -1,0 +1,31 @@
+# This is the network config written by 'subiquity'
+# This file is generated from information provided by the datasource.  Changes
+# to it will not persist across an instance reboot.  To disable cloud-init's
+# network configuration capabilities, write a file
+# /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:
+# network: {config: disabled}
+network:
+  bonds:
+    bond0:
+      dhcp4: true
+      macaddress: 76:d0:ea:38:f7:ee
+      interfaces:
+      - enp7s0f0
+      - enp7s0f1
+      parameters:
+        mode: 802.3ad
+        lacp-rate: fast
+        mii-monitor-interval: 100
+        min-links: 1
+        transmit-hash-policy: encap3+4
+  ethernets:
+    enp3s0:
+      dhcp4: false
+      optional: true
+    enp7s0f0:
+      dhcp4: false
+      optional: true
+    enp7s0f1:
+      dhcp4: false
+      optional: true
+  version: 2

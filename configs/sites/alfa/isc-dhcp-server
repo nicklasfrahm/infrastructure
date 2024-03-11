@@ -14,5 +14,5 @@
 
 # On what interfaces should the DHCP server (dhcpd) serve DHCP requests?
 #	Separate multiple interfaces with spaces, e.g. "eth0 eth1".
-INTERFACESv4="br0 vlan0010 vlan0011 vlan0012"
+INTERFACESv4="br0 vlan0010 vlan0011 vlan0012 vlan0013 vlan0014 vlan0015"
 INTERFACESv6=""
