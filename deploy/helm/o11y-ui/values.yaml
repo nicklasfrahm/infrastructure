@@ -1,24 +1,57 @@
 grafana:
   enabled: true
+  extraLabels:
+    app.kubernetes.io/part-of: o11y-ui
+  admin:
+    existingSecret: o11y-ui-grafana-admin
+  extraSecretMounts:
+    - name: secret-oauth
+      mountPath: /etc/secrets/oauth
+      secretName: o11y-ui-grafana-oauth
+      readOnly: true
   ingress:
     enabled: true
     hosts:
-      - grafana.10.0.11.33.nip.io
+      - grafana.nicklasfrahm.dev
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    tls:
+      - secretName: o11y-ui-grafana-tls
+        hosts:
+          - grafana.nicklasfrahm.dev
   persistence:
     enabled: true
   resources:
     requests:
-      cpu: 750m
-      memory: 128Mi
+      cpu: 500m
+      memory: 256Mi
     limits:
-      cpu: 750m
-      memory: 128Mi
+      cpu: 500m
+      memory: 256Mi
+  grafana.ini:
+    server:
+      domain: grafana.nicklasfrahm.dev
+      root_url: https://grafana.nicklasfrahm.dev
+    auth.google:
+      enabled: true
+      # TODO: Enable this temporarily to allow sign up.
+      allow_sign_up: false
+      # TODO: Enable this permanently to allow auto login.
+      # TODO: Disable username and password login.
+      auto_login: false
+      client_id: $__file{/etc/secrets/oauth/CLIENT_ID}
+      client_secret: $__file{/etc/secrets/oauth/CLIENT_SECRET}
+      scopes: openid email profile
+      auth_url: https://accounts.google.com/o/oauth2/v2/auth
+      token_url: https://oauth2.googleapis.com/token
+      api_url: https://openidconnect.googleapis.com/v1/userinfo
+      use_pkce: true
   datasources:
     datasources.yaml:
       apiVersion: 1
       datasources:
         - name: Victoria Metrics
           type: prometheus
-          url: http://victoria-metrics.10.0.11.33.nip.io
+          url: https://victoria-metrics.nicklasfrahm.dev
           access: proxy
           isDefault: true

@@ -1,0 +1,1 @@
+Grafana is now running at online: {{ index .Values.grafana "grafana.ini" "server" "root_url" }}
