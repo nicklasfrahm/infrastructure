@@ -30,7 +30,6 @@ grafana:
       memory: 256Mi
   grafana.ini:
     server:
-      domain: grafana.nicklasfrahm.dev
       root_url: https://grafana.nicklasfrahm.dev
     auth.google:
       enabled: true
