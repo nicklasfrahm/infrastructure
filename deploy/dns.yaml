@@ -36,6 +36,11 @@ zones:
         type: SITE
         site:
           router: alfa.nicklasfrahm.dev
+      # My observability stack.
+      - name: grafana
+        type: SITE
+        site:
+          router: zebra.nicklasfrahm.dev
 
   - provider: cloudflare
     name: odance.nl
