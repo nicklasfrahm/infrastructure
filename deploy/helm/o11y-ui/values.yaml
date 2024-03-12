@@ -31,13 +31,12 @@ grafana:
   grafana.ini:
     server:
       root_url: https://grafana.nicklasfrahm.dev
+    auth:
+      disable_login_form: true
     auth.google:
       enabled: true
-      # TODO: Enable this temporarily to allow sign up.
       allow_sign_up: false
-      # TODO: Enable this permanently to allow auto login.
-      # TODO: Disable username and password login.
-      auto_login: false
+      auto_login: true
       client_id: $__file{/etc/secrets/oauth/CLIENT_ID}
       client_secret: $__file{/etc/secrets/oauth/CLIENT_SECRET}
       scopes: openid email profile
