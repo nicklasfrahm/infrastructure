@@ -13,8 +13,9 @@ grafana:
     enabled: true
     hosts:
       - grafana.nicklasfrahm.dev
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-production
+    # TODO: Enable this once we have the networking figuered out.
+    # annotations:
+      # cert-manager.io/cluster-issuer: letsencrypt-production
     tls:
       - secretName: o11y-ui-grafana-tls
         hosts:
