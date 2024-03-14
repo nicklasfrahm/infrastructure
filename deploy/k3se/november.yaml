@@ -21,6 +21,10 @@ cluster:
       - 10.255.0.0/16
     cluster-dns:
       - 10.255.0.10
+    kube-apiserver-arg:
+    - oidc-username-claim=email
+    - oidc-issuer-url=https://accounts.google.com
+    - oidc-client-id=454914783251-5vktqqa8kcdfkpceh0ll0ede864cu845.apps.googleusercontent.com
 
 # A list of all nodes in the cluster and their connection information.
 nodes:
