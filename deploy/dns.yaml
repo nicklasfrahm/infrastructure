@@ -46,6 +46,10 @@ zones:
     name: odance.nl
     records:
       - name: "@"
-        type: CNAME
+        type: A
         values:
-          - delta.nicklasfrahm.dev
+          - 34.133.76.226
+      - name: www
+        type: A
+        values:
+          - 34.133.76.226
