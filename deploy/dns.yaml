@@ -41,15 +41,20 @@ zones:
         type: SITE
         site:
           router: zebra.nicklasfrahm.dev
+      # VM hosted in GCP.
+      - name: odance-37d741aa95
+        type: A
+        values:
+          - 34.133.76.226
 
   - provider: cloudflare
     name: odance.nl
     records:
       - name: "@"
-        type: A
+        type: CNAME
         values:
-          - 34.133.76.226
+          - odance-37d741aa95.nicklasfrahm.dev
       - name: www
-        type: A
+        type: CNAME
         values:
-          - 34.133.76.226
+          - odance-37d741aa95.nicklasfrahm.dev
