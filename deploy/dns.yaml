@@ -46,7 +46,7 @@ zones:
         site:
           router: zebra.nicklasfrahm.dev
       - name: insights
-        type: A
+        type: CNAME
         values:
           - mon0.nicklasfrahm.dev
       # VM hosted in GCP.
