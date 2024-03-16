@@ -29,10 +29,10 @@ jobs:
           - foundation
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: stable
 
@@ -40,7 +40,7 @@ jobs:
         run: go mod download
 
       - name: Preview infrastructure
-        uses: pulumi/actions@v4
+        uses: pulumi/actions@v5
         with:
           refresh: true
           comment-on-pr: true
@@ -64,10 +64,10 @@ jobs:
       name: ${{ matrix.stack }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: stable
 
@@ -75,7 +75,7 @@ jobs:
         run: go mod download
 
       - name: Update infrastructure
-        uses: pulumi/actions@v4
+        uses: pulumi/actions@v5
         with:
           refresh: true
           command: update
