@@ -10,7 +10,7 @@ cluster:
     # It is highly recommended to always specify this option as it
     # is used to determine the server URL of the cluster.
     tls-san:
-      - zebra.nicklasfrahm.dev
+      - mon0.nicklasfrahm.dev
     disable:
       - traefik
     flannel-iface: bond0
