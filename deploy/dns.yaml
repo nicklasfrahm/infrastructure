@@ -32,6 +32,10 @@ zones:
         site:
           router: delta.nicklasfrahm.dev
       # A single node cluster with some storage to host MinIO for backups.
+      - name: mon0
+        type: SITE
+        site:
+          router: alfa.nicklasfrahm.dev
       - name: zebra
         type: SITE
         site:
@@ -41,6 +45,10 @@ zones:
         type: SITE
         site:
           router: zebra.nicklasfrahm.dev
+      - name: insights
+        type: A
+        values:
+          - mon0.nicklasfrahm.dev
       # VM hosted in GCP.
       - name: odance-37d741aa95
         type: A
