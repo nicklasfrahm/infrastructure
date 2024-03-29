@@ -5,12 +5,12 @@ go 1.21
 toolchain go1.21.3
 
 require (
-	github.com/cloudflare/cloudflare-go v0.90.0
+	github.com/cloudflare/cloudflare-go v0.92.0
 	github.com/go-playground/validator/v10 v10.19.0
-	github.com/gofiber/fiber/v2 v2.52.2
+	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/joho/godotenv v1.5.1
-	github.com/pulumi/pulumi-cloudflare/sdk/v5 v5.22.0
-	github.com/pulumi/pulumi/sdk/v3 v3.107.0
+	github.com/pulumi/pulumi-cloudflare/sdk/v5 v5.24.0
+	github.com/pulumi/pulumi/sdk/v3 v3.111.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v3 v3.0.1
