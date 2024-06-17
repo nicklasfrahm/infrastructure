@@ -1,0 +1,13 @@
+apiVersion: v2
+name: ingress
+description: This helm chart implements an ingress controller for a Kubernetes cluster.
+version: 0.1.0
+dependencies:
+  - name: traefik
+    version: 24.0.0
+    repository: https://traefik.github.io/charts
+    condition: traefik.enabled
+  - name: cert-manager
+    version: 1.13.1
+    repository: https://charts.jetstack.io
+    condition: cert-manager.enabled
