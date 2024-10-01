@@ -53,7 +53,7 @@ zones:
       - name: odance-37d741aa95
         type: A
         values:
-          - 104.198.242.33
+          - 34.133.126.82
 
   - provider: cloudflare
     name: odance.nl
