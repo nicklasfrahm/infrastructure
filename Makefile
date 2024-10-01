@@ -68,3 +68,21 @@ odance:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update bitnami
 	helm --kube-context moos -n odance-prd upgrade --install --atomic odance bitnami/wordpress -f deploy/helm/odance.values.yaml
+
+.PHONY: cluster-addons
+cluster-addons: ingress dashboard
+
+.PHONY: ingress
+ingress:
+	kubectl create ns ingress --dry-run=client -o yaml | kubectl apply -f -
+	helm upgrade ingress charts/ingress --namespace ingress --install --atomic
+
+.PHONY: dashboard
+dashboard:
+	kubectl create ns dashboard --dry-run=client -o yaml | kubectl apply -f -
+	helm upgrade dashboard charts/dashboard --namespace dashboard --install --atomic --values secret-dashboard.yaml
+
+.PHONY: registry
+registry:
+	kubectl create ns registry --dry-run=client -o yaml | kubectl apply -f -
+	helm upgrade registry charts/registry --namespace registry --install --atomic --values secret-registry.yaml
