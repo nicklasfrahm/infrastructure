@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: blue
+  name: blue
+  namespace: blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blue
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: blue
+    spec:
+      containers:
+      - image: gcr.io/kuar-demo/kuard-amd64:blue
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            memory: 64Mi
+      topologySpreadConstraints:
+        - topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          minDomains: 3
+          maxSkew: 1
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: blue
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: blue
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: blue
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 75
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: blue
+spec:
+  # stateless
+  maxUnavailable: 50%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blue
