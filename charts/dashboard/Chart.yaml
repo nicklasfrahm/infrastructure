@@ -1,0 +1,15 @@
+apiVersion: v2
+name: dashboard
+description: |
+  This helm chart installs the Kubernetes dashboard
+  and configures forward authentication.
+version: 0.1.0
+dependencies:
+  - name: kubernetes-dashboard
+    version: 7.0.0-alpha1
+    repository: https://kubernetes.github.io/dashboard/
+    condition: kubernetes-dashboard.enabled
+  - name: oauth2-proxy
+    version: 6.17.1
+    repository: https://oauth2-proxy.github.io/manifests
+    condition: oauth2-proxy.enabled

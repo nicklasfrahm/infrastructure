@@ -1,0 +1,49 @@
+traefik:
+  enabled: true
+
+  ingressClass:
+    enabled: yes
+    isDefaultClass: yes
+    name: traefik
+
+  service:
+    enabled: yes
+    type: LoadBalancer
+    single: false
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+  ports:
+    traefik:
+      port: 9000
+      expose: no
+      exposedPort: 9000
+      protocol: TCP
+    web:
+      port: 8080
+      expose: yes
+      exposedPort: 80
+      protocol: TCP
+      redirectTo: websecure
+    websecure:
+      port: 8443
+      expose: yes
+      exposedPort: 443
+      protocol: TCP
+      tls:
+        enabled: yes
+
+  providers:
+    kubernetesIngress:
+      publishedService:
+        enabled: true
+
+cert-manager:
+  enabled: true
+  installCRDs: true

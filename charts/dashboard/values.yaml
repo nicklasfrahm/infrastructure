@@ -1,0 +1,85 @@
+# Configure role bindings to allow users to access the dashboard.
+bindings: []
+# - # Must be either `ClusterRole` or `Role``.
+#   kind: ClusterRole
+#   role: cluster-admin
+#   users:
+#     - nicklas.frahm@gmail.com
+# - # Must be either `ClusterRole` or `Role``.
+#   kind: ClusterRole
+#   role: cluster-admin
+#   groups:
+#     - platform-engineers
+
+kubernetes-dashboard:
+  enabled: true
+  nginx:
+    enabled: false
+  cert-manager:
+    enabled: false
+  metrics-server:
+    enabled: false
+  app:
+    ingress:
+      enabled: false
+
+oauth2-proxy:
+  enabled: true
+  ingress:
+    enabled: true
+    className: traefik
+    hosts:
+      - dashboard.november.nicklasfrahm.dev
+    path: /
+    pathType: Prefix
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    tls:
+      - secretName: dev-nicklasfrahm-november-dashboard-tls
+        hosts:
+          - dashboard.november.nicklasfrahm.dev
+  extraArgs: {}
+
+  config:
+    clientID: "CHANGE_ME"
+    clientSecret: "CHANGE_ME"
+    cookieSecret: "CHANGE_ME"
+    configFile: |-
+      # General proxy settings.
+      reverse_proxy = true
+      real_client_ip_header = "X-Forwarded-For"
+      pass_authorization_header = true
+
+      # Display settings.
+      custom_sign_in_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Kubernetes_logo.svg/798px-Kubernetes_logo.svg.png"
+
+      # Cookie settings.
+      cookie_domains = [ ".november.nicklasfrahm.dev" ]
+      cookie_samesite = "lax"
+      cookie_expire	= "3h"
+      cookie_csrf_per_request = true
+      cookie_name = "__secure_oauth2_proxy"
+      cookie_secure = true
+      cookie_refresh = "1h"
+
+      # OIDC settings.
+      insecure_oidc_skip_issuer_verification = false
+      insecure_oidc_skip_nonce = false
+      oidc_issuer_url = "https://accounts.google.com"
+      code_challenge_method = "S256"
+
+      # Authorization settings.
+      email_domains = [ "*" ]
+
+      # Logging settings.
+      silence_ping_logging = true
+      logging_local_time = false
+
+      # Backend configuration.
+      upstreams = [
+        "http://{{ .Release.Name }}-kubernetes-dashboard-web.{{ .Release.Namespace }}.svc:8000/",
+        "http://{{ .Release.Name }}-kubernetes-dashboard-api.{{ .Release.Namespace }}.svc:9000/api/",
+      ]
+      api_routes = [
+        "^/api/",
+      ]
