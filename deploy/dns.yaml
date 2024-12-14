@@ -17,7 +17,7 @@ zones:
       - name: "@"
         type: GITHUB_PAGES
         githubPages:
-          org: nicklasfrahm
+          org: nicklasfrahm-dev
       - name: kraut
         type: GITHUB_PAGES
         githubPages:
