@@ -53,20 +53,3 @@ zones:
         type: CNAME
         values:
           - mon0.nicklasfrahm.dev
-      # VM hosted in GCP.
-      - name: odance-37d741aa95
-        type: A
-        values:
-          - 34.133.126.82
-
-  - provider: cloudflare
-    name: odance.nl
-    records:
-      - name: "@"
-        type: CNAME
-        values:
-          - odance-37d741aa95.nicklasfrahm.dev
-      - name: www
-        type: CNAME
-        values:
-          - odance-37d741aa95.nicklasfrahm.dev
